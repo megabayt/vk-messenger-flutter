@@ -28,6 +28,7 @@ class Response {
     Response({
         this.count,
         this.items,
+        this.unreadCount,
         this.profiles,
         this.groups,
         this.emails,
@@ -35,6 +36,7 @@ class Response {
 
     final int count;
     final List<Item> items;
+    final int unreadCount;
     final List<Profile> profiles;
     final List<Group> groups;
     final List<Email> emails;
@@ -46,6 +48,7 @@ class Response {
     factory Response.fromJson(Map<String, dynamic> json) => Response(
         count: json["count"] == null ? null : json["count"],
         items: json["items"] == null ? null : List<Item>.from(json["items"].map((x) => Item.fromJson(x))),
+        unreadCount: json["unread_count"] == null ? null : json["unread_count"],
         profiles: json["profiles"] == null ? null : List<Profile>.from(json["profiles"].map((x) => Profile.fromJson(x))),
         groups: json["groups"] == null ? null : List<Group>.from(json["groups"].map((x) => Group.fromJson(x))),
         emails: json["emails"] == null ? null : List<Email>.from(json["emails"].map((x) => Email.fromJson(x))),
@@ -54,6 +57,7 @@ class Response {
     Map<String, dynamic> toJson() => {
         "count": count == null ? null : count,
         "items": items == null ? null : List<dynamic>.from(items.map((x) => x.toJson())),
+        "unread_count": unreadCount == null ? null : unreadCount,
         "profiles": profiles == null ? null : List<dynamic>.from(profiles.map((x) => x.toJson())),
         "groups": groups == null ? null : List<dynamic>.from(groups.map((x) => x.toJson())),
         "emails": emails == null ? null : List<dynamic>.from(emails.map((x) => x.toJson())),
@@ -183,11 +187,12 @@ class Conversation {
         this.inRead,
         this.outRead,
         this.sortId,
+        this.unreadCount,
         this.isMarkedUnread,
         this.important,
         this.canWrite,
-        this.currentKeyboard,
         this.chatSettings,
+        this.currentKeyboard,
         this.pushSettings,
     });
 
@@ -196,11 +201,12 @@ class Conversation {
     final int inRead;
     final int outRead;
     final SortId sortId;
+    final int unreadCount;
     final bool isMarkedUnread;
     final bool important;
     final CanWrite canWrite;
-    final CurrentKeyboard currentKeyboard;
     final ChatSettings chatSettings;
+    final CurrentKeyboard currentKeyboard;
     final PushSettings pushSettings;
 
     factory Conversation.fromRawJson(String str) => Conversation.fromJson(json.decode(str));
@@ -213,11 +219,12 @@ class Conversation {
         inRead: json["in_read"] == null ? null : json["in_read"],
         outRead: json["out_read"] == null ? null : json["out_read"],
         sortId: json["sort_id"] == null ? null : SortId.fromJson(json["sort_id"]),
+        unreadCount: json["unread_count"] == null ? null : json["unread_count"],
         isMarkedUnread: json["is_marked_unread"] == null ? null : json["is_marked_unread"],
         important: json["important"] == null ? null : json["important"],
         canWrite: json["can_write"] == null ? null : CanWrite.fromJson(json["can_write"]),
-        currentKeyboard: json["current_keyboard"] == null ? null : CurrentKeyboard.fromJson(json["current_keyboard"]),
         chatSettings: json["chat_settings"] == null ? null : ChatSettings.fromJson(json["chat_settings"]),
+        currentKeyboard: json["current_keyboard"] == null ? null : CurrentKeyboard.fromJson(json["current_keyboard"]),
         pushSettings: json["push_settings"] == null ? null : PushSettings.fromJson(json["push_settings"]),
     );
 
@@ -227,11 +234,12 @@ class Conversation {
         "in_read": inRead == null ? null : inRead,
         "out_read": outRead == null ? null : outRead,
         "sort_id": sortId == null ? null : sortId.toJson(),
+        "unread_count": unreadCount == null ? null : unreadCount,
         "is_marked_unread": isMarkedUnread == null ? null : isMarkedUnread,
         "important": important == null ? null : important,
         "can_write": canWrite == null ? null : canWrite.toJson(),
-        "current_keyboard": currentKeyboard == null ? null : currentKeyboard.toJson(),
         "chat_settings": chatSettings == null ? null : chatSettings.toJson(),
+        "current_keyboard": currentKeyboard == null ? null : currentKeyboard.toJson(),
         "push_settings": pushSettings == null ? null : pushSettings.toJson(),
     };
 }
@@ -669,7 +677,6 @@ class AttachmentPhoto {
         this.text,
         this.userId,
         this.accessKey,
-        this.postId,
         this.lat,
         this.long,
     });
@@ -683,7 +690,6 @@ class AttachmentPhoto {
     final String text;
     final int userId;
     final String accessKey;
-    final int postId;
     final double lat;
     final double long;
 
@@ -701,7 +707,6 @@ class AttachmentPhoto {
         text: json["text"] == null ? null : json["text"],
         userId: json["user_id"] == null ? null : json["user_id"],
         accessKey: json["access_key"] == null ? null : json["access_key"],
-        postId: json["post_id"] == null ? null : json["post_id"],
         lat: json["lat"] == null ? null : json["lat"].toDouble(),
         long: json["long"] == null ? null : json["long"].toDouble(),
     );
@@ -716,7 +721,6 @@ class AttachmentPhoto {
         "text": text == null ? null : text,
         "user_id": userId == null ? null : userId,
         "access_key": accessKey == null ? null : accessKey,
-        "post_id": postId == null ? null : postId,
         "lat": lat == null ? null : lat,
         "long": long == null ? null : long,
     };
@@ -873,7 +877,7 @@ class Peer {
     };
 }
 
-enum PeerType { USER, GROUP, CHAT, EMAIL }
+enum PeerType { CHAT, USER, GROUP, EMAIL }
 
 final peerTypeValues = EnumValues({
     "chat": PeerType.CHAT,
@@ -944,7 +948,6 @@ class LastMessage {
         this.randomId,
         this.attachments,
         this.isHidden,
-        this.ref,
         this.replyMessage,
         this.updateTime,
         this.action,
@@ -963,7 +966,6 @@ class LastMessage {
     final int randomId;
     final List<LastMessageAttachment> attachments;
     final bool isHidden;
-    final String ref;
     final Message replyMessage;
     final int updateTime;
     final LastMessageAction action;
@@ -986,7 +988,6 @@ class LastMessage {
         randomId: json["random_id"] == null ? null : json["random_id"],
         attachments: json["attachments"] == null ? null : List<LastMessageAttachment>.from(json["attachments"].map((x) => LastMessageAttachment.fromJson(x))),
         isHidden: json["is_hidden"] == null ? null : json["is_hidden"],
-        ref: json["ref"] == null ? null : json["ref"],
         replyMessage: json["reply_message"] == null ? null : Message.fromJson(json["reply_message"]),
         updateTime: json["update_time"] == null ? null : json["update_time"],
         action: json["action"] == null ? null : LastMessageAction.fromJson(json["action"]),
@@ -1006,7 +1007,6 @@ class LastMessage {
         "random_id": randomId == null ? null : randomId,
         "attachments": attachments == null ? null : List<dynamic>.from(attachments.map((x) => x.toJson())),
         "is_hidden": isHidden == null ? null : isHidden,
-        "ref": ref == null ? null : ref,
         "reply_message": replyMessage == null ? null : replyMessage.toJson(),
         "update_time": updateTime == null ? null : updateTime,
         "action": action == null ? null : action.toJson(),
@@ -1048,10 +1048,10 @@ class LastMessageAttachment {
     LastMessageAttachment({
         this.type,
         this.photo,
-        this.wall,
         this.link,
         this.sticker,
         this.story,
+        this.wall,
         this.doc,
         this.video,
         this.gift,
@@ -1059,10 +1059,10 @@ class LastMessageAttachment {
 
     final String type;
     final AttachmentPhoto photo;
-    final Wall wall;
     final Link link;
     final Sticker sticker;
     final Story story;
+    final Wall wall;
     final Doc doc;
     final Video video;
     final Gift gift;
@@ -1074,10 +1074,10 @@ class LastMessageAttachment {
     factory LastMessageAttachment.fromJson(Map<String, dynamic> json) => LastMessageAttachment(
         type: json["type"] == null ? null : json["type"],
         photo: json["photo"] == null ? null : AttachmentPhoto.fromJson(json["photo"]),
-        wall: json["wall"] == null ? null : Wall.fromJson(json["wall"]),
         link: json["link"] == null ? null : Link.fromJson(json["link"]),
         sticker: json["sticker"] == null ? null : Sticker.fromJson(json["sticker"]),
         story: json["story"] == null ? null : Story.fromJson(json["story"]),
+        wall: json["wall"] == null ? null : Wall.fromJson(json["wall"]),
         doc: json["doc"] == null ? null : Doc.fromJson(json["doc"]),
         video: json["video"] == null ? null : Video.fromJson(json["video"]),
         gift: json["gift"] == null ? null : Gift.fromJson(json["gift"]),
@@ -1086,10 +1086,10 @@ class LastMessageAttachment {
     Map<String, dynamic> toJson() => {
         "type": type == null ? null : type,
         "photo": photo == null ? null : photo.toJson(),
-        "wall": wall == null ? null : wall.toJson(),
         "link": link == null ? null : link.toJson(),
         "sticker": sticker == null ? null : sticker.toJson(),
         "story": story == null ? null : story.toJson(),
+        "wall": wall == null ? null : wall.toJson(),
         "doc": doc == null ? null : doc.toJson(),
         "video": video == null ? null : video.toJson(),
         "gift": gift == null ? null : gift.toJson(),
@@ -1832,9 +1832,9 @@ class Profile {
         this.photo50,
         this.photo100,
         this.online,
+        this.onlineInfo,
         this.onlineApp,
         this.onlineMobile,
-        this.onlineInfo,
         this.deactivated,
     });
 
@@ -1848,9 +1848,9 @@ class Profile {
     final String photo50;
     final String photo100;
     final int online;
+    final OnlineInfo onlineInfo;
     final int onlineApp;
     final int onlineMobile;
-    final OnlineInfo onlineInfo;
     final String deactivated;
 
     factory Profile.fromRawJson(String str) => Profile.fromJson(json.decode(str));
@@ -1868,9 +1868,9 @@ class Profile {
         photo50: json["photo_50"] == null ? null : json["photo_50"],
         photo100: json["photo_100"] == null ? null : json["photo_100"],
         online: json["online"] == null ? null : json["online"],
+        onlineInfo: json["online_info"] == null ? null : OnlineInfo.fromJson(json["online_info"]),
         onlineApp: json["online_app"] == null ? null : json["online_app"],
         onlineMobile: json["online_mobile"] == null ? null : json["online_mobile"],
-        onlineInfo: json["online_info"] == null ? null : OnlineInfo.fromJson(json["online_info"]),
         deactivated: json["deactivated"] == null ? null : json["deactivated"],
     );
 
@@ -1885,9 +1885,9 @@ class Profile {
         "photo_50": photo50 == null ? null : photo50,
         "photo_100": photo100 == null ? null : photo100,
         "online": online == null ? null : online,
+        "online_info": onlineInfo == null ? null : onlineInfo.toJson(),
         "online_app": onlineApp == null ? null : onlineApp,
         "online_mobile": onlineMobile == null ? null : onlineMobile,
-        "online_info": onlineInfo == null ? null : onlineInfo.toJson(),
         "deactivated": deactivated == null ? null : deactivated,
     };
 }

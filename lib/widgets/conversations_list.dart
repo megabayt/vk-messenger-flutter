@@ -25,7 +25,7 @@ class ConversationList extends StatelessWidget {
     final needFetchMore = totalCount > items.length;
 
     if (needFetchMore) {
-      items = [...items, null, null, null];
+      items = [...items, null];
     }
 
     return RefreshIndicator(

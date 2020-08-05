@@ -1,14 +1,20 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'package:vk_messenger_flutter/models/vk_conversations.dart' show Item;
 import 'package:vk_messenger_flutter/store/chats_store.dart';
-import 'package:vk_messenger_flutter/widgets/skeleton.dart';
+import 'package:vk_messenger_flutter/utils/helpers.dart';
+import 'package:vk_messenger_flutter/widgets/conversation_avatar.dart';
 
 class ConversationTile extends StatelessWidget {
   final Item _item;
 
-  get _peerId {
-    return _item?.conversation?.peer?.id;
+  get _message {
+    if (_item?.lastMessage?.text != '') {
+      return _item?.lastMessage?.text;
+    }
+    return getAttachmentReplacer(_item);
   }
 
   ConversationTile(this._item);
@@ -17,24 +23,41 @@ class ConversationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = Provider.of<ChatsStore>(context);
 
-    final profiles = provider.data?.response?.profiles ?? [];
+    final profile = provider.getProfile(_item?.conversation?.peer?.id);
 
-    final profile = profiles.firstWhere(
-      (profile) => profile.id == _peerId,
-      orElse: () => null
-    );
+    final name = _item?.conversation?.chatSettings?.title ?? profile.name;
+
+    final unreadCount = _item?.conversation?.unreadCount;
 
     if (_item == null) {
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15.0),
-        child: Skeleton(),
+        padding: EdgeInsets.symmetric(vertical: 15.0),
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       );
     }
+
     return ListTile(
-      leading: CircleAvatar(
-          backgroundImage: NetworkImage(profile != null ? profile.photo50 : 'https://unsplash.it/150/200?random')),
-      title: Text(profile != null ? profile.lastName : _peerId.toString()),
-      subtitle: Text(_item?.lastMessage?.text),
+      leading: ConversationAvatar(_item),
+      title: Text(name),
+      subtitle: Text(
+        _message,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: unreadCount != null
+          ? Badge(
+              padding: EdgeInsets.all(7),
+              badgeContent: Text(
+                unreadCount.toString(),
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              child: null,
+            )
+          : null,
     );
   }
 }

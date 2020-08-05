@@ -29,6 +29,7 @@ dependencies:
   flutter_login_vk: ^0.1.0+3
   http: ^0.12.2
   get_it: ^4.0.4
+  badges: ^1.1.1
 
 dev_dependencies:
   flutter_test:
