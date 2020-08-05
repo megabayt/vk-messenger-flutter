@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vk_messenger_flutter/service_locator.dart';
-import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
+import 'package:vk_messenger_flutter/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/utils/errors.dart';
 
 class AuthStore with ChangeNotifier {
@@ -13,6 +13,7 @@ class AuthStore with ChangeNotifier {
   Future<void> login() async {
     try {
       await _vkService.login();
+      notifyListeners();
     } on VKServiceError catch (_) {
       // Словили исключение, пробуем снова
       login();

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vk_messenger_flutter/screens/chats_page.dart';
 
 import 'package:vk_messenger_flutter/screens/initial_screen.dart';
 import 'package:vk_messenger_flutter/service_locator.dart';
 import 'package:vk_messenger_flutter/store/auth_store.dart';
+import 'package:vk_messenger_flutter/store/chats_store.dart';
 
 void main() {
   setupServiceLocator();
@@ -13,8 +15,11 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AuthStore(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthStore()),
+        ChangeNotifierProvider(create: (_) => ChatsStore()),
+      ],
       child: MaterialApp(
         title: 'Vk Chat App',
         theme: ThemeData(
@@ -30,7 +35,18 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        home: InitialScreen(),
+        home: Consumer<AuthStore>(
+            builder: (consumerContext, authStoreData, _) {
+              final isAuthenticated = authStoreData.isAuthenticated;
+              if (!isAuthenticated) {
+                return InitialScreen();
+              }
+              return ChatsPage();
+            },
+          ),
+        routes: {
+          ChatsPage.routeUrl: (_) => ChatsPage(),
+        },
       ),
     );
   }

@@ -8,21 +8,7 @@ class InitialScreen extends StatelessWidget {
     return FutureBuilder(
       future: Provider.of<AuthStore>(context, listen: false).login(),
       builder: (BuildContext builderContext, AsyncSnapshot dataSnapshot) {
-        return Scaffold(
-          body: Consumer<AuthStore>(
-            builder: (consumerContext, authStoreData, _) {
-              final isAuthenticated = authStoreData.isAuthenticated;
-              if (!isAuthenticated) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              return Center(
-                child: Text('You Authenticated'),
-              );
-            },
-          ),
-        );
+        return Scaffold(body: Center(child: CircularProgressIndicator()));
       },
     );
   }
