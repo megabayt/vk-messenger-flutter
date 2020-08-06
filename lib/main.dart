@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vk_messenger_flutter/screens/chat_page.dart';
 import 'package:vk_messenger_flutter/screens/chats_page.dart';
 
 import 'package:vk_messenger_flutter/screens/initial_screen.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/store/auth_store.dart';
 import 'package:vk_messenger_flutter/store/chats_store.dart';
+import 'package:vk_messenger_flutter/store/chat_store.dart';
 
 void main() {
   setupServiceLocator();
@@ -19,6 +21,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthStore()),
         ChangeNotifierProvider(create: (_) => ChatsStore()),
+        ChangeNotifierProvider(create: (_) => ChatStore()),
       ],
       child: MaterialApp(
         title: 'Vk Chat App',
@@ -46,6 +49,7 @@ class MyApp extends StatelessWidget {
           ),
         routes: {
           ChatsPage.routeUrl: (_) => ChatsPage(),
+          ChatPage.routeUrl: (_) => ChatPage(),
         },
       ),
     );

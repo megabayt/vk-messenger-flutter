@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:vk_messenger_flutter/models/vk_conversations.dart' show Item;
+import 'package:vk_messenger_flutter/screens/chat_page.dart';
 import 'package:vk_messenger_flutter/store/chats_store.dart';
 import 'package:vk_messenger_flutter/utils/helpers.dart';
 import 'package:vk_messenger_flutter/widgets/conversation_avatar.dart';
@@ -18,6 +19,16 @@ class ConversationTile extends StatelessWidget {
   }
 
   ConversationTile(this._item);
+
+  void _chatTapHandler(BuildContext context) {
+    Navigator.pushNamed(
+      context,
+      ChatPage.routeUrl,
+      arguments: ChatPageScreenArguments(
+        _item?.conversation?.peer?.id,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,26 +49,31 @@ class ConversationTile extends StatelessWidget {
       );
     }
 
-    return ListTile(
-      leading: ConversationAvatar(_item),
-      title: Text(name),
-      subtitle: Text(
-        _message,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
+    return Material(
+      child: InkWell(
+        onTap: () => _chatTapHandler(context),
+        child: ListTile(
+          leading: ConversationAvatar(_item),
+          title: Text(name),
+          subtitle: Text(
+            _message,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          trailing: unreadCount != null
+              ? Badge(
+                  padding: EdgeInsets.all(7),
+                  badgeContent: Text(
+                    unreadCount.toString(),
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  child: null,
+                )
+              : null,
+        ),
       ),
-      trailing: unreadCount != null
-          ? Badge(
-              padding: EdgeInsets.all(7),
-              badgeContent: Text(
-                unreadCount.toString(),
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              child: null,
-            )
-          : null,
     );
   }
 }
