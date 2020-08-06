@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:vk_messenger_flutter/service_locator.dart';
-import 'package:vk_messenger_flutter/interfaces/vk_service.dart';
+
+import 'package:vk_messenger_flutter/services/service_locator.dart';
+import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/utils/errors.dart';
 
 class AuthStore with ChangeNotifier {

@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:vk_messenger_flutter/screens/chats_page.dart';
 
 import 'package:vk_messenger_flutter/screens/initial_screen.dart';
-import 'package:vk_messenger_flutter/service_locator.dart';
+import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/store/auth_store.dart';
 import 'package:vk_messenger_flutter/store/chats_store.dart';
 

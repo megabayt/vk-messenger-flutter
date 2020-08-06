@@ -1,7 +1,7 @@
 import 'package:flutter_login_vk/flutter_login_vk.dart';
 
 import 'package:vk_messenger_flutter/constants/api.dart' as api;
-import 'package:vk_messenger_flutter/interfaces/vk_service.dart';
+import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/utils/errors.dart';
 
 class VkServiceImpl implements VKService {

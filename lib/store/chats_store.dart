@@ -5,8 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:vk_messenger_flutter/constants/api.dart';
 import 'package:vk_messenger_flutter/models/vk_conversations.dart';
 
-import 'package:vk_messenger_flutter/service_locator.dart';
-import 'package:vk_messenger_flutter/interfaces/vk_service.dart';
+import 'package:vk_messenger_flutter/services/service_locator.dart';
+import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/utils/helpers.dart';
 
 class ProfileCacheItem {
