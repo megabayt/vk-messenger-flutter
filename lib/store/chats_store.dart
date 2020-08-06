@@ -85,8 +85,12 @@ class ChatsStore with ChangeNotifier {
     });
 
     _data.response.items.addAll(newData.response.items);
-    _data.response.profiles.addAll(newData.response.profiles);
-    _data.response.groups.addAll(newData.response.groups);
+    if (newData.response.profiles != null) {
+      _data.response.profiles.addAll(newData.response.profiles);
+    }
+    if (newData.response.groups != null) {
+      _data.response.groups.addAll(newData.response.groups);
+    }
 
     notifyListeners();
   }
