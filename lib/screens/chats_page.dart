@@ -4,7 +4,7 @@ import 'package:vk_messenger_flutter/store/chats_store.dart';
 import 'package:vk_messenger_flutter/widgets/conversations_list.dart';
 
 class ChatsPage extends StatelessWidget {
-  static final routeUrl = '/chats';
+  static const routeUrl = '/chats';
 
   @override
   Widget build(BuildContext context) {

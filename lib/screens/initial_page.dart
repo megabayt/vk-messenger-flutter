@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vk_messenger_flutter/store/auth_store.dart';
 
-class InitialScreen extends StatelessWidget {
+class InitialPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(

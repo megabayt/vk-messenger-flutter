@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/screens/chat_page.dart';
 import 'package:vk_messenger_flutter/screens/chats_page.dart';
-
-import 'package:vk_messenger_flutter/screens/initial_screen.dart';
-import 'package:vk_messenger_flutter/services/service_locator.dart';
+import 'package:vk_messenger_flutter/screens/error_page.dart';
+import 'package:vk_messenger_flutter/screens/initial_page.dart';
 import 'package:vk_messenger_flutter/store/auth_store.dart';
 import 'package:vk_messenger_flutter/store/chats_store.dart';
 import 'package:vk_messenger_flutter/store/chat_store.dart';
@@ -38,19 +39,28 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        home: Consumer<AuthStore>(
-            builder: (consumerContext, authStoreData, _) {
-              final isAuthenticated = authStoreData.isAuthenticated;
-              if (!isAuthenticated) {
-                return InitialScreen();
-              }
-              return ChatsPage();
-            },
-          ),
-        routes: {
-          ChatsPage.routeUrl: (_) => ChatsPage(),
-          ChatPage.routeUrl: (_) => ChatPage(),
+        onGenerateRoute: (RouteSettings settings) {
+          switch (settings.name) {
+            case '/':
+              return MaterialPageRoute(
+                  builder: (_) => Consumer<AuthStore>(
+                        builder: (consumerContext, authStoreData, _) {
+                          final isAuthenticated = authStoreData.isAuthenticated;
+                          if (!isAuthenticated) {
+                            return InitialPage();
+                          }
+                          return ChatsPage();
+                        },
+                      ));
+            case ChatsPage.routeUrl:
+              return MaterialPageRoute(builder: (_) => ChatsPage());
+            case ChatPage.routeUrl:
+              return MaterialPageRoute(builder: (_) => ChatPage((settings.arguments as Map<String, int>)['peerId']));
+            default:
+              return MaterialPageRoute(builder: (_) => ErrorPage());
+          }
         },
+        routes: {},
       ),
     );
   }

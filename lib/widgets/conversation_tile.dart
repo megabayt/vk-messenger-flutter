@@ -21,13 +21,9 @@ class ConversationTile extends StatelessWidget {
   ConversationTile(this._item);
 
   void _chatTapHandler(BuildContext context) {
-    Navigator.pushNamed(
-      context,
-      ChatPage.routeUrl,
-      arguments: ChatPageScreenArguments(
-        _item?.conversation?.peer?.id,
-      ),
-    );
+    Navigator.pushNamed(context, ChatPage.routeUrl, arguments: {
+      'peerId': _item?.conversation?.peer?.id,
+    });
   }
 
   @override
