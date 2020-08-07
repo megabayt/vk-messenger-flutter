@@ -5,38 +5,28 @@ import 'package:provider/provider.dart';
 import 'package:vk_messenger_flutter/models/vk_conversations.dart' show Item;
 import 'package:vk_messenger_flutter/screens/chat_page.dart';
 import 'package:vk_messenger_flutter/store/chats_store.dart';
-import 'package:vk_messenger_flutter/utils/helpers.dart';
 import 'package:vk_messenger_flutter/widgets/conversation_avatar.dart';
 
 class ConversationTile extends StatelessWidget {
-  final Item _item;
-
-  get _message {
-    if (_item?.lastMessage?.text != '') {
-      return _item?.lastMessage?.text;
-    }
-    return getAttachmentReplacer(_item);
-  }
-
-  ConversationTile(this._item);
-
   void _chatTapHandler(BuildContext context) {
+    final item = Provider.of<Item>(context);
     Navigator.pushNamed(context, ChatPage.routeUrl, arguments: {
-      'peerId': _item?.conversation?.peer?.id,
+      'peerId': item?.conversation?.peer?.id,
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ChatsStore>(context);
+    final item = Provider.of<Item>(context);
+    final getProfile = Provider.of<ChatsStore>(context).getProfile;
 
-    final profile = provider.getProfile(_item?.conversation?.peer?.id);
+    final profile = getProfile(item?.conversation?.peer?.id);
 
-    final name = _item?.conversation?.chatSettings?.title ?? profile.name;
+    final name = item?.conversation?.chatSettings?.title ?? profile.name;
 
-    final unreadCount = _item?.conversation?.unreadCount;
+    final unreadCount = item?.conversation?.unreadCount;
 
-    if (_item == null) {
+    if (item == null) {
       return Padding(
         padding: EdgeInsets.symmetric(vertical: 15.0),
         child: Center(
@@ -49,10 +39,10 @@ class ConversationTile extends StatelessWidget {
       child: InkWell(
         onTap: () => _chatTapHandler(context),
         child: ListTile(
-          leading: ConversationAvatar(_item),
+          leading: ConversationAvatar(),
           title: Text(name),
           subtitle: Text(
-            _message,
+            item?.lastMessage?.text,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),

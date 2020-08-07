@@ -35,12 +35,12 @@ class ConversationList extends StatelessWidget {
         itemCount: items.length,
         itemBuilder: (BuildContext _, int index) {
           return CreationAwareListItem(
-            key: ValueKey(items[index]?.lastMessage?.id),
-            itemCreated: () => _itemCreatedHandler(provider, index),
-            child: ConversationTile(
-              items[index],
-            ),
-          );
+              key: ValueKey(items[index]?.lastMessage?.id),
+              itemCreated: () => _itemCreatedHandler(provider, index),
+              child: Provider.value(
+                value: items[index],
+                child: ConversationTile(),
+              ));
         },
       ),
     );
