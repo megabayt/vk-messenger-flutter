@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:vk_messenger_flutter/models/vk_conversations.dart' show Profile, Group;
+
 class VkConversation {
     VkConversation({
         this.response,
@@ -177,66 +179,6 @@ class SortId {
     Map<String, dynamic> toJson() => {
         "major_id": majorId == null ? null : majorId,
         "minor_id": minorId == null ? null : minorId,
-    };
-}
-
-class Group {
-    Group({
-        this.id,
-        this.name,
-        this.screenName,
-        this.isClosed,
-        this.type,
-        this.isAdmin,
-        this.isMember,
-        this.isAdvertiser,
-        this.photo50,
-        this.photo100,
-        this.photo200,
-    });
-
-    final int id;
-    final String name;
-    final String screenName;
-    final int isClosed;
-    final GroupType type;
-    final int isAdmin;
-    final int isMember;
-    final int isAdvertiser;
-    final String photo50;
-    final String photo100;
-    final String photo200;
-
-    factory Group.fromRawJson(String str) => Group.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory Group.fromJson(Map<String, dynamic> json) => Group(
-        id: json["id"] == null ? null : json["id"],
-        name: json["name"] == null ? null : json["name"],
-        screenName: json["screen_name"] == null ? null : json["screen_name"],
-        isClosed: json["is_closed"] == null ? null : json["is_closed"],
-        type: json["type"] == null ? null : groupTypeValues.map[json["type"]],
-        isAdmin: json["is_admin"] == null ? null : json["is_admin"],
-        isMember: json["is_member"] == null ? null : json["is_member"],
-        isAdvertiser: json["is_advertiser"] == null ? null : json["is_advertiser"],
-        photo50: json["photo_50"] == null ? null : json["photo_50"],
-        photo100: json["photo_100"] == null ? null : json["photo_100"],
-        photo200: json["photo_200"] == null ? null : json["photo_200"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "id": id == null ? null : id,
-        "name": name == null ? null : name,
-        "screen_name": screenName == null ? null : screenName,
-        "is_closed": isClosed == null ? null : isClosed,
-        "type": type == null ? null : groupTypeValues.reverse[type],
-        "is_admin": isAdmin == null ? null : isAdmin,
-        "is_member": isMember == null ? null : isMember,
-        "is_advertiser": isAdvertiser == null ? null : isAdvertiser,
-        "photo_50": photo50 == null ? null : photo50,
-        "photo_100": photo100 == null ? null : photo100,
-        "photo_200": photo200 == null ? null : photo200,
     };
 }
 
@@ -1709,70 +1651,6 @@ final refValues = EnumValues({
     "feed_recent": Ref.FEED_RECENT,
     "single": Ref.SINGLE
 });
-
-class Profile {
-    Profile({
-        this.id,
-        this.firstName,
-        this.lastName,
-        this.isClosed,
-        this.canAccessClosed,
-        this.sex,
-        this.screenName,
-        this.photo50,
-        this.photo100,
-        this.online,
-        this.onlineInfo,
-        this.deactivated,
-    });
-
-    final int id;
-    final String firstName;
-    final String lastName;
-    final bool isClosed;
-    final bool canAccessClosed;
-    final int sex;
-    final String screenName;
-    final String photo50;
-    final String photo100;
-    final int online;
-    final OnlineInfo onlineInfo;
-    final String deactivated;
-
-    factory Profile.fromRawJson(String str) => Profile.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory Profile.fromJson(Map<String, dynamic> json) => Profile(
-        id: json["id"] == null ? null : json["id"],
-        firstName: json["first_name"] == null ? null : json["first_name"],
-        lastName: json["last_name"] == null ? null : json["last_name"],
-        isClosed: json["is_closed"] == null ? null : json["is_closed"],
-        canAccessClosed: json["can_access_closed"] == null ? null : json["can_access_closed"],
-        sex: json["sex"] == null ? null : json["sex"],
-        screenName: json["screen_name"] == null ? null : json["screen_name"],
-        photo50: json["photo_50"] == null ? null : json["photo_50"],
-        photo100: json["photo_100"] == null ? null : json["photo_100"],
-        online: json["online"] == null ? null : json["online"],
-        onlineInfo: json["online_info"] == null ? null : OnlineInfo.fromJson(json["online_info"]),
-        deactivated: json["deactivated"] == null ? null : json["deactivated"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "id": id == null ? null : id,
-        "first_name": firstName == null ? null : firstName,
-        "last_name": lastName == null ? null : lastName,
-        "is_closed": isClosed == null ? null : isClosed,
-        "can_access_closed": canAccessClosed == null ? null : canAccessClosed,
-        "sex": sex == null ? null : sex,
-        "screen_name": screenName == null ? null : screenName,
-        "photo_50": photo50 == null ? null : photo50,
-        "photo_100": photo100 == null ? null : photo100,
-        "online": online == null ? null : online,
-        "online_info": onlineInfo == null ? null : onlineInfo.toJson(),
-        "deactivated": deactivated == null ? null : deactivated,
-    };
-}
 
 class OnlineInfo {
     OnlineInfo({

@@ -12,6 +12,10 @@ class VkServiceImpl implements VKService {
     return _tokenObject?.token;
   }
 
+  get userId {
+    return int.parse(_tokenObject.userId);
+  }
+
   Future<void> login() async {
     try {
       if (!_instance.isInitialized) {

@@ -1,5 +1,6 @@
 abstract class VKService {
-  get token;
+  String get token;
+  int get userId;
 
   Future<void> login();
 }

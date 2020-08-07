@@ -4,12 +4,15 @@ import 'package:provider/provider.dart';
 
 import 'package:vk_messenger_flutter/models/vk_conversations.dart' show Item;
 import 'package:vk_messenger_flutter/screens/chat_page.dart';
-import 'package:vk_messenger_flutter/store/chats_store.dart';
+import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
+import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/widgets/conversation_avatar.dart';
 
 class ConversationTile extends StatelessWidget {
+  final _profilesService = locator<ProfilesService>();
+
   void _chatTapHandler(BuildContext context) {
-    final item = Provider.of<Item>(context);
+    final item = Provider.of<Item>(context, listen: false);
     Navigator.pushNamed(context, ChatPage.routeUrl, arguments: {
       'peerId': item?.conversation?.peer?.id,
     });
@@ -18,9 +21,8 @@ class ConversationTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final item = Provider.of<Item>(context);
-    final getProfile = Provider.of<ChatsStore>(context).getProfile;
 
-    final profile = getProfile(item?.conversation?.peer?.id);
+    final profile = _profilesService.getProfile(item?.conversation?.peer?.id);
 
     final name = item?.conversation?.chatSettings?.title ?? profile.name;
 

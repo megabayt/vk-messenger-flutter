@@ -2,21 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:vk_messenger_flutter/models/vk_conversations.dart' show Item;
-import 'package:vk_messenger_flutter/store/chats_store.dart';
+import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
+import 'package:vk_messenger_flutter/services/service_locator.dart';
 
 class ConversationAvatar extends StatelessWidget {
+  final _profilesService = locator<ProfilesService>();
+
   @override
   Widget build(BuildContext context) {
     final item = Provider.of<Item>(context);
 
-    final getProfile = Provider.of<ChatsStore>(context).getProfile;
-
-    final profile = getProfile(item?.conversation?.peer?.id);
+    final profile = _profilesService.getProfile(item?.conversation?.peer?.id);
 
     final activeIds = item?.conversation?.chatSettings?.activeIds ?? [];
 
     final activeProfiles = activeIds
-        .map<String>((activeId) => getProfile(activeId)?.avatar)
+        .map<String>((activeId) => _profilesService.getProfile(activeId)?.avatar)
         .toList();
 
     var avatarUrls = activeProfiles.length != 0 ? activeProfiles : [profile.avatar];

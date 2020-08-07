@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:vk_messenger_flutter/constants/api.dart';
 import 'package:vk_messenger_flutter/models/vk_conversation.dart';
+import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
 
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
@@ -12,6 +13,14 @@ import 'package:vk_messenger_flutter/utils/helpers.dart';
 class ChatStore with ChangeNotifier {
   static const PAGE_COUNT = '20';
   VKService _vkService = locator<VKService>();
+  int get currentUserId {
+    return _vkService.userId;
+  }
+  ProfilesService _profilesService = locator<ProfilesService>();
+  int _peerId;
+  get peerId {
+    return _peerId;
+  }
   bool _isFetching = false;
   VkConversation _data;
   VkConversation get data {
@@ -34,11 +43,16 @@ class ChatStore with ChangeNotifier {
     if (responseBody == null) {
       return null;
     }
+    final conversation = VkConversation.fromJson(responseBody);
 
-    return VkConversation.fromJson(responseBody);
+    _profilesService.appendProfiles(conversation?.response?.profiles);
+    _profilesService.appendGroups(conversation?.response?.groups);
+
+    return conversation;
   }
 
   Future<void> getInitialData(int peerId) async {
+    _peerId = peerId;
     if (_isFetching) {
       return;
     }
@@ -52,13 +66,13 @@ class ChatStore with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getNextData(int peerId) async {
+  Future<void> getNextData() async {
     if (_isFetching) {
       return;
     }
 
     if (_data == null) {
-      await getInitialData(peerId);
+      await getInitialData(_peerId);
       notifyListeners();
       return;
     }
@@ -66,7 +80,7 @@ class ChatStore with ChangeNotifier {
     final newData = await _getData({
       'count': PAGE_COUNT,
       'offset': _data.response.items.length.toString(),
-      'peer_id': peerId.toString()
+      'peer_id': _peerId.toString()
     });
 
     _data.response.items.addAll(newData.response.items);
