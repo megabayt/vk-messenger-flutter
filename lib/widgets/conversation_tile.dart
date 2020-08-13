@@ -6,6 +6,7 @@ import 'package:vk_messenger_flutter/models/vk_conversations.dart' show Item;
 import 'package:vk_messenger_flutter/screens/chat_page.dart';
 import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
+import 'package:vk_messenger_flutter/utils/helpers.dart';
 import 'package:vk_messenger_flutter/widgets/conversation_avatar.dart';
 
 class ConversationTile extends StatelessWidget {
@@ -28,6 +29,10 @@ class ConversationTile extends StatelessWidget {
 
     final unreadCount = item?.conversation?.unreadCount;
 
+    final text = item?.lastMessage?.text != ''
+        ? item?.lastMessage?.text
+        : getAttachmentReplacer(item?.lastMessage);
+
     if (item == null) {
       return Padding(
         padding: EdgeInsets.symmetric(vertical: 15.0),
@@ -44,7 +49,7 @@ class ConversationTile extends StatelessWidget {
           leading: ConversationAvatar(),
           title: Text(name),
           subtitle: Text(
-            item?.lastMessage?.text,
+            text,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),

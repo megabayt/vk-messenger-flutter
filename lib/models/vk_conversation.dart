@@ -644,7 +644,7 @@ class Story {
     };
 }
 
-enum AttachmentType { PHOTO, LINK, WALL, STICKER, DOC, WALL_REPLY, VIDEO, STORY, POLL }
+enum AttachmentType { PHOTO, LINK, WALL, STICKER, DOC, WALL_REPLY, VIDEO, STORY, POLL, GIFT }
 
 final attachmentTypeValues = EnumValues({
     "doc": AttachmentType.DOC,
@@ -655,7 +655,8 @@ final attachmentTypeValues = EnumValues({
     "story": AttachmentType.STORY,
     "video": AttachmentType.VIDEO,
     "wall": AttachmentType.WALL,
-    "wall_reply": AttachmentType.WALL_REPLY
+    "wall_reply": AttachmentType.WALL_REPLY,
+    "gift": AttachmentType.GIFT
 });
 
 class Video {

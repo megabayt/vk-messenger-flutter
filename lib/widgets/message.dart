@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'package:vk_messenger_flutter/models/vk_conversation.dart';
 import 'package:vk_messenger_flutter/store/chat_store.dart';
+import 'package:vk_messenger_flutter/utils/helpers.dart';
 
 class Message extends StatelessWidget {
   @override
@@ -13,13 +14,14 @@ class Message extends StatelessWidget {
 
     final me = item?.fromId == chatStore?.currentUserId;
 
+    final text = item?.text != '' ? item?.text : getAttachmentReplacer(item);
+
     return Bubble(
       margin: BubbleEdges.symmetric(vertical: 7),
       alignment: me ? Alignment.topRight : Alignment.topLeft,
       nip: me ? BubbleNip.rightTop : BubbleNip.leftTop,
       color: me ? Color.fromRGBO(225, 255, 199, 1.0) : null,
-      child: Text(item?.text ?? '',
-          textAlign: me ? TextAlign.left : TextAlign.right),
+      child: Text(text, textAlign: me ? TextAlign.left : TextAlign.right),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:core';
 
-import 'package:vk_messenger_flutter/models/vk_conversations.dart' as VKConversations;
+import 'package:vk_messenger_flutter/models/vk_conversation.dart' as VKConversation;
 
 String serialize(Map<String, String> params) {
   String result = '';
@@ -10,19 +10,19 @@ String serialize(Map<String, String> params) {
   return result;
 }
 
-String getAttachmentReplacer(VKConversations.Item item) {
-  final attachments = item?.lastMessage?.attachments;
+String getAttachmentReplacer(VKConversation.Item item) {
+  final attachments = item?.attachments;
 
   final attachmentType = attachments.length != 0 ? attachments[0]?.type : null;
 
   switch (attachmentType) {
-    case 'wall': return 'Запись со стены';
-    case 'sticker': return 'Стикер';
-    case 'photo': return 'Фото';
-    case 'doc': return 'Документ';
-    case 'gift': return 'Подарок';
+    case VKConversation.AttachmentType.WALL: return 'Запись со стены';
+    case VKConversation.AttachmentType.STICKER: return 'Стикер';
+    case VKConversation.AttachmentType.PHOTO: return 'Фото';
+    case VKConversation.AttachmentType.DOC: return 'Документ';
+    case VKConversation.AttachmentType.GIFT: return 'Подарок';
     default: {
-      final fwdMessages = item?.lastMessage?.fwdMessages;
+      final fwdMessages = item?.fwdMessages;
       if (fwdMessages != null) {
         return 'Пересланные сообщения';
       }

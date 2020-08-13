@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:vk_messenger_flutter/models/vk_conversation.dart' as VKConversation;
+
 class VkConversations {
     VkConversations({
         this.response,
@@ -148,7 +150,7 @@ class Group {
     };
 }
 
-enum GroupType { GROUP, PAGE, EVENT }
+enum GroupType { PAGE, GROUP, EVENT }
 
 final groupTypeValues = EnumValues({
     "event": GroupType.EVENT,
@@ -163,7 +165,7 @@ class Item {
     });
 
     final Conversation conversation;
-    final LastMessage lastMessage;
+    final VKConversation.Item lastMessage;
 
     factory Item.fromRawJson(String str) => Item.fromJson(json.decode(str));
 
@@ -171,7 +173,7 @@ class Item {
 
     factory Item.fromJson(Map<String, dynamic> json) => Item(
         conversation: json["conversation"] == null ? null : Conversation.fromJson(json["conversation"]),
-        lastMessage: json["last_message"] == null ? null : LastMessage.fromJson(json["last_message"]),
+        lastMessage: json["last_message"] == null ? null : VKConversation.Item.fromJson(json["last_message"])
     );
 
     Map<String, dynamic> toJson() => {
@@ -293,7 +295,7 @@ class ChatSettings {
     final Permissions permissions;
     final bool isDisappearing;
     final bool isService;
-    final Message pinnedMessage;
+    final PinnedMessage pinnedMessage;
 
     factory ChatSettings.fromRawJson(String str) => ChatSettings.fromJson(json.decode(str));
 
@@ -310,7 +312,7 @@ class ChatSettings {
         permissions: json["permissions"] == null ? null : Permissions.fromJson(json["permissions"]),
         isDisappearing: json["is_disappearing"] == null ? null : json["is_disappearing"],
         isService: json["is_service"] == null ? null : json["is_service"],
-        pinnedMessage: json["pinned_message"] == null ? null : Message.fromJson(json["pinned_message"]),
+        pinnedMessage: json["pinned_message"] == null ? null : PinnedMessage.fromJson(json["pinned_message"]),
     );
 
     Map<String, dynamic> toJson() => {
@@ -432,8 +434,8 @@ class Permissions {
     };
 }
 
-class Message {
-    Message({
+class PinnedMessage {
+    PinnedMessage({
         this.id,
         this.date,
         this.fromId,
@@ -448,20 +450,20 @@ class Message {
     final int fromId;
     final int peerId;
     final String text;
-    final List<ReplyMessageAttachment> attachments;
+    final List<dynamic> attachments;
     final int conversationMessageId;
 
-    factory Message.fromRawJson(String str) => Message.fromJson(json.decode(str));
+    factory PinnedMessage.fromRawJson(String str) => PinnedMessage.fromJson(json.decode(str));
 
     String toRawJson() => json.encode(toJson());
 
-    factory Message.fromJson(Map<String, dynamic> json) => Message(
+    factory PinnedMessage.fromJson(Map<String, dynamic> json) => PinnedMessage(
         id: json["id"] == null ? null : json["id"],
         date: json["date"] == null ? null : json["date"],
         fromId: json["from_id"] == null ? null : json["from_id"],
         peerId: json["peer_id"] == null ? null : json["peer_id"],
         text: json["text"] == null ? null : json["text"],
-        attachments: json["attachments"] == null ? null : List<ReplyMessageAttachment>.from(json["attachments"].map((x) => ReplyMessageAttachment.fromJson(x))),
+        attachments: json["attachments"] == null ? null : List<dynamic>.from(json["attachments"].map((x) => x)),
         conversationMessageId: json["conversation_message_id"] == null ? null : json["conversation_message_id"],
     );
 
@@ -471,267 +473,10 @@ class Message {
         "from_id": fromId == null ? null : fromId,
         "peer_id": peerId == null ? null : peerId,
         "text": text == null ? null : text,
-        "attachments": attachments == null ? null : List<dynamic>.from(attachments.map((x) => x.toJson())),
+        "attachments": attachments == null ? null : List<dynamic>.from(attachments.map((x) => x)),
         "conversation_message_id": conversationMessageId == null ? null : conversationMessageId,
     };
 }
-
-class ReplyMessageAttachment {
-    ReplyMessageAttachment({
-        this.type,
-        this.photo,
-        this.doc,
-    });
-
-    final AttachmentType type;
-    final AttachmentPhoto photo;
-    final Doc doc;
-
-    factory ReplyMessageAttachment.fromRawJson(String str) => ReplyMessageAttachment.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory ReplyMessageAttachment.fromJson(Map<String, dynamic> json) => ReplyMessageAttachment(
-        type: json["type"] == null ? null : attachmentTypeValues.map[json["type"]],
-        photo: json["photo"] == null ? null : AttachmentPhoto.fromJson(json["photo"]),
-        doc: json["doc"] == null ? null : Doc.fromJson(json["doc"]),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "type": type == null ? null : attachmentTypeValues.reverse[type],
-        "photo": photo == null ? null : photo.toJson(),
-        "doc": doc == null ? null : doc.toJson(),
-    };
-}
-
-class Doc {
-    Doc({
-        this.id,
-        this.ownerId,
-        this.title,
-        this.size,
-        this.ext,
-        this.date,
-        this.type,
-        this.url,
-        this.preview,
-        this.accessKey,
-    });
-
-    final int id;
-    final int ownerId;
-    final String title;
-    final int size;
-    final String ext;
-    final int date;
-    final int type;
-    final String url;
-    final Preview preview;
-    final String accessKey;
-
-    factory Doc.fromRawJson(String str) => Doc.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory Doc.fromJson(Map<String, dynamic> json) => Doc(
-        id: json["id"] == null ? null : json["id"],
-        ownerId: json["owner_id"] == null ? null : json["owner_id"],
-        title: json["title"] == null ? null : json["title"],
-        size: json["size"] == null ? null : json["size"],
-        ext: json["ext"] == null ? null : json["ext"],
-        date: json["date"] == null ? null : json["date"],
-        type: json["type"] == null ? null : json["type"],
-        url: json["url"] == null ? null : json["url"],
-        preview: json["preview"] == null ? null : Preview.fromJson(json["preview"]),
-        accessKey: json["access_key"] == null ? null : json["access_key"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "id": id == null ? null : id,
-        "owner_id": ownerId == null ? null : ownerId,
-        "title": title == null ? null : title,
-        "size": size == null ? null : size,
-        "ext": ext == null ? null : ext,
-        "date": date == null ? null : date,
-        "type": type == null ? null : type,
-        "url": url == null ? null : url,
-        "preview": preview == null ? null : preview.toJson(),
-        "access_key": accessKey == null ? null : accessKey,
-    };
-}
-
-class Preview {
-    Preview({
-        this.photo,
-        this.video,
-    });
-
-    final PreviewPhoto photo;
-    final Size video;
-
-    factory Preview.fromRawJson(String str) => Preview.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory Preview.fromJson(Map<String, dynamic> json) => Preview(
-        photo: json["photo"] == null ? null : PreviewPhoto.fromJson(json["photo"]),
-        video: json["video"] == null ? null : Size.fromJson(json["video"]),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "photo": photo == null ? null : photo.toJson(),
-        "video": video == null ? null : video.toJson(),
-    };
-}
-
-class PreviewPhoto {
-    PreviewPhoto({
-        this.sizes,
-    });
-
-    final List<Size> sizes;
-
-    factory PreviewPhoto.fromRawJson(String str) => PreviewPhoto.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory PreviewPhoto.fromJson(Map<String, dynamic> json) => PreviewPhoto(
-        sizes: json["sizes"] == null ? null : List<Size>.from(json["sizes"].map((x) => Size.fromJson(x))),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "sizes": sizes == null ? null : List<dynamic>.from(sizes.map((x) => x.toJson())),
-    };
-}
-
-class Size {
-    Size({
-        this.src,
-        this.width,
-        this.height,
-        this.type,
-        this.fileSize,
-        this.url,
-        this.withPadding,
-    });
-
-    final String src;
-    final int width;
-    final int height;
-    final SizeType type;
-    final int fileSize;
-    final String url;
-    final int withPadding;
-
-    factory Size.fromRawJson(String str) => Size.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory Size.fromJson(Map<String, dynamic> json) => Size(
-        src: json["src"] == null ? null : json["src"],
-        width: json["width"] == null ? null : json["width"],
-        height: json["height"] == null ? null : json["height"],
-        type: json["type"] == null ? null : sizeTypeValues.map[json["type"]],
-        fileSize: json["file_size"] == null ? null : json["file_size"],
-        url: json["url"] == null ? null : json["url"],
-        withPadding: json["with_padding"] == null ? null : json["with_padding"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "src": src == null ? null : src,
-        "width": width == null ? null : width,
-        "height": height == null ? null : height,
-        "type": type == null ? null : sizeTypeValues.reverse[type],
-        "file_size": fileSize == null ? null : fileSize,
-        "url": url == null ? null : url,
-        "with_padding": withPadding == null ? null : withPadding,
-    };
-}
-
-enum SizeType { M, S, X, Y, O, I, D, P, Q, R, W, Z, J }
-
-final sizeTypeValues = EnumValues({
-    "d": SizeType.D,
-    "i": SizeType.I,
-    "j": SizeType.J,
-    "m": SizeType.M,
-    "o": SizeType.O,
-    "p": SizeType.P,
-    "q": SizeType.Q,
-    "r": SizeType.R,
-    "s": SizeType.S,
-    "w": SizeType.W,
-    "x": SizeType.X,
-    "y": SizeType.Y,
-    "z": SizeType.Z
-});
-
-class AttachmentPhoto {
-    AttachmentPhoto({
-        this.albumId,
-        this.date,
-        this.id,
-        this.ownerId,
-        this.hasTags,
-        this.sizes,
-        this.text,
-        this.userId,
-        this.accessKey,
-        this.lat,
-        this.long,
-    });
-
-    final int albumId;
-    final int date;
-    final int id;
-    final int ownerId;
-    final bool hasTags;
-    final List<Size> sizes;
-    final String text;
-    final int userId;
-    final String accessKey;
-    final double lat;
-    final double long;
-
-    factory AttachmentPhoto.fromRawJson(String str) => AttachmentPhoto.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory AttachmentPhoto.fromJson(Map<String, dynamic> json) => AttachmentPhoto(
-        albumId: json["album_id"] == null ? null : json["album_id"],
-        date: json["date"] == null ? null : json["date"],
-        id: json["id"] == null ? null : json["id"],
-        ownerId: json["owner_id"] == null ? null : json["owner_id"],
-        hasTags: json["has_tags"] == null ? null : json["has_tags"],
-        sizes: json["sizes"] == null ? null : List<Size>.from(json["sizes"].map((x) => Size.fromJson(x))),
-        text: json["text"] == null ? null : json["text"],
-        userId: json["user_id"] == null ? null : json["user_id"],
-        accessKey: json["access_key"] == null ? null : json["access_key"],
-        lat: json["lat"] == null ? null : json["lat"].toDouble(),
-        long: json["long"] == null ? null : json["long"].toDouble(),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "album_id": albumId == null ? null : albumId,
-        "date": date == null ? null : date,
-        "id": id == null ? null : id,
-        "owner_id": ownerId == null ? null : ownerId,
-        "has_tags": hasTags == null ? null : hasTags,
-        "sizes": sizes == null ? null : List<dynamic>.from(sizes.map((x) => x.toJson())),
-        "text": text == null ? null : text,
-        "user_id": userId == null ? null : userId,
-        "access_key": accessKey == null ? null : accessKey,
-        "lat": lat == null ? null : lat,
-        "long": long == null ? null : long,
-    };
-}
-
-enum AttachmentType { PHOTO, DOC }
-
-final attachmentTypeValues = EnumValues({
-    "doc": AttachmentType.DOC,
-    "photo": AttachmentType.PHOTO
-});
 
 enum State { IN, LEFT, KICKED }
 
@@ -751,7 +496,7 @@ class CurrentKeyboard {
 
     final bool oneTime;
     final int authorId;
-    final List<List<ButtonElement>> buttons;
+    final List<List<Button>> buttons;
     final bool inline;
 
     factory CurrentKeyboard.fromRawJson(String str) => CurrentKeyboard.fromJson(json.decode(str));
@@ -761,7 +506,7 @@ class CurrentKeyboard {
     factory CurrentKeyboard.fromJson(Map<String, dynamic> json) => CurrentKeyboard(
         oneTime: json["one_time"] == null ? null : json["one_time"],
         authorId: json["author_id"] == null ? null : json["author_id"],
-        buttons: json["buttons"] == null ? null : List<List<ButtonElement>>.from(json["buttons"].map((x) => List<ButtonElement>.from(x.map((x) => ButtonElement.fromJson(x))))),
+        buttons: json["buttons"] == null ? null : List<List<Button>>.from(json["buttons"].map((x) => List<Button>.from(x.map((x) => Button.fromJson(x))))),
         inline: json["inline"] == null ? null : json["inline"],
     );
 
@@ -773,21 +518,21 @@ class CurrentKeyboard {
     };
 }
 
-class ButtonElement {
-    ButtonElement({
+class Button {
+    Button({
         this.action,
         this.color,
     });
 
-    final PurpleAction action;
+    final Action action;
     final Color color;
 
-    factory ButtonElement.fromRawJson(String str) => ButtonElement.fromJson(json.decode(str));
+    factory Button.fromRawJson(String str) => Button.fromJson(json.decode(str));
 
     String toRawJson() => json.encode(toJson());
 
-    factory ButtonElement.fromJson(Map<String, dynamic> json) => ButtonElement(
-        action: json["action"] == null ? null : PurpleAction.fromJson(json["action"]),
+    factory Button.fromJson(Map<String, dynamic> json) => Button(
+        action: json["action"] == null ? null : Action.fromJson(json["action"]),
         color: json["color"] == null ? null : colorValues.map[json["color"]],
     );
 
@@ -797,8 +542,8 @@ class ButtonElement {
     };
 }
 
-class PurpleAction {
-    PurpleAction({
+class Action {
+    Action({
         this.type,
         this.label,
         this.payload,
@@ -806,18 +551,18 @@ class PurpleAction {
         this.hash,
     });
 
-    final PurpleType type;
+    final ActionType type;
     final String label;
     final String payload;
     final int appId;
     final String hash;
 
-    factory PurpleAction.fromRawJson(String str) => PurpleAction.fromJson(json.decode(str));
+    factory Action.fromRawJson(String str) => Action.fromJson(json.decode(str));
 
     String toRawJson() => json.encode(toJson());
 
-    factory PurpleAction.fromJson(Map<String, dynamic> json) => PurpleAction(
-        type: json["type"] == null ? null : purpleTypeValues.map[json["type"]],
+    factory Action.fromJson(Map<String, dynamic> json) => Action(
+        type: json["type"] == null ? null : actionTypeValues.map[json["type"]],
         label: json["label"] == null ? null : json["label"],
         payload: json["payload"] == null ? null : json["payload"],
         appId: json["app_id"] == null ? null : json["app_id"],
@@ -825,7 +570,7 @@ class PurpleAction {
     );
 
     Map<String, dynamic> toJson() => {
-        "type": type == null ? null : purpleTypeValues.reverse[type],
+        "type": type == null ? null : actionTypeValues.reverse[type],
         "label": label == null ? null : label,
         "payload": payload == null ? null : payload,
         "app_id": appId == null ? null : appId,
@@ -833,11 +578,11 @@ class PurpleAction {
     };
 }
 
-enum PurpleType { TEXT, OPEN_APP }
+enum ActionType { TEXT, OPEN_APP }
 
-final purpleTypeValues = EnumValues({
-    "open_app": PurpleType.OPEN_APP,
-    "text": PurpleType.TEXT
+final actionTypeValues = EnumValues({
+    "open_app": ActionType.OPEN_APP,
+    "text": ActionType.TEXT
 });
 
 enum Color { NEGATIVE, POSITIVE, PRIMARY, DEFAULT }
@@ -934,892 +679,6 @@ class SortId {
     };
 }
 
-class LastMessage {
-    LastMessage({
-        this.date,
-        this.fromId,
-        this.id,
-        this.out,
-        this.peerId,
-        this.text,
-        this.conversationMessageId,
-        this.fwdMessages,
-        this.important,
-        this.randomId,
-        this.attachments,
-        this.isHidden,
-        this.replyMessage,
-        this.updateTime,
-        this.action,
-        this.messageTag,
-    });
-
-    final int date;
-    final int fromId;
-    final int id;
-    final int out;
-    final int peerId;
-    final String text;
-    final int conversationMessageId;
-    final List<Message> fwdMessages;
-    final bool important;
-    final int randomId;
-    final List<LastMessageAttachment> attachments;
-    final bool isHidden;
-    final Message replyMessage;
-    final int updateTime;
-    final LastMessageAction action;
-    final String messageTag;
-
-    factory LastMessage.fromRawJson(String str) => LastMessage.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory LastMessage.fromJson(Map<String, dynamic> json) => LastMessage(
-        date: json["date"] == null ? null : json["date"],
-        fromId: json["from_id"] == null ? null : json["from_id"],
-        id: json["id"] == null ? null : json["id"],
-        out: json["out"] == null ? null : json["out"],
-        peerId: json["peer_id"] == null ? null : json["peer_id"],
-        text: json["text"] == null ? null : json["text"],
-        conversationMessageId: json["conversation_message_id"] == null ? null : json["conversation_message_id"],
-        fwdMessages: json["fwd_messages"] == null ? null : List<Message>.from(json["fwd_messages"].map((x) => Message.fromJson(x))),
-        important: json["important"] == null ? null : json["important"],
-        randomId: json["random_id"] == null ? null : json["random_id"],
-        attachments: json["attachments"] == null ? null : List<LastMessageAttachment>.from(json["attachments"].map((x) => LastMessageAttachment.fromJson(x))),
-        isHidden: json["is_hidden"] == null ? null : json["is_hidden"],
-        replyMessage: json["reply_message"] == null ? null : Message.fromJson(json["reply_message"]),
-        updateTime: json["update_time"] == null ? null : json["update_time"],
-        action: json["action"] == null ? null : LastMessageAction.fromJson(json["action"]),
-        messageTag: json["message_tag"] == null ? null : json["message_tag"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "date": date == null ? null : date,
-        "from_id": fromId == null ? null : fromId,
-        "id": id == null ? null : id,
-        "out": out == null ? null : out,
-        "peer_id": peerId == null ? null : peerId,
-        "text": text == null ? null : text,
-        "conversation_message_id": conversationMessageId == null ? null : conversationMessageId,
-        "fwd_messages": fwdMessages == null ? null : List<dynamic>.from(fwdMessages.map((x) => x.toJson())),
-        "important": important == null ? null : important,
-        "random_id": randomId == null ? null : randomId,
-        "attachments": attachments == null ? null : List<dynamic>.from(attachments.map((x) => x.toJson())),
-        "is_hidden": isHidden == null ? null : isHidden,
-        "reply_message": replyMessage == null ? null : replyMessage.toJson(),
-        "update_time": updateTime == null ? null : updateTime,
-        "action": action == null ? null : action.toJson(),
-        "message_tag": messageTag == null ? null : messageTag,
-    };
-}
-
-class LastMessageAction {
-    LastMessageAction({
-        this.type,
-        this.memberId,
-    });
-
-    final FluffyType type;
-    final int memberId;
-
-    factory LastMessageAction.fromRawJson(String str) => LastMessageAction.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory LastMessageAction.fromJson(Map<String, dynamic> json) => LastMessageAction(
-        type: json["type"] == null ? null : fluffyTypeValues.map[json["type"]],
-        memberId: json["member_id"] == null ? null : json["member_id"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "type": type == null ? null : fluffyTypeValues.reverse[type],
-        "member_id": memberId == null ? null : memberId,
-    };
-}
-
-enum FluffyType { CHAT_KICK_USER }
-
-final fluffyTypeValues = EnumValues({
-    "chat_kick_user": FluffyType.CHAT_KICK_USER
-});
-
-class LastMessageAttachment {
-    LastMessageAttachment({
-        this.type,
-        this.photo,
-        this.link,
-        this.sticker,
-        this.story,
-        this.wall,
-        this.doc,
-        this.video,
-        this.gift,
-    });
-
-    final String type;
-    final AttachmentPhoto photo;
-    final Link link;
-    final Sticker sticker;
-    final Story story;
-    final Wall wall;
-    final Doc doc;
-    final Video video;
-    final Gift gift;
-
-    factory LastMessageAttachment.fromRawJson(String str) => LastMessageAttachment.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory LastMessageAttachment.fromJson(Map<String, dynamic> json) => LastMessageAttachment(
-        type: json["type"] == null ? null : json["type"],
-        photo: json["photo"] == null ? null : AttachmentPhoto.fromJson(json["photo"]),
-        link: json["link"] == null ? null : Link.fromJson(json["link"]),
-        sticker: json["sticker"] == null ? null : Sticker.fromJson(json["sticker"]),
-        story: json["story"] == null ? null : Story.fromJson(json["story"]),
-        wall: json["wall"] == null ? null : Wall.fromJson(json["wall"]),
-        doc: json["doc"] == null ? null : Doc.fromJson(json["doc"]),
-        video: json["video"] == null ? null : Video.fromJson(json["video"]),
-        gift: json["gift"] == null ? null : Gift.fromJson(json["gift"]),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "type": type == null ? null : type,
-        "photo": photo == null ? null : photo.toJson(),
-        "link": link == null ? null : link.toJson(),
-        "sticker": sticker == null ? null : sticker.toJson(),
-        "story": story == null ? null : story.toJson(),
-        "wall": wall == null ? null : wall.toJson(),
-        "doc": doc == null ? null : doc.toJson(),
-        "video": video == null ? null : video.toJson(),
-        "gift": gift == null ? null : gift.toJson(),
-    };
-}
-
-class Gift {
-    Gift({
-        this.id,
-        this.thumb256,
-        this.thumb48,
-        this.thumb96,
-        this.stickersProductId,
-    });
-
-    final int id;
-    final String thumb256;
-    final String thumb48;
-    final String thumb96;
-    final int stickersProductId;
-
-    factory Gift.fromRawJson(String str) => Gift.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory Gift.fromJson(Map<String, dynamic> json) => Gift(
-        id: json["id"] == null ? null : json["id"],
-        thumb256: json["thumb_256"] == null ? null : json["thumb_256"],
-        thumb48: json["thumb_48"] == null ? null : json["thumb_48"],
-        thumb96: json["thumb_96"] == null ? null : json["thumb_96"],
-        stickersProductId: json["stickers_product_id"] == null ? null : json["stickers_product_id"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "id": id == null ? null : id,
-        "thumb_256": thumb256 == null ? null : thumb256,
-        "thumb_48": thumb48 == null ? null : thumb48,
-        "thumb_96": thumb96 == null ? null : thumb96,
-        "stickers_product_id": stickersProductId == null ? null : stickersProductId,
-    };
-}
-
-class Link {
-    Link({
-        this.url,
-        this.title,
-        this.caption,
-        this.description,
-        this.photo,
-        this.button,
-        this.isFavorite,
-    });
-
-    final String url;
-    final String title;
-    final String caption;
-    final String description;
-    final AttachmentPhoto photo;
-    final LinkButton button;
-    final bool isFavorite;
-
-    factory Link.fromRawJson(String str) => Link.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory Link.fromJson(Map<String, dynamic> json) => Link(
-        url: json["url"] == null ? null : json["url"],
-        title: json["title"] == null ? null : json["title"],
-        caption: json["caption"] == null ? null : json["caption"],
-        description: json["description"] == null ? null : json["description"],
-        photo: json["photo"] == null ? null : AttachmentPhoto.fromJson(json["photo"]),
-        button: json["button"] == null ? null : LinkButton.fromJson(json["button"]),
-        isFavorite: json["is_favorite"] == null ? null : json["is_favorite"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "url": url == null ? null : url,
-        "title": title == null ? null : title,
-        "caption": caption == null ? null : caption,
-        "description": description == null ? null : description,
-        "photo": photo == null ? null : photo.toJson(),
-        "button": button == null ? null : button.toJson(),
-        "is_favorite": isFavorite == null ? null : isFavorite,
-    };
-}
-
-class LinkButton {
-    LinkButton({
-        this.title,
-        this.action,
-    });
-
-    final String title;
-    final FluffyAction action;
-
-    factory LinkButton.fromRawJson(String str) => LinkButton.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory LinkButton.fromJson(Map<String, dynamic> json) => LinkButton(
-        title: json["title"] == null ? null : json["title"],
-        action: json["action"] == null ? null : FluffyAction.fromJson(json["action"]),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "title": title == null ? null : title,
-        "action": action == null ? null : action.toJson(),
-    };
-}
-
-class FluffyAction {
-    FluffyAction({
-        this.type,
-        this.url,
-    });
-
-    final String type;
-    final String url;
-
-    factory FluffyAction.fromRawJson(String str) => FluffyAction.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory FluffyAction.fromJson(Map<String, dynamic> json) => FluffyAction(
-        type: json["type"] == null ? null : json["type"],
-        url: json["url"] == null ? null : json["url"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "type": type == null ? null : type,
-        "url": url == null ? null : url,
-    };
-}
-
-class Sticker {
-    Sticker({
-        this.productId,
-        this.stickerId,
-        this.images,
-        this.imagesWithBackground,
-        this.animationUrl,
-    });
-
-    final int productId;
-    final int stickerId;
-    final List<Size> images;
-    final List<Size> imagesWithBackground;
-    final String animationUrl;
-
-    factory Sticker.fromRawJson(String str) => Sticker.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory Sticker.fromJson(Map<String, dynamic> json) => Sticker(
-        productId: json["product_id"] == null ? null : json["product_id"],
-        stickerId: json["sticker_id"] == null ? null : json["sticker_id"],
-        images: json["images"] == null ? null : List<Size>.from(json["images"].map((x) => Size.fromJson(x))),
-        imagesWithBackground: json["images_with_background"] == null ? null : List<Size>.from(json["images_with_background"].map((x) => Size.fromJson(x))),
-        animationUrl: json["animation_url"] == null ? null : json["animation_url"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "product_id": productId == null ? null : productId,
-        "sticker_id": stickerId == null ? null : stickerId,
-        "images": images == null ? null : List<dynamic>.from(images.map((x) => x.toJson())),
-        "images_with_background": imagesWithBackground == null ? null : List<dynamic>.from(imagesWithBackground.map((x) => x.toJson())),
-        "animation_url": animationUrl == null ? null : animationUrl,
-    };
-}
-
-class Story {
-    Story({
-        this.id,
-        this.ownerId,
-        this.accessKey,
-        this.canComment,
-        this.canReply,
-        this.canSee,
-        this.canLike,
-        this.canShare,
-        this.canHide,
-        this.date,
-        this.expiresAt,
-        this.photo,
-        this.replies,
-        this.isOneTime,
-        this.trackCode,
-        this.type,
-        this.clickableStickers,
-        this.views,
-        this.likesCount,
-        this.isRestricted,
-        this.noSound,
-        this.needMute,
-        this.muteReply,
-        this.canAsk,
-        this.canAskAnonymous,
-        this.isOwnerPinned,
-        this.narrativesCount,
-        this.firstNarrativeTitle,
-        this.canUseInNarrative,
-    });
-
-    final int id;
-    final int ownerId;
-    final String accessKey;
-    final int canComment;
-    final int canReply;
-    final int canSee;
-    final bool canLike;
-    final int canShare;
-    final int canHide;
-    final int date;
-    final int expiresAt;
-    final AttachmentPhoto photo;
-    final Replies replies;
-    final bool isOneTime;
-    final String trackCode;
-    final AttachmentType type;
-    final ClickableStickers clickableStickers;
-    final int views;
-    final int likesCount;
-    final bool isRestricted;
-    final bool noSound;
-    final bool needMute;
-    final bool muteReply;
-    final int canAsk;
-    final int canAskAnonymous;
-    final bool isOwnerPinned;
-    final int narrativesCount;
-    final String firstNarrativeTitle;
-    final bool canUseInNarrative;
-
-    factory Story.fromRawJson(String str) => Story.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory Story.fromJson(Map<String, dynamic> json) => Story(
-        id: json["id"] == null ? null : json["id"],
-        ownerId: json["owner_id"] == null ? null : json["owner_id"],
-        accessKey: json["access_key"] == null ? null : json["access_key"],
-        canComment: json["can_comment"] == null ? null : json["can_comment"],
-        canReply: json["can_reply"] == null ? null : json["can_reply"],
-        canSee: json["can_see"] == null ? null : json["can_see"],
-        canLike: json["can_like"] == null ? null : json["can_like"],
-        canShare: json["can_share"] == null ? null : json["can_share"],
-        canHide: json["can_hide"] == null ? null : json["can_hide"],
-        date: json["date"] == null ? null : json["date"],
-        expiresAt: json["expires_at"] == null ? null : json["expires_at"],
-        photo: json["photo"] == null ? null : AttachmentPhoto.fromJson(json["photo"]),
-        replies: json["replies"] == null ? null : Replies.fromJson(json["replies"]),
-        isOneTime: json["is_one_time"] == null ? null : json["is_one_time"],
-        trackCode: json["track_code"] == null ? null : json["track_code"],
-        type: json["type"] == null ? null : attachmentTypeValues.map[json["type"]],
-        clickableStickers: json["clickable_stickers"] == null ? null : ClickableStickers.fromJson(json["clickable_stickers"]),
-        views: json["views"] == null ? null : json["views"],
-        likesCount: json["likes_count"] == null ? null : json["likes_count"],
-        isRestricted: json["is_restricted"] == null ? null : json["is_restricted"],
-        noSound: json["no_sound"] == null ? null : json["no_sound"],
-        needMute: json["need_mute"] == null ? null : json["need_mute"],
-        muteReply: json["mute_reply"] == null ? null : json["mute_reply"],
-        canAsk: json["can_ask"] == null ? null : json["can_ask"],
-        canAskAnonymous: json["can_ask_anonymous"] == null ? null : json["can_ask_anonymous"],
-        isOwnerPinned: json["is_owner_pinned"] == null ? null : json["is_owner_pinned"],
-        narrativesCount: json["narratives_count"] == null ? null : json["narratives_count"],
-        firstNarrativeTitle: json["first_narrative_title"] == null ? null : json["first_narrative_title"],
-        canUseInNarrative: json["can_use_in_narrative"] == null ? null : json["can_use_in_narrative"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "id": id == null ? null : id,
-        "owner_id": ownerId == null ? null : ownerId,
-        "access_key": accessKey == null ? null : accessKey,
-        "can_comment": canComment == null ? null : canComment,
-        "can_reply": canReply == null ? null : canReply,
-        "can_see": canSee == null ? null : canSee,
-        "can_like": canLike == null ? null : canLike,
-        "can_share": canShare == null ? null : canShare,
-        "can_hide": canHide == null ? null : canHide,
-        "date": date == null ? null : date,
-        "expires_at": expiresAt == null ? null : expiresAt,
-        "photo": photo == null ? null : photo.toJson(),
-        "replies": replies == null ? null : replies.toJson(),
-        "is_one_time": isOneTime == null ? null : isOneTime,
-        "track_code": trackCode == null ? null : trackCode,
-        "type": type == null ? null : attachmentTypeValues.reverse[type],
-        "clickable_stickers": clickableStickers == null ? null : clickableStickers.toJson(),
-        "views": views == null ? null : views,
-        "likes_count": likesCount == null ? null : likesCount,
-        "is_restricted": isRestricted == null ? null : isRestricted,
-        "no_sound": noSound == null ? null : noSound,
-        "need_mute": needMute == null ? null : needMute,
-        "mute_reply": muteReply == null ? null : muteReply,
-        "can_ask": canAsk == null ? null : canAsk,
-        "can_ask_anonymous": canAskAnonymous == null ? null : canAskAnonymous,
-        "is_owner_pinned": isOwnerPinned == null ? null : isOwnerPinned,
-        "narratives_count": narrativesCount == null ? null : narrativesCount,
-        "first_narrative_title": firstNarrativeTitle == null ? null : firstNarrativeTitle,
-        "can_use_in_narrative": canUseInNarrative == null ? null : canUseInNarrative,
-    };
-}
-
-class ClickableStickers {
-    ClickableStickers({
-        this.originalHeight,
-        this.originalWidth,
-        this.clickableStickers,
-    });
-
-    final int originalHeight;
-    final int originalWidth;
-    final List<ClickableSticker> clickableStickers;
-
-    factory ClickableStickers.fromRawJson(String str) => ClickableStickers.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory ClickableStickers.fromJson(Map<String, dynamic> json) => ClickableStickers(
-        originalHeight: json["original_height"] == null ? null : json["original_height"],
-        originalWidth: json["original_width"] == null ? null : json["original_width"],
-        clickableStickers: json["clickable_stickers"] == null ? null : List<ClickableSticker>.from(json["clickable_stickers"].map((x) => ClickableSticker.fromJson(x))),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "original_height": originalHeight == null ? null : originalHeight,
-        "original_width": originalWidth == null ? null : originalWidth,
-        "clickable_stickers": clickableStickers == null ? null : List<dynamic>.from(clickableStickers.map((x) => x.toJson())),
-    };
-}
-
-class ClickableSticker {
-    ClickableSticker({
-        this.id,
-        this.type,
-        this.clickableArea,
-        this.linkObject,
-        this.tooltipText,
-    });
-
-    final int id;
-    final String type;
-    final List<ClickableArea> clickableArea;
-    final LinkObject linkObject;
-    final String tooltipText;
-
-    factory ClickableSticker.fromRawJson(String str) => ClickableSticker.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory ClickableSticker.fromJson(Map<String, dynamic> json) => ClickableSticker(
-        id: json["id"] == null ? null : json["id"],
-        type: json["type"] == null ? null : json["type"],
-        clickableArea: json["clickable_area"] == null ? null : List<ClickableArea>.from(json["clickable_area"].map((x) => ClickableArea.fromJson(x))),
-        linkObject: json["link_object"] == null ? null : LinkObject.fromJson(json["link_object"]),
-        tooltipText: json["tooltip_text"] == null ? null : json["tooltip_text"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "id": id == null ? null : id,
-        "type": type == null ? null : type,
-        "clickable_area": clickableArea == null ? null : List<dynamic>.from(clickableArea.map((x) => x.toJson())),
-        "link_object": linkObject == null ? null : linkObject.toJson(),
-        "tooltip_text": tooltipText == null ? null : tooltipText,
-    };
-}
-
-class ClickableArea {
-    ClickableArea({
-        this.x,
-        this.y,
-    });
-
-    final int x;
-    final int y;
-
-    factory ClickableArea.fromRawJson(String str) => ClickableArea.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory ClickableArea.fromJson(Map<String, dynamic> json) => ClickableArea(
-        x: json["x"] == null ? null : json["x"],
-        y: json["y"] == null ? null : json["y"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "x": x == null ? null : x,
-        "y": y == null ? null : y,
-    };
-}
-
-class LinkObject {
-    LinkObject({
-        this.url,
-        this.title,
-        this.caption,
-        this.description,
-    });
-
-    final String url;
-    final String title;
-    final String caption;
-    final String description;
-
-    factory LinkObject.fromRawJson(String str) => LinkObject.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory LinkObject.fromJson(Map<String, dynamic> json) => LinkObject(
-        url: json["url"] == null ? null : json["url"],
-        title: json["title"] == null ? null : json["title"],
-        caption: json["caption"] == null ? null : json["caption"],
-        description: json["description"] == null ? null : json["description"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "url": url == null ? null : url,
-        "title": title == null ? null : title,
-        "caption": caption == null ? null : caption,
-        "description": description == null ? null : description,
-    };
-}
-
-class Replies {
-    Replies({
-        this.count,
-        this.repliesNew,
-    });
-
-    final int count;
-    final int repliesNew;
-
-    factory Replies.fromRawJson(String str) => Replies.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory Replies.fromJson(Map<String, dynamic> json) => Replies(
-        count: json["count"] == null ? null : json["count"],
-        repliesNew: json["new"] == null ? null : json["new"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "count": count == null ? null : count,
-        "new": repliesNew == null ? null : repliesNew,
-    };
-}
-
-class Video {
-    Video({
-        this.accessKey,
-        this.canAdd,
-        this.comments,
-        this.date,
-        this.description,
-        this.duration,
-        this.image,
-        this.firstFrame,
-        this.width,
-        this.height,
-        this.id,
-        this.ownerId,
-        this.title,
-        this.isFavorite,
-        this.trackCode,
-        this.type,
-        this.views,
-    });
-
-    final String accessKey;
-    final int canAdd;
-    final int comments;
-    final int date;
-    final String description;
-    final int duration;
-    final List<Size> image;
-    final List<Size> firstFrame;
-    final int width;
-    final int height;
-    final int id;
-    final int ownerId;
-    final String title;
-    final bool isFavorite;
-    final String trackCode;
-    final String type;
-    final int views;
-
-    factory Video.fromRawJson(String str) => Video.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory Video.fromJson(Map<String, dynamic> json) => Video(
-        accessKey: json["access_key"] == null ? null : json["access_key"],
-        canAdd: json["can_add"] == null ? null : json["can_add"],
-        comments: json["comments"] == null ? null : json["comments"],
-        date: json["date"] == null ? null : json["date"],
-        description: json["description"] == null ? null : json["description"],
-        duration: json["duration"] == null ? null : json["duration"],
-        image: json["image"] == null ? null : List<Size>.from(json["image"].map((x) => Size.fromJson(x))),
-        firstFrame: json["first_frame"] == null ? null : List<Size>.from(json["first_frame"].map((x) => Size.fromJson(x))),
-        width: json["width"] == null ? null : json["width"],
-        height: json["height"] == null ? null : json["height"],
-        id: json["id"] == null ? null : json["id"],
-        ownerId: json["owner_id"] == null ? null : json["owner_id"],
-        title: json["title"] == null ? null : json["title"],
-        isFavorite: json["is_favorite"] == null ? null : json["is_favorite"],
-        trackCode: json["track_code"] == null ? null : json["track_code"],
-        type: json["type"] == null ? null : json["type"],
-        views: json["views"] == null ? null : json["views"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "access_key": accessKey == null ? null : accessKey,
-        "can_add": canAdd == null ? null : canAdd,
-        "comments": comments == null ? null : comments,
-        "date": date == null ? null : date,
-        "description": description == null ? null : description,
-        "duration": duration == null ? null : duration,
-        "image": image == null ? null : List<dynamic>.from(image.map((x) => x.toJson())),
-        "first_frame": firstFrame == null ? null : List<dynamic>.from(firstFrame.map((x) => x.toJson())),
-        "width": width == null ? null : width,
-        "height": height == null ? null : height,
-        "id": id == null ? null : id,
-        "owner_id": ownerId == null ? null : ownerId,
-        "title": title == null ? null : title,
-        "is_favorite": isFavorite == null ? null : isFavorite,
-        "track_code": trackCode == null ? null : trackCode,
-        "type": type == null ? null : type,
-        "views": views == null ? null : views,
-    };
-}
-
-class Wall {
-    Wall({
-        this.id,
-        this.fromId,
-        this.toId,
-        this.date,
-        this.postType,
-        this.text,
-        this.markedAsAds,
-        this.attachments,
-        this.postSource,
-        this.comments,
-        this.likes,
-        this.reposts,
-        this.views,
-        this.isFavorite,
-        this.accessKey,
-    });
-
-    final int id;
-    final int fromId;
-    final int toId;
-    final int date;
-    final String postType;
-    final String text;
-    final int markedAsAds;
-    final List<ReplyMessageAttachment> attachments;
-    final PostSource postSource;
-    final Comments comments;
-    final Likes likes;
-    final Reposts reposts;
-    final Views views;
-    final bool isFavorite;
-    final String accessKey;
-
-    factory Wall.fromRawJson(String str) => Wall.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory Wall.fromJson(Map<String, dynamic> json) => Wall(
-        id: json["id"] == null ? null : json["id"],
-        fromId: json["from_id"] == null ? null : json["from_id"],
-        toId: json["to_id"] == null ? null : json["to_id"],
-        date: json["date"] == null ? null : json["date"],
-        postType: json["post_type"] == null ? null : json["post_type"],
-        text: json["text"] == null ? null : json["text"],
-        markedAsAds: json["marked_as_ads"] == null ? null : json["marked_as_ads"],
-        attachments: json["attachments"] == null ? null : List<ReplyMessageAttachment>.from(json["attachments"].map((x) => ReplyMessageAttachment.fromJson(x))),
-        postSource: json["post_source"] == null ? null : PostSource.fromJson(json["post_source"]),
-        comments: json["comments"] == null ? null : Comments.fromJson(json["comments"]),
-        likes: json["likes"] == null ? null : Likes.fromJson(json["likes"]),
-        reposts: json["reposts"] == null ? null : Reposts.fromJson(json["reposts"]),
-        views: json["views"] == null ? null : Views.fromJson(json["views"]),
-        isFavorite: json["is_favorite"] == null ? null : json["is_favorite"],
-        accessKey: json["access_key"] == null ? null : json["access_key"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "id": id == null ? null : id,
-        "from_id": fromId == null ? null : fromId,
-        "to_id": toId == null ? null : toId,
-        "date": date == null ? null : date,
-        "post_type": postType == null ? null : postType,
-        "text": text == null ? null : text,
-        "marked_as_ads": markedAsAds == null ? null : markedAsAds,
-        "attachments": attachments == null ? null : List<dynamic>.from(attachments.map((x) => x.toJson())),
-        "post_source": postSource == null ? null : postSource.toJson(),
-        "comments": comments == null ? null : comments.toJson(),
-        "likes": likes == null ? null : likes.toJson(),
-        "reposts": reposts == null ? null : reposts.toJson(),
-        "views": views == null ? null : views.toJson(),
-        "is_favorite": isFavorite == null ? null : isFavorite,
-        "access_key": accessKey == null ? null : accessKey,
-    };
-}
-
-class Comments {
-    Comments({
-        this.count,
-        this.canPost,
-        this.groupsCanPost,
-    });
-
-    final int count;
-    final int canPost;
-    final bool groupsCanPost;
-
-    factory Comments.fromRawJson(String str) => Comments.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory Comments.fromJson(Map<String, dynamic> json) => Comments(
-        count: json["count"] == null ? null : json["count"],
-        canPost: json["can_post"] == null ? null : json["can_post"],
-        groupsCanPost: json["groups_can_post"] == null ? null : json["groups_can_post"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "count": count == null ? null : count,
-        "can_post": canPost == null ? null : canPost,
-        "groups_can_post": groupsCanPost == null ? null : groupsCanPost,
-    };
-}
-
-class Likes {
-    Likes({
-        this.count,
-        this.userLikes,
-        this.canLike,
-        this.canPublish,
-    });
-
-    final int count;
-    final int userLikes;
-    final int canLike;
-    final int canPublish;
-
-    factory Likes.fromRawJson(String str) => Likes.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory Likes.fromJson(Map<String, dynamic> json) => Likes(
-        count: json["count"] == null ? null : json["count"],
-        userLikes: json["user_likes"] == null ? null : json["user_likes"],
-        canLike: json["can_like"] == null ? null : json["can_like"],
-        canPublish: json["can_publish"] == null ? null : json["can_publish"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "count": count == null ? null : count,
-        "user_likes": userLikes == null ? null : userLikes,
-        "can_like": canLike == null ? null : canLike,
-        "can_publish": canPublish == null ? null : canPublish,
-    };
-}
-
-class PostSource {
-    PostSource({
-        this.type,
-    });
-
-    final String type;
-
-    factory PostSource.fromRawJson(String str) => PostSource.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory PostSource.fromJson(Map<String, dynamic> json) => PostSource(
-        type: json["type"] == null ? null : json["type"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "type": type == null ? null : type,
-    };
-}
-
-class Reposts {
-    Reposts({
-        this.count,
-        this.userReposted,
-    });
-
-    final int count;
-    final int userReposted;
-
-    factory Reposts.fromRawJson(String str) => Reposts.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory Reposts.fromJson(Map<String, dynamic> json) => Reposts(
-        count: json["count"] == null ? null : json["count"],
-        userReposted: json["user_reposted"] == null ? null : json["user_reposted"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "count": count == null ? null : count,
-        "user_reposted": userReposted == null ? null : userReposted,
-    };
-}
-
-class Views {
-    Views({
-        this.count,
-    });
-
-    final int count;
-
-    factory Views.fromRawJson(String str) => Views.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
-    factory Views.fromJson(Map<String, dynamic> json) => Views(
-        count: json["count"] == null ? null : json["count"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "count": count == null ? null : count,
-    };
-}
-
 class Profile {
     Profile({
         this.id,
@@ -1833,8 +692,6 @@ class Profile {
         this.photo100,
         this.online,
         this.onlineInfo,
-        this.onlineApp,
-        this.onlineMobile,
         this.deactivated,
     });
 
@@ -1849,8 +706,6 @@ class Profile {
     final String photo100;
     final int online;
     final OnlineInfo onlineInfo;
-    final int onlineApp;
-    final int onlineMobile;
     final String deactivated;
 
     factory Profile.fromRawJson(String str) => Profile.fromJson(json.decode(str));
@@ -1869,8 +724,6 @@ class Profile {
         photo100: json["photo_100"] == null ? null : json["photo_100"],
         online: json["online"] == null ? null : json["online"],
         onlineInfo: json["online_info"] == null ? null : OnlineInfo.fromJson(json["online_info"]),
-        onlineApp: json["online_app"] == null ? null : json["online_app"],
-        onlineMobile: json["online_mobile"] == null ? null : json["online_mobile"],
         deactivated: json["deactivated"] == null ? null : json["deactivated"],
     );
 
@@ -1886,8 +739,6 @@ class Profile {
         "photo_100": photo100 == null ? null : photo100,
         "online": online == null ? null : online,
         "online_info": onlineInfo == null ? null : onlineInfo.toJson(),
-        "online_app": onlineApp == null ? null : onlineApp,
-        "online_mobile": onlineMobile == null ? null : onlineMobile,
         "deactivated": deactivated == null ? null : deactivated,
     };
 }
@@ -1899,7 +750,6 @@ class OnlineInfo {
         this.isOnline,
         this.appId,
         this.isMobile,
-        this.status,
     });
 
     final bool visible;
@@ -1907,7 +757,6 @@ class OnlineInfo {
     final bool isOnline;
     final int appId;
     final bool isMobile;
-    final String status;
 
     factory OnlineInfo.fromRawJson(String str) => OnlineInfo.fromJson(json.decode(str));
 
@@ -1919,7 +768,6 @@ class OnlineInfo {
         isOnline: json["is_online"] == null ? null : json["is_online"],
         appId: json["app_id"] == null ? null : json["app_id"],
         isMobile: json["is_mobile"] == null ? null : json["is_mobile"],
-        status: json["status"] == null ? null : json["status"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -1928,7 +776,6 @@ class OnlineInfo {
         "is_online": isOnline == null ? null : isOnline,
         "app_id": appId == null ? null : appId,
         "is_mobile": isMobile == null ? null : isMobile,
-        "status": status == null ? null : status,
     };
 }
 
