@@ -3,11 +3,14 @@ PODS:
   - flutter_login_vk (0.1.0):
     - Flutter
     - VK-ios-sdk (~> 1.5)
+  - url_launcher (0.0.1):
+    - Flutter
   - VK-ios-sdk (1.5.1)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_login_vk (from `.symlinks/plugins/flutter_login_vk/ios`)
+  - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
 
 SPEC REPOS:
   trunk:
@@ -18,10 +21,13 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_login_vk:
     :path: ".symlinks/plugins/flutter_login_vk/ios"
+  url_launcher:
+    :path: ".symlinks/plugins/url_launcher/ios"
 
 SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_login_vk: d21edb4b6ace07e70f894f1ec6c3728b5ba82dcb
+  url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
   VK-ios-sdk: 62a10b6571fbcda0657f455fedce7fedf55b4cd0
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c

@@ -29,9 +29,19 @@ class ConversationTile extends StatelessWidget {
 
     final unreadCount = item?.conversation?.unreadCount;
 
-    final text = item?.lastMessage?.text != ''
-        ? item?.lastMessage?.text
-        : getAttachmentReplacer(item?.lastMessage);
+    final lastMsgAttachments = item?.lastMessage?.attachments ?? [];
+    final lastMsgFwdMessages = item?.lastMessage?.fwdMessages ?? [];
+
+    var text = item?.lastMessage?.text;
+
+    if (text == '') {
+      if (lastMsgAttachments.length != 0) {
+        text = getAttachmentReplacer(lastMsgAttachments[0]);
+      }
+      if (lastMsgFwdMessages.length != 0) {
+        text = 'Пересланные сообщения';
+      }
+    }
 
     if (item == null) {
       return Padding(

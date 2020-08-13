@@ -31,6 +31,7 @@ dependencies:
   get_it: ^4.0.4
   badges: ^1.1.1
   bubble: ^1.1.9+1
+  url_launcher: ^5.5.0
 
 dev_dependencies:
   flutter_test:
