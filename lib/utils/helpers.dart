@@ -16,7 +16,7 @@ String getAttachmentReplacer(VKConversation.ItemAttachment attachment) {
 
   switch (attachmentType) {
     case VKConversation.AttachmentType.DOC:
-      return 'Документ';
+      return 'Документ: ${attachment.doc?.title ?? ''}';
     case VKConversation.AttachmentType.GIFT:
       return 'Подарок';
     case VKConversation.AttachmentType.LINK:
@@ -30,11 +30,13 @@ String getAttachmentReplacer(VKConversation.ItemAttachment attachment) {
     case VKConversation.AttachmentType.STORY:
       return 'История';
     case VKConversation.AttachmentType.VIDEO:
-      return 'Видео';
+      return 'Видео: ${attachment?.video?.title ?? ''}';
+    case VKConversation.AttachmentType.AUDIO:
+      return 'Аудио: ${attachment.audio?.artist ?? ''} - ${attachment.audio?.title ?? ''}';
     case VKConversation.AttachmentType.WALL:
-      return 'Запись со стены';
+      return 'Запись со стены: ${attachment.wall?.text ?? ''}';
     case VKConversation.AttachmentType.WALL_REPLY:
-      return 'Комментарий';
+      return 'Комментарий: ${attachment.wallReply?.text ?? ''}';
     default:
       return 'Вложение';
   }

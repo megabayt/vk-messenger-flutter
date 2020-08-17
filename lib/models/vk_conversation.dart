@@ -272,6 +272,8 @@ class ItemAttachment {
         this.wallReply,
         this.video,
         this.story,
+        this.gift,
+        this.audio
     });
 
     final AttachmentType type;
@@ -283,6 +285,8 @@ class ItemAttachment {
     final WallReply wallReply;
     final Video video;
     final Story story;
+    final Gift gift;
+    final Audio audio;
 
     factory ItemAttachment.fromRawJson(String str) => ItemAttachment.fromJson(json.decode(str));
 
@@ -298,6 +302,8 @@ class ItemAttachment {
         wallReply: json["wall_reply"] == null ? null : WallReply.fromJson(json["wall_reply"]),
         video: json["video"] == null ? null : Video.fromJson(json["video"]),
         story: json["story"] == null ? null : Story.fromJson(json["story"]),
+        gift: json["gift"] == null ? null : Gift.fromJson(json["gift"]),
+        audio: json["audio"] == null ? null : Audio.fromJson(json["audio"]),
     );
 
     Map<String, dynamic> toJson() => {
@@ -310,6 +316,116 @@ class ItemAttachment {
         "wall_reply": wallReply == null ? null : wallReply.toJson(),
         "video": video == null ? null : video.toJson(),
         "story": story == null ? null : story.toJson(),
+        "gift": gift == null ? null : gift.toJson(),
+        "audio": audio == null ? null : audio.toJson(),
+    };
+}
+
+class Audio {
+    Audio({
+        this.artist,
+        this.id,
+        this.ownerId,
+        this.title,
+        this.duration,
+        this.isExplicit,
+        this.isFocusTrack,
+        this.trackCode,
+        this.url,
+        this.date,
+        this.albumId,
+        this.lyricsId,
+        this.genreId,
+        this.shortVideosAllowed,
+        this.storiesAllowed,
+    });
+
+    final String artist;
+    final int id;
+    final int ownerId;
+    final String title;
+    final int duration;
+    final bool isExplicit;
+    final bool isFocusTrack;
+    final String trackCode;
+    final String url;
+    final int date;
+    final int albumId;
+    final int lyricsId;
+    final int genreId;
+    final bool shortVideosAllowed;
+    final bool storiesAllowed;
+
+    factory Audio.fromRawJson(String str) => Audio.fromJson(json.decode(str));
+
+    String toRawJson() => json.encode(toJson());
+
+    factory Audio.fromJson(Map<String, dynamic> json) => Audio(
+        artist: json["artist"] == null ? null : json["artist"],
+        id: json["id"] == null ? null : json["id"],
+        ownerId: json["owner_id"] == null ? null : json["owner_id"],
+        title: json["title"] == null ? null : json["title"],
+        duration: json["duration"] == null ? null : json["duration"],
+        isExplicit: json["is_explicit"] == null ? null : json["is_explicit"],
+        isFocusTrack: json["is_focus_track"] == null ? null : json["is_focus_track"],
+        trackCode: json["track_code"] == null ? null : json["track_code"],
+        url: json["url"] == null ? null : json["url"],
+        date: json["date"] == null ? null : json["date"],
+        albumId: json["album_id"] == null ? null : json["album_id"],
+        lyricsId: json["lyrics_id"] == null ? null : json["lyrics_id"],
+        genreId: json["genre_id"] == null ? null : json["genre_id"],
+        shortVideosAllowed: json["short_videos_allowed"] == null ? null : json["short_videos_allowed"],
+        storiesAllowed: json["stories_allowed"] == null ? null : json["stories_allowed"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "artist": artist == null ? null : artist,
+        "id": id == null ? null : id,
+        "owner_id": ownerId == null ? null : ownerId,
+        "title": title == null ? null : title,
+        "duration": duration == null ? null : duration,
+        "is_explicit": isExplicit == null ? null : isExplicit,
+        "is_focus_track": isFocusTrack == null ? null : isFocusTrack,
+        "track_code": trackCode == null ? null : trackCode,
+        "url": url == null ? null : url,
+        "date": date == null ? null : date,
+        "album_id": albumId == null ? null : albumId,
+        "lyrics_id": lyricsId == null ? null : lyricsId,
+        "genre_id": genreId == null ? null : genreId,
+        "short_videos_allowed": shortVideosAllowed == null ? null : shortVideosAllowed,
+        "stories_allowed": storiesAllowed == null ? null : storiesAllowed,
+    };
+}
+
+class Gift {
+    Gift({
+        this.id,
+        this.thumb256,
+        this.thumb48,
+        this.thumb96,
+    });
+
+    final int id;
+    final String thumb256;
+    final String thumb48;
+    final String thumb96;
+
+    factory Gift.fromRawJson(String str) => Gift.fromJson(json.decode(str));
+
+    String toRawJson() => json.encode(toJson());
+
+    factory Gift.fromJson(Map<String, dynamic> json) => Gift(
+        id: json["id"] == null ? null : json["id"],
+        thumb256: json["thumb_256"] == null ? null : json["thumb_256"],
+        thumb48: json["thumb_48"] == null ? null : json["thumb_48"],
+        thumb96: json["thumb_96"] == null ? null : json["thumb_96"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "id": id == null ? null : id,
+        "thumb_256": thumb256 == null ? null : thumb256,
+        "thumb_48": thumb48 == null ? null : thumb48,
+        "thumb_96": thumb96 == null ? null : thumb96,
     };
 }
 
@@ -608,18 +724,56 @@ class Story {
     Story({
         this.id,
         this.ownerId,
+        this.accessKey,
+        this.canComment,
+        this.canReply,
+        this.canSee,
+        this.canLike,
+        this.canShare,
+        this.canHide,
         this.date,
         this.expiresAt,
-        this.isExpired,
+        this.seen,
         this.isOneTime,
+        this.trackCode,
+        this.type,
+        this.link,
+        this.photo,
+        this.video,
+        this.isRestricted,
+        this.noSound,
+        this.needMute,
+        this.muteReply,
+        this.canAsk,
+        this.canAskAnonymous,
+        this.isOwnerPinned,
     });
 
     final int id;
     final int ownerId;
+    final String accessKey;
+    final int canComment;
+    final int canReply;
+    final int canSee;
+    final bool canLike;
+    final int canShare;
+    final int canHide;
     final int date;
     final int expiresAt;
-    final bool isExpired;
+    final int seen;
     final bool isOneTime;
+    final String trackCode;
+    final String type;
+    final Link link;
+    final Photo photo;
+    final Video video;
+    final bool isRestricted;
+    final bool noSound;
+    final bool needMute;
+    final bool muteReply;
+    final int canAsk;
+    final int canAskAnonymous;
+    final bool isOwnerPinned;
 
     factory Story.fromRawJson(String str) => Story.fromJson(json.decode(str));
 
@@ -628,23 +782,133 @@ class Story {
     factory Story.fromJson(Map<String, dynamic> json) => Story(
         id: json["id"] == null ? null : json["id"],
         ownerId: json["owner_id"] == null ? null : json["owner_id"],
+        accessKey: json["access_key"] == null ? null : json["access_key"],
+        canComment: json["can_comment"] == null ? null : json["can_comment"],
+        canReply: json["can_reply"] == null ? null : json["can_reply"],
+        canSee: json["can_see"] == null ? null : json["can_see"],
+        canLike: json["can_like"] == null ? null : json["can_like"],
+        canShare: json["can_share"] == null ? null : json["can_share"],
+        canHide: json["can_hide"] == null ? null : json["can_hide"],
         date: json["date"] == null ? null : json["date"],
         expiresAt: json["expires_at"] == null ? null : json["expires_at"],
-        isExpired: json["is_expired"] == null ? null : json["is_expired"],
+        seen: json["seen"] == null ? null : json["seen"],
         isOneTime: json["is_one_time"] == null ? null : json["is_one_time"],
+        trackCode: json["track_code"] == null ? null : json["track_code"],
+        type: json["type"] == null ? null : json["type"],
+        link: json["link"] == null ? null : Link.fromJson(json["link"]),
+        photo: json["photo"] == null ? null : Photo.fromJson(json["photo"]),
+        video: json["video"] == null ? null : Video.fromJson(json["video"]),
+        isRestricted: json["is_restricted"] == null ? null : json["is_restricted"],
+        noSound: json["no_sound"] == null ? null : json["no_sound"],
+        needMute: json["need_mute"] == null ? null : json["need_mute"],
+        muteReply: json["mute_reply"] == null ? null : json["mute_reply"],
+        canAsk: json["can_ask"] == null ? null : json["can_ask"],
+        canAskAnonymous: json["can_ask_anonymous"] == null ? null : json["can_ask_anonymous"],
+        isOwnerPinned: json["is_owner_pinned"] == null ? null : json["is_owner_pinned"],
     );
 
     Map<String, dynamic> toJson() => {
         "id": id == null ? null : id,
         "owner_id": ownerId == null ? null : ownerId,
+        "access_key": accessKey == null ? null : accessKey,
+        "can_comment": canComment == null ? null : canComment,
+        "can_reply": canReply == null ? null : canReply,
+        "can_see": canSee == null ? null : canSee,
+        "can_like": canLike == null ? null : canLike,
+        "can_share": canShare == null ? null : canShare,
+        "can_hide": canHide == null ? null : canHide,
         "date": date == null ? null : date,
         "expires_at": expiresAt == null ? null : expiresAt,
-        "is_expired": isExpired == null ? null : isExpired,
+        "seen": seen == null ? null : seen,
         "is_one_time": isOneTime == null ? null : isOneTime,
+        "track_code": trackCode == null ? null : trackCode,
+        "type": type == null ? null : type,
+        "link": link == null ? null : link.toJson(),
+        "photo": photo == null ? null : photo.toJson(),
+        "video": video == null ? null : video.toJson(),
+        "is_restricted": isRestricted == null ? null : isRestricted,
+        "no_sound": noSound == null ? null : noSound,
+        "need_mute": needMute == null ? null : needMute,
+        "mute_reply": muteReply == null ? null : muteReply,
+        "can_ask": canAsk == null ? null : canAsk,
+        "can_ask_anonymous": canAskAnonymous == null ? null : canAskAnonymous,
+        "is_owner_pinned": isOwnerPinned == null ? null : isOwnerPinned,
     };
 }
 
-enum AttachmentType { PHOTO, LINK, WALL, STICKER, DOC, WALL_REPLY, VIDEO, STORY, POLL, GIFT }
+class Link {
+    Link({
+        this.text,
+        this.url,
+    });
+
+    final String text;
+    final String url;
+
+    factory Link.fromRawJson(String str) => Link.fromJson(json.decode(str));
+
+    String toRawJson() => json.encode(toJson());
+
+    factory Link.fromJson(Map<String, dynamic> json) => Link(
+        text: json["text"] == null ? null : json["text"],
+        url: json["url"] == null ? null : json["url"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "text": text == null ? null : text,
+        "url": url == null ? null : url,
+    };
+}
+
+class Photo {
+    Photo({
+        this.albumId,
+        this.date,
+        this.id,
+        this.ownerId,
+        this.hasTags,
+        this.sizes,
+        this.text,
+        this.userId,
+    });
+
+    final int albumId;
+    final int date;
+    final int id;
+    final int ownerId;
+    final bool hasTags;
+    final List<Size> sizes;
+    final String text;
+    final int userId;
+
+    factory Photo.fromRawJson(String str) => Photo.fromJson(json.decode(str));
+
+    String toRawJson() => json.encode(toJson());
+
+    factory Photo.fromJson(Map<String, dynamic> json) => Photo(
+        albumId: json["album_id"] == null ? null : json["album_id"],
+        date: json["date"] == null ? null : json["date"],
+        id: json["id"] == null ? null : json["id"],
+        ownerId: json["owner_id"] == null ? null : json["owner_id"],
+        hasTags: json["has_tags"] == null ? null : json["has_tags"],
+        sizes: json["sizes"] == null ? null : List<Size>.from(json["sizes"].map((x) => Size.fromJson(x))),
+        text: json["text"] == null ? null : json["text"],
+        userId: json["user_id"] == null ? null : json["user_id"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "album_id": albumId == null ? null : albumId,
+        "date": date == null ? null : date,
+        "id": id == null ? null : id,
+        "owner_id": ownerId == null ? null : ownerId,
+        "has_tags": hasTags == null ? null : hasTags,
+        "sizes": sizes == null ? null : List<dynamic>.from(sizes.map((x) => x.toJson())),
+        "text": text == null ? null : text,
+        "user_id": userId == null ? null : userId,
+    };
+}
+
+enum AttachmentType { PHOTO, LINK, WALL, STICKER, DOC, WALL_REPLY, VIDEO, STORY, POLL, GIFT, AUDIO }
 
 final attachmentTypeValues = EnumValues({
     "doc": AttachmentType.DOC,
@@ -656,7 +920,8 @@ final attachmentTypeValues = EnumValues({
     "video": AttachmentType.VIDEO,
     "wall": AttachmentType.WALL,
     "wall_reply": AttachmentType.WALL_REPLY,
-    "gift": AttachmentType.GIFT
+    "gift": AttachmentType.GIFT,
+    "audio": AttachmentType.AUDIO,
 });
 
 class Video {

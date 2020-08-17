@@ -34,7 +34,7 @@ class Message extends StatelessWidget {
     if (attachments.length != 0) {
       rows.addAll(
         attachments.map(
-          (attachment) => Attachment(attachment, textAlign),
+          (attachment) => Attachment(attachment, me),
         ),
       );
     }
