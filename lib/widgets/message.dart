@@ -1,25 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:vk_messenger_flutter/models/vk_conversation.dart';
 import 'package:vk_messenger_flutter/store/chat_store.dart';
-import 'package:vk_messenger_flutter/utils/helpers.dart';
+import 'package:vk_messenger_flutter/widgets/attachment.dart';
 
 class Message extends StatelessWidget {
-  _attachTapHandler(ItemAttachment attachment) async {
-    final attachmentType = attachment?.type;
-
-    switch (attachmentType) {
-      case AttachmentType.LINK:
-        final url = attachment?.link?.url;
-        if (await canLaunch(url)) {
-          await launch(url);
-        }
-    }
-  }
-
   _fwdMsgTapHandler(FwdMessage fwdMessage) {}
 
   @override
@@ -30,7 +17,7 @@ class Message extends StatelessWidget {
 
     final me = item?.fromId == chatStore?.currentUserId;
 
-    final text = item?.text;
+    final text = item?.text ?? '';
 
     final attachments = item?.attachments ?? [];
 
@@ -47,12 +34,7 @@ class Message extends StatelessWidget {
     if (attachments.length != 0) {
       rows.addAll(
         attachments.map(
-          (attachment) => GestureDetector(
-            onTap: () => _attachTapHandler(attachment),
-            child: Text(getAttachmentReplacer(attachment),
-                textAlign: textAlign,
-                style: TextStyle(color: Color.fromRGBO(0, 0, 0, .5))),
-          ),
+          (attachment) => Attachment(attachment, textAlign),
         ),
       );
     }
