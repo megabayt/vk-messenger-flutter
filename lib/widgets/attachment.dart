@@ -22,53 +22,69 @@ class Attachment extends StatelessWidget {
 
   Attachment(this.attachment, this.me);
 
-  _attachTapHandler(BuildContext context) => (AttachmentModel.Attachment attachment) async {
-    final messages = Provider.of<ChatStore>(context, listen: false)?.data?.response?.items ?? [];
-    final message = Provider.of<Message>(context, listen: false);
-    final messageIndex = messages.indexWhere((element) => element?.id == message?.id);
+  _attachTapHandler(BuildContext context) =>
+      (AttachmentModel.Attachment attachment) async {
+        final messages = Provider.of<ChatStore>(context, listen: false)
+                ?.data
+                ?.response
+                ?.items ??
+            [];
+        final message = Provider.of<Message>(context, listen: false);
+        final messageIndex =
+            messages.indexWhere((element) => element?.id == message?.id);
 
-    final attachments = message?.attachments ?? [];
-    final attachmentIndex = attachments.indexWhere((element) => element == attachment);
+        final attachments = message?.attachments ?? [];
+        final attachmentIndex =
+            attachments.indexWhere((element) => element == attachment);
 
-    final attachmentType = attachment?.type;
+        final attachmentType = attachment?.type;
 
-    var url = '';
+        var url = '';
 
-    switch (attachmentType) {
-      case AttachmentModel.AttachmentType.PHOTO:
-        Navigator.of(context).pushNamed(PhotosPage.routeUrl, arguments: {
-          "messageIndex": messageIndex,
-          "attachmentIndex": attachmentIndex,
-        });
-        return;
-      case AttachmentModel.AttachmentType.VIDEO:
-        url = 'https://vk.com/video${attachment?.video?.ownerId}_${attachment?.video?.id}';
-        break;
-      case AttachmentModel.AttachmentType.AUDIO:
-        // TODO: Воспроизводить в приложении
-        url = 'https://vk.com/audio${attachment?.audio?.ownerId}_${attachment?.audio?.id}';
-        break;
-      case AttachmentModel.AttachmentType.DOC:
-        url = 'https://vk.com/doc${attachment?.doc?.ownerId}_${attachment?.doc?.id}';
-        break;
-      case AttachmentModel.AttachmentType.STORY:
-        url = 'https://vk.com/story${attachment?.story?.ownerId}_${attachment?.story?.id}';
-        break;
-      case AttachmentModel.AttachmentType.WALL:
-        url = 'https://vk.com/wall${attachment?.wall?.fromId}_${attachment?.wall?.id}';
-        break;
-      case AttachmentModel.AttachmentType.WALL_REPLY:
-        url = 'https://vk.com/wall${attachment?.wallReply?.ownerId}_${attachment?.wallReply?.postId}?reply=${attachment?.wallReply?.id}';
-        break;
-      case AttachmentModel.AttachmentType.LINK:
-      default:
-        url = attachment?.link?.url ?? '';
-        break;
-    }
-    if (url != '' && await canLaunch(url)) {
-      await launch(url);
-    }
-  };
+        switch (attachmentType) {
+          case AttachmentModel.AttachmentType.PHOTO:
+            Navigator.of(context).pushNamed(PhotosPage.routeUrl, arguments: {
+              "messageIndex": messageIndex,
+              "attachmentIndex": attachmentIndex,
+            });
+            return;
+          case AttachmentModel.AttachmentType.VIDEO:
+            url =
+                'https://vk.com/video${attachment?.video?.ownerId}_${attachment?.video?.id}';
+            break;
+          case AttachmentModel.AttachmentType.AUDIO:
+            // TODO: Воспроизводить в приложении
+            url =
+                'https://vk.com/audio${attachment?.audio?.ownerId}_${attachment?.audio?.id}';
+            break;
+          case AttachmentModel.AttachmentType.DOC:
+            url =
+                'https://vk.com/doc${attachment?.doc?.ownerId}_${attachment?.doc?.id}';
+            break;
+          case AttachmentModel.AttachmentType.STORY:
+            if (attachment?.story?.isExpired ?? false) {
+              return;
+            }
+            url =
+                'https://vk.com/story${attachment?.story?.ownerId}_${attachment?.story?.id}';
+            break;
+          case AttachmentModel.AttachmentType.WALL:
+            url =
+                'https://vk.com/wall${attachment?.wall?.fromId}_${attachment?.wall?.id}';
+            break;
+          case AttachmentModel.AttachmentType.WALL_REPLY:
+            url =
+                'https://vk.com/wall${attachment?.wallReply?.ownerId}_${attachment?.wallReply?.postId}?reply=${attachment?.wallReply?.id}';
+            break;
+          case AttachmentModel.AttachmentType.LINK:
+          default:
+            url = attachment?.link?.url ?? '';
+            break;
+        }
+        if (url != '' && await canLaunch(url)) {
+          await launch(url);
+        }
+      };
 
   Widget _getImageWidget() {
     final sizes = attachment?.photo?.sizes ?? [];
@@ -156,6 +172,16 @@ class Attachment extends StatelessWidget {
   }
 
   Widget _getStoryWidget() {
+    final isExpired = attachment?.story?.isExpired ?? false;
+
+    if (isExpired) {
+      return Text(
+        'История (недоступна)',
+        textAlign: align,
+        style: textStyle,
+      );
+    }
+
     final sizes = attachment.story?.photo?.sizes ?? [];
 
     if (sizes.length != 0) {
