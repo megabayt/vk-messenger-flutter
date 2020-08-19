@@ -34,7 +34,10 @@ class Message extends StatelessWidget {
     if (attachments.length != 0) {
       rows.addAll(
         attachments.map(
-          (attachment) => Attachment(attachment, me),
+          (attachment) => Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Attachment(attachment, me),
+          ),
         ),
       );
     }

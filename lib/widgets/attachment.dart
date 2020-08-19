@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import 'package:vk_messenger_flutter/models/vk_conversation.dart';
+import 'package:vk_messenger_flutter/screens/photos_page.dart';
+import 'package:vk_messenger_flutter/store/chat_store.dart';
 import 'package:vk_messenger_flutter/utils/helpers.dart';
 
 class Attachment extends StatelessWidget {
@@ -17,16 +21,25 @@ class Attachment extends StatelessWidget {
 
   Attachment(this.attachment, this.me);
 
-  _attachTapHandler(ItemAttachment attachment) async {
+  _attachTapHandler(BuildContext context) => (ItemAttachment attachment) async {
+    final messages = Provider.of<ChatStore>(context, listen: false)?.data?.response?.items ?? [];
+    final message = Provider.of<Item>(context, listen: false);
+    final messageIndex = messages.indexWhere((element) => element?.id == message?.id);
+
+    final attachments = message?.attachments ?? [];
+    final attachmentIndex = attachments.indexWhere((element) => element == attachment);
+
     final attachmentType = attachment?.type;
 
     var url = '';
 
     switch (attachmentType) {
       case AttachmentType.PHOTO:
-        // TODO: Отображать в приложении
-        url = 'https://vk.com/photo${attachment?.photo?.ownerId}_${attachment?.photo?.id}';
-        break;
+        Navigator.of(context).pushNamed(PhotosPage.routeUrl, arguments: {
+          "messageIndex": messageIndex,
+          "attachmentIndex": attachmentIndex,
+        });
+        return;
       case AttachmentType.VIDEO:
         url = 'https://vk.com/video${attachment?.video?.ownerId}_${attachment?.video?.id}';
         break;
@@ -54,7 +67,7 @@ class Attachment extends StatelessWidget {
     if (url != '' && await canLaunch(url)) {
       await launch(url);
     }
-  }
+  };
 
   Widget _getImageWidget() {
     final sizes = attachment?.photo?.sizes ?? [];
@@ -187,7 +200,7 @@ class Attachment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _attachTapHandler(attachment),
+      onTap: () => _attachTapHandler(context)(attachment),
       child: _getAttachmentWidget(),
     );
   }

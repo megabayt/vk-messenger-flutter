@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vk_messenger_flutter/screens/photos_page.dart';
 
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/screens/chat_page.dart';
@@ -55,7 +56,15 @@ class MyApp extends StatelessWidget {
             case ChatsPage.routeUrl:
               return MaterialPageRoute(builder: (_) => ChatsPage());
             case ChatPage.routeUrl:
-              return MaterialPageRoute(builder: (_) => ChatPage((settings.arguments as Map<String, int>)['peerId']));
+              return MaterialPageRoute(
+                  builder: (_) => ChatPage(
+                      (settings.arguments as Map<String, int>)['peerId']));
+            case PhotosPage.routeUrl:
+              return MaterialPageRoute(
+                  builder: (_) => PhotosPage(
+                        (settings.arguments as Map<String, int>)['messageIndex'],
+                        (settings.arguments as Map<String, int>)['attachmentIndex'],
+                      ));
             default:
               return MaterialPageRoute(builder: (_) => ErrorPage());
           }
