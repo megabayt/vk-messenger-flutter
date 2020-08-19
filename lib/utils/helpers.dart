@@ -1,7 +1,6 @@
 import 'dart:core';
 
-import 'package:vk_messenger_flutter/models/vk_conversation.dart'
-    as VKConversation;
+import 'package:vk_messenger_flutter/models/attachment.dart';
 
 String serialize(Map<String, String> params) {
   String result = '';
@@ -11,31 +10,31 @@ String serialize(Map<String, String> params) {
   return result;
 }
 
-String getAttachmentReplacer(VKConversation.ItemAttachment attachment) {
+String getAttachmentReplacer(Attachment attachment) {
   final attachmentType = attachment?.type;
 
   switch (attachmentType) {
-    case VKConversation.AttachmentType.DOC:
+    case AttachmentType.DOC:
       return 'Документ: ${attachment.doc?.title ?? ''}';
-    case VKConversation.AttachmentType.GIFT:
+    case AttachmentType.GIFT:
       return 'Подарок';
-    case VKConversation.AttachmentType.LINK:
+    case AttachmentType.LINK:
       return 'Ссылка: ${attachment.link?.title ?? ''}';
-    case VKConversation.AttachmentType.PHOTO:
+    case AttachmentType.PHOTO:
       return 'Фото';
-    case VKConversation.AttachmentType.POLL:
+    case AttachmentType.POLL:
       return 'Голосование';
-    case VKConversation.AttachmentType.STICKER:
+    case AttachmentType.STICKER:
       return 'Стикер';
-    case VKConversation.AttachmentType.STORY:
+    case AttachmentType.STORY:
       return 'История';
-    case VKConversation.AttachmentType.VIDEO:
+    case AttachmentType.VIDEO:
       return 'Видео: ${attachment?.video?.title ?? ''}';
-    case VKConversation.AttachmentType.AUDIO:
+    case AttachmentType.AUDIO:
       return 'Аудио: ${attachment.audio?.artist ?? ''} - ${attachment.audio?.title ?? ''}';
-    case VKConversation.AttachmentType.WALL:
+    case AttachmentType.WALL:
       return 'Запись со стены: ${attachment.wall?.text ?? ''}';
-    case VKConversation.AttachmentType.WALL_REPLY:
+    case AttachmentType.WALL_REPLY:
       return 'Комментарий: ${attachment.wallReply?.text ?? ''}';
     default:
       return 'Вложение';

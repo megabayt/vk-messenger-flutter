@@ -22,12 +22,12 @@ class ChatStore with ChangeNotifier {
     return _peerId;
   }
   bool _isFetching = false;
-  VkConversation _data;
-  VkConversation get data {
+  VkConversationResponseBody _data;
+  VkConversationResponseBody get data {
     return _data;
   }
 
-  Future<VkConversation> _getData(Map<String, String> params) async {
+  Future<VkConversationResponseBody> _getData(Map<String, String> params) async {
     _isFetching = true;
 
     final getConversationUrl =
@@ -43,7 +43,7 @@ class ChatStore with ChangeNotifier {
     if (responseBody == null) {
       return null;
     }
-    final conversation = VkConversation.fromJson(responseBody);
+    final conversation = VkConversationResponseBody.fromJson(responseBody);
 
     _profilesService.appendProfiles(conversation?.response?.profiles);
     _profilesService.appendGroups(conversation?.response?.groups);

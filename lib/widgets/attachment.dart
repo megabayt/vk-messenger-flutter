@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:vk_messenger_flutter/models/vk_conversation.dart';
 import 'package:vk_messenger_flutter/screens/photos_page.dart';
 import 'package:vk_messenger_flutter/store/chat_store.dart';
 import 'package:vk_messenger_flutter/utils/helpers.dart';
+import 'package:vk_messenger_flutter/models/attachment.dart' as AttachmentModel;
+import 'package:vk_messenger_flutter/models/message.dart';
 
 class Attachment extends StatelessWidget {
-  final ItemAttachment attachment;
+  final AttachmentModel.Attachment attachment;
   final bool me;
 
   get align {
@@ -21,9 +22,9 @@ class Attachment extends StatelessWidget {
 
   Attachment(this.attachment, this.me);
 
-  _attachTapHandler(BuildContext context) => (ItemAttachment attachment) async {
+  _attachTapHandler(BuildContext context) => (AttachmentModel.Attachment attachment) async {
     final messages = Provider.of<ChatStore>(context, listen: false)?.data?.response?.items ?? [];
-    final message = Provider.of<Item>(context, listen: false);
+    final message = Provider.of<Message>(context, listen: false);
     final messageIndex = messages.indexWhere((element) => element?.id == message?.id);
 
     final attachments = message?.attachments ?? [];
@@ -34,32 +35,32 @@ class Attachment extends StatelessWidget {
     var url = '';
 
     switch (attachmentType) {
-      case AttachmentType.PHOTO:
+      case AttachmentModel.AttachmentType.PHOTO:
         Navigator.of(context).pushNamed(PhotosPage.routeUrl, arguments: {
           "messageIndex": messageIndex,
           "attachmentIndex": attachmentIndex,
         });
         return;
-      case AttachmentType.VIDEO:
+      case AttachmentModel.AttachmentType.VIDEO:
         url = 'https://vk.com/video${attachment?.video?.ownerId}_${attachment?.video?.id}';
         break;
-      case AttachmentType.AUDIO:
+      case AttachmentModel.AttachmentType.AUDIO:
         // TODO: Воспроизводить в приложении
         url = 'https://vk.com/audio${attachment?.audio?.ownerId}_${attachment?.audio?.id}';
         break;
-      case AttachmentType.DOC:
+      case AttachmentModel.AttachmentType.DOC:
         url = 'https://vk.com/doc${attachment?.doc?.ownerId}_${attachment?.doc?.id}';
         break;
-      case AttachmentType.STORY:
+      case AttachmentModel.AttachmentType.STORY:
         url = 'https://vk.com/story${attachment?.story?.ownerId}_${attachment?.story?.id}';
         break;
-      case AttachmentType.WALL:
+      case AttachmentModel.AttachmentType.WALL:
         url = 'https://vk.com/wall${attachment?.wall?.fromId}_${attachment?.wall?.id}';
         break;
-      case AttachmentType.WALL_REPLY:
+      case AttachmentModel.AttachmentType.WALL_REPLY:
         url = 'https://vk.com/wall${attachment?.wallReply?.ownerId}_${attachment?.wallReply?.postId}?reply=${attachment?.wallReply?.id}';
         break;
-      case AttachmentType.LINK:
+      case AttachmentModel.AttachmentType.LINK:
       default:
         url = attachment?.link?.url ?? '';
         break;
@@ -171,22 +172,22 @@ class Attachment extends StatelessWidget {
 
   Widget _getAttachmentWidget() {
     switch (attachment.type) {
-      case AttachmentType.PHOTO:
+      case AttachmentModel.AttachmentType.PHOTO:
         return _getImageWidget();
-      case AttachmentType.VIDEO:
+      case AttachmentModel.AttachmentType.VIDEO:
         return _getVideoWidget();
-      case AttachmentType.GIFT:
+      case AttachmentModel.AttachmentType.GIFT:
         return _getGiftWidget();
-      case AttachmentType.STICKER:
+      case AttachmentModel.AttachmentType.STICKER:
         return _getStickerWidget();
-      case AttachmentType.DOC:
+      case AttachmentModel.AttachmentType.DOC:
         return _getDocWidget();
-      case AttachmentType.STORY:
+      case AttachmentModel.AttachmentType.STORY:
         return _getStoryWidget();
-      case AttachmentType.LINK:
-      case AttachmentType.POLL:
-      case AttachmentType.WALL:
-      case AttachmentType.WALL_REPLY:
+      case AttachmentModel.AttachmentType.LINK:
+      case AttachmentModel.AttachmentType.POLL:
+      case AttachmentModel.AttachmentType.WALL:
+      case AttachmentModel.AttachmentType.WALL_REPLY:
       default:
         final text = getAttachmentReplacer(attachment);
         return Text(

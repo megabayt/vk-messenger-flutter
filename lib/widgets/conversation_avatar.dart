@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:vk_messenger_flutter/models/vk_conversations.dart' show Item;
+import 'package:vk_messenger_flutter/models/vk_conversations.dart' show VkConversationItem;
 import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 
@@ -10,7 +10,7 @@ class ConversationAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final item = Provider.of<Item>(context);
+    final item = Provider.of<VkConversationItem>(context);
 
     final profile = _profilesService.getProfile(item?.conversation?.peer?.id);
 

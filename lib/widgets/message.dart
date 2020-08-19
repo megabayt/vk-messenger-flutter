@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
 import 'package:provider/provider.dart';
 
-import 'package:vk_messenger_flutter/models/vk_conversation.dart';
+import 'package:vk_messenger_flutter/models/message.dart' as MessageModel;
 import 'package:vk_messenger_flutter/store/chat_store.dart';
 import 'package:vk_messenger_flutter/widgets/attachment.dart';
 
 class Message extends StatelessWidget {
-  _fwdMsgTapHandler(FwdMessage fwdMessage) {}
+  _fwdMsgTapHandler(MessageModel.Message fwdMessage) {}
 
   @override
   Widget build(BuildContext context) {
     final chatStore = Provider.of<ChatStore>(context);
-    final item = Provider.of<Item>(context);
+    final item = Provider.of<MessageModel.Message>(context);
     double width = MediaQuery.of(context).size.width * 0.8; // 80% of screen
 
     final me = item?.fromId == chatStore?.currentUserId;

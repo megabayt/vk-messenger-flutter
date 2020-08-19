@@ -1,10 +1,11 @@
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vk_messenger_flutter/models/vk_conversation.dart';
+
+import 'package:vk_messenger_flutter/models/message.dart';
 
 class MessageDateDelimeter extends StatelessWidget {
-  final Item prevItem;
+  final Message prevItem;
 
   MessageDateDelimeter(this.prevItem);
 
@@ -21,7 +22,7 @@ class MessageDateDelimeter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final item = Provider.of<Item>(context);
+    final item = Provider.of<Message>(context);
 
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);

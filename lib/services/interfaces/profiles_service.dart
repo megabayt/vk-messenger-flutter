@@ -1,4 +1,5 @@
-import 'package:vk_messenger_flutter/models/vk_conversations.dart';
+import 'package:vk_messenger_flutter/models/group.dart';
+import 'package:vk_messenger_flutter/models/profile.dart';
 
 class ProfileCacheItem {
   String _avatar;

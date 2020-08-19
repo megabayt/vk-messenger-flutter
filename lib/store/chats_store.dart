@@ -15,12 +15,12 @@ class ChatsStore with ChangeNotifier {
   VKService _vkService = locator<VKService>();
   ProfilesService _profilesService = locator<ProfilesService>();
   bool _isFetching = false;
-  VkConversations _data;
-  VkConversations get data {
+  VkConversationsResponseBody _data;
+  VkConversationsResponseBody get data {
     return _data;
   }
 
-  Future<VkConversations> _getData(Map<String, String> params) async {
+  Future<VkConversationsResponseBody> _getData(Map<String, String> params) async {
     _isFetching = true;
 
     final getConversationsUrl =
@@ -37,7 +37,7 @@ class ChatsStore with ChangeNotifier {
       return null;
     }
 
-    final conversations = VkConversations.fromJson(responseBody);
+    final conversations = VkConversationsResponseBody.fromJson(responseBody);
 
     _profilesService.appendProfiles(conversations?.response?.profiles);
     _profilesService.appendGroups(conversations?.response?.groups);
