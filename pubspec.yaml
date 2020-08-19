@@ -33,6 +33,7 @@ dependencies:
   bubble: ^1.1.9+1
   url_launcher: ^5.5.0
   photo_view: ^0.10.0
+  audioplayers: ^0.15.1
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +53,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/video_play_small_2x.png
+    - assets/audio_play_small_2x.png
+    - assets/audio_pause_small_2x.png
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

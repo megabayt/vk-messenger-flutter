@@ -36,7 +36,10 @@ class Message extends StatelessWidget {
         attachments.map(
           (attachment) => Padding(
             padding: const EdgeInsets.all(5.0),
-            child: Attachment(attachment, me),
+            child: Provider.value(
+              value: attachment,
+              child: Attachment(),
+            ),
           ),
         ),
       );
