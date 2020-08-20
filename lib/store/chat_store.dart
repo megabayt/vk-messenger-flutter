@@ -22,9 +22,9 @@ class ChatStore with ChangeNotifier {
     return _peerId;
   }
   bool _isFetching = false;
-  VkConversationResponseBody _data;
+  var _data = Map<int, VkConversationResponseBody>();
   VkConversationResponseBody get data {
-    return _data;
+    return _data[_peerId];
   }
 
   Future<VkConversationResponseBody> _getData(Map<String, String> params) async {
@@ -57,7 +57,7 @@ class ChatStore with ChangeNotifier {
       return;
     }
 
-    _data = await _getData({
+    _data[peerId] = await _getData({
       'count': PAGE_COUNT,
       'offset': '0',
       'peer_id': peerId.toString()
@@ -79,11 +79,11 @@ class ChatStore with ChangeNotifier {
 
     final newData = await _getData({
       'count': PAGE_COUNT,
-      'offset': _data.response.items.length.toString(),
+      'offset': _data[_peerId].response.items.length.toString(),
       'peer_id': _peerId.toString()
     });
 
-    _data.response.items.addAll(newData.response.items);
+    _data[_peerId].response.items.addAll(newData.response.items);
 
     notifyListeners();
   }

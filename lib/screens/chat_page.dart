@@ -23,6 +23,9 @@ class ChatPage extends StatelessWidget {
         body: FutureBuilder(
           future: provider.getInitialData(peerId),
           builder: (BuildContext _, AsyncSnapshot snapShot) {
+            if (snapShot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
             return MessagesList();
           },
         ));
