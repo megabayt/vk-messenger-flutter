@@ -44,6 +44,8 @@ class _AttachmentAudioState extends State<AttachmentAudio> {
 
     final url = attachment?.audio?.url;
 
+    final captionTheme = Theme.of(context).textTheme.caption;
+
     return Row(
       children: <Widget>[
         _playerService.getUrl() != url ||
@@ -72,7 +74,7 @@ class _AttachmentAudioState extends State<AttachmentAudio> {
         Text(
           '${attachment.audio?.artist ?? ''} - ${attachment.audio?.title ?? ''}',
           textAlign: me ? TextAlign.right : TextAlign.left,
-          style: TextStyle(color: Color.fromRGBO(0, 0, 0, .5)),
+          style: captionTheme,
         ),
       ],
     );

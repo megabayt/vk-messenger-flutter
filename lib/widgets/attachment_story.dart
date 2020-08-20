@@ -27,11 +27,13 @@ class AttachmentStory extends StatelessWidget {
 
     final isExpired = attachment?.story?.isExpired ?? false;
 
+    final captionTheme = Theme.of(context).textTheme.caption;
+
     if (isExpired) {
       return Text(
         'История (недоступна)',
         textAlign: me ? TextAlign.right : TextAlign.left,
-        style: TextStyle(color: Color.fromRGBO(0, 0, 0, .5)),
+        style: captionTheme,
       );
     }
 

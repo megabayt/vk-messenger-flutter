@@ -26,6 +26,9 @@ class AttachmentVideo extends StatelessWidget {
     final attachment = Provider.of<Attachment>(context, listen: false);
 
     final images = attachment?.video?.image ?? [];
+
+    final captionTheme = Theme.of(context).textTheme.caption;
+
     if (images.length == 0) {
       return Container();
     }
@@ -61,7 +64,7 @@ class AttachmentVideo extends StatelessWidget {
           Text(
             attachment?.video?.title ?? '',
             textAlign: me ? TextAlign.right : TextAlign.left,
-            style: TextStyle(color: Color.fromRGBO(0, 0, 0, .5)),
+            style: captionTheme,
           ),
         ],
       ),

@@ -25,13 +25,15 @@ class AttachmentLink extends StatelessWidget {
 
     final attachment = Provider.of<Attachment>(context, listen: false);
 
+    final captionTheme = Theme.of(context).textTheme.caption;
+
     final text = getAttachmentReplacer(attachment);
     return GestureDetector(
       onTap: _tapHandler(context),
       child: Text(
         text,
         textAlign: me ? TextAlign.right : TextAlign.left,
-        style: TextStyle(color: Color.fromRGBO(0, 0, 0, .5)),
+        style: captionTheme,
       ),
     );
   }

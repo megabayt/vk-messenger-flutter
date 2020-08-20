@@ -27,6 +27,8 @@ class AttachmentDoc extends StatelessWidget {
 
     final sizes = attachment?.doc?.preview?.photo?.sizes ?? [];
 
+    final captionTheme = Theme.of(context).textTheme.caption;
+
     return GestureDetector(
       onTap: _tapHandler(context),
       child: Column(
@@ -41,7 +43,7 @@ class AttachmentDoc extends StatelessWidget {
           Text(
             attachment?.doc?.title ?? '',
             textAlign: me ? TextAlign.right : TextAlign.left,
-            style: TextStyle(color: Color.fromRGBO(0, 0, 0, .5)),
+            style: captionTheme,
           ),
         ],
       ),

@@ -27,6 +27,8 @@ class Message extends StatelessWidget {
 
     final textAlign = me ? TextAlign.right : TextAlign.left;
 
+    final captionTheme = Theme.of(context).textTheme.caption;
+
     if (text != '') {
       rows.add(Text(text, textAlign: textAlign));
     }
@@ -50,9 +52,11 @@ class Message extends StatelessWidget {
         fwdMessages.map(
           (message) => GestureDetector(
             onTap: () => _fwdMsgTapHandler(message),
-            child: Text('Пересланные сообщения',
-                textAlign: textAlign,
-                style: TextStyle(color: Color.fromRGBO(0, 0, 0, .5))),
+            child: Text(
+              'Пересланные сообщения',
+              textAlign: textAlign,
+              style: captionTheme,
+            ),
           ),
         ),
       );
