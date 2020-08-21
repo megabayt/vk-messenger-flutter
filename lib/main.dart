@@ -10,6 +10,7 @@ import 'package:vk_messenger_flutter/screens/initial_page.dart';
 import 'package:vk_messenger_flutter/store/auth_store.dart';
 import 'package:vk_messenger_flutter/store/chats_store.dart';
 import 'package:vk_messenger_flutter/store/chat_store.dart';
+import 'package:vk_messenger_flutter/store/send_store.dart';
 
 void main() {
   setupServiceLocator();
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthStore()),
         ChangeNotifierProvider(create: (_) => ChatsStore()),
         ChangeNotifierProvider(create: (_) => ChatStore()),
+        ChangeNotifierProvider(create: (_) => SendStore()),
       ],
       child: MaterialApp(
         title: 'Vk Chat App',

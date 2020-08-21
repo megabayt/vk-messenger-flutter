@@ -1,8 +1,23 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:vk_messenger_flutter/store/chat_store.dart';
+import 'package:vk_messenger_flutter/store/send_store.dart';
 
 class MessageInput extends StatelessWidget {
   final TextEditingController textEditingController = TextEditingController();
-  final FocusNode focusNode = FocusNode();
+
+  Function _sendHandler(context) => () async {
+        final peerId = Provider.of<ChatStore>(context, listen: false).peerId;
+        int int32max = 1 << 32;
+        await Provider.of<SendStore>(context, listen: false).sendMessage({
+          'peer_id': peerId.toString(),
+          'random_id': Random.secure().nextInt(int32max).toString(),
+          'message': textEditingController.text,
+        });
+        textEditingController.clear();
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +52,6 @@ class MessageInput extends StatelessWidget {
                 hintText: 'Сообщение',
                 hintStyle: TextStyle(color: hintColor),
               ),
-              focusNode: focusNode,
             ),
           ),
         ),
@@ -47,7 +61,7 @@ class MessageInput extends StatelessWidget {
           margin: EdgeInsets.symmetric(horizontal: 8.0),
           child: IconButton(
             icon: Icon(Icons.send),
-            onPressed: () {},
+            onPressed: _sendHandler(context),
             color: primaryColor,
           ),
         ),
