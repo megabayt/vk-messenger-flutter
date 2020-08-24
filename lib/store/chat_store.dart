@@ -26,6 +26,15 @@ class ChatStore with ChangeNotifier {
   VkConversationResponseBody get data {
     return _data[_peerId];
   }
+  bool _showEmojiKeyboard = false;
+  get showEmojiKeyboard {
+    return _showEmojiKeyboard;
+  }
+
+  void toggleEmojiKeyboard() {
+    _showEmojiKeyboard = !_showEmojiKeyboard;
+    notifyListeners();
+  }
 
   Future<VkConversationResponseBody> _getData(Map<String, String> params) async {
     _isFetching = true;

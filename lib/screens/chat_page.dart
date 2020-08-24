@@ -38,16 +38,22 @@ class _ChatPageState extends State<ChatPage> {
               return Center(child: CircularProgressIndicator());
             }
 
+            final showEmojiKeyboard = Provider.of<ChatStore>(context).showEmojiKeyboard;
+
             final statusBarHeight = MediaQuery.of(context).padding.top;
             final appBarHeight = AppBar().preferredSize.height;
             final screenHeight = MediaQuery.of(context).size.height;
             final bottomOffset = MediaQuery.of(context).viewInsets.bottom;
+            final emojiKeyboardHeight = showEmojiKeyboard ? 215.0 : 0.0;
+
+            final inputHeight = 50.0 + emojiKeyboardHeight;
 
             final messagesListHeight = screenHeight -
                 appBarHeight -
                 statusBarHeight -
                 bottomOffset -
-                50;
+                inputHeight;
+
 
             return Column(
               children: <Widget>[
@@ -57,7 +63,7 @@ class _ChatPageState extends State<ChatPage> {
                 ),
                 Container(
                   width: double.infinity,
-                  height: 50.0,
+                  height: inputHeight,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     boxShadow: [

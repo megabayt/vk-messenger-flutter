@@ -1,11 +1,15 @@
 PODS:
   - audioplayers (0.0.1):
     - Flutter
+  - emoji_picker (0.0.3):
+    - Flutter
   - Flutter (1.0.0)
   - flutter_login_vk (0.1.0):
     - Flutter
     - VK-ios-sdk (~> 1.5)
   - path_provider (0.0.1):
+    - Flutter
+  - shared_preferences (0.0.1):
     - Flutter
   - url_launcher (0.0.1):
     - Flutter
@@ -13,9 +17,11 @@ PODS:
 
 DEPENDENCIES:
   - audioplayers (from `.symlinks/plugins/audioplayers/ios`)
+  - emoji_picker (from `.symlinks/plugins/emoji_picker/ios`)
   - Flutter (from `Flutter`)
   - flutter_login_vk (from `.symlinks/plugins/flutter_login_vk/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
 
 SPEC REPOS:
@@ -25,20 +31,26 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   audioplayers:
     :path: ".symlinks/plugins/audioplayers/ios"
+  emoji_picker:
+    :path: ".symlinks/plugins/emoji_picker/ios"
   Flutter:
     :path: Flutter
   flutter_login_vk:
     :path: ".symlinks/plugins/flutter_login_vk/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
+  shared_preferences:
+    :path: ".symlinks/plugins/shared_preferences/ios"
   url_launcher:
     :path: ".symlinks/plugins/url_launcher/ios"
 
 SPEC CHECKSUMS:
   audioplayers: 84f968cea3f2deab00ec4f8ff53358b3c0b3992c
+  emoji_picker: 0e868059aa18f9473d234f3d0701fbd4d5fd310c
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_login_vk: d21edb4b6ace07e70f894f1ec6c3728b5ba82dcb
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
+  shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
   VK-ios-sdk: 62a10b6571fbcda0657f455fedce7fedf55b4cd0
 
