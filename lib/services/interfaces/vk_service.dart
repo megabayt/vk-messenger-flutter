@@ -9,4 +9,5 @@ abstract class VKService {
   Future<void> logout();
   Future<VkConversationsResponseBody> getConversations(Map<String, String> params);
   Future<VkConversationResponseBody> getHistory(Map<String, String> params);
+  Future<int> sendMessage(Map<String, String> params);
 }

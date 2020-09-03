@@ -100,4 +100,17 @@ class VkServiceImpl implements VKService {
 
     return conversation;
   }
+
+  Future<int> sendMessage(Map<String, String> params) async {
+    final sendMessageUrl =
+        '${api.BASE_URL}messages.send?access_token=$token&v=${api.VERSION}&extended=1'
+        +'${serialize(params)}';
+
+    final response = await http.get(sendMessageUrl);
+
+    Map<String, dynamic> responseBody =
+        response?.body != null ? json.decode(response?.body) : null;
+
+    return responseBody != null ? responseBody['response'] : null;
+  }
 }

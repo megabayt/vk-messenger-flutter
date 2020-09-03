@@ -53,7 +53,7 @@ class _MessagesListState extends State<MessagesList> {
             reverse: true,
             itemCount: items.length,
             itemBuilder: (BuildContext _, int index) {
-              final prevItem = index > 0 ? items[index - 1] : null;
+              final nextItem = index < items.length - 1 ? items[index + 1] : null;
 
               return CreationAwareListItem(
                 key: ValueKey(items[index]?.id),
@@ -62,8 +62,8 @@ class _MessagesListState extends State<MessagesList> {
                   value: items[index],
                   child: Column(
                     children: <Widget>[
+                      MessageDateDelimeter(nextItem),
                       Message(),
-                      MessageDateDelimeter(prevItem),
                     ],
                   ),
                 ),

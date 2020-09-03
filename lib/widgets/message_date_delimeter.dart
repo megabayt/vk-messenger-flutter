@@ -5,9 +5,9 @@ import 'package:provider/provider.dart';
 import 'package:vk_messenger_flutter/models/message.dart';
 
 class MessageDateDelimeter extends StatelessWidget {
-  final Message prevItem;
+  final Message nextItem;
 
-  MessageDateDelimeter(this.prevItem);
+  MessageDateDelimeter(this.nextItem);
 
   DateTime _getDateFromTimestamp(int timestamp) {
     if (timestamp == null) {
@@ -27,12 +27,12 @@ class MessageDateDelimeter extends StatelessWidget {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
-    final prevDate = _getDateFromTimestamp(prevItem?.date);
+    final nextDate = _getDateFromTimestamp(nextItem?.date);
     final date = _getDateFromTimestamp(item?.date);
 
-    if (prevDate == null ||
+    if (nextDate == null ||
         date == null ||
-        today.difference(prevDate).inDays == today.difference(date).inDays) {
+        date.difference(nextDate).inDays == 0) {
       return Container();
     }
 
@@ -40,9 +40,9 @@ class MessageDateDelimeter extends StatelessWidget {
 
     var text;
 
-    if (diff == 1) {
+    if (diff == 0) {
       text = 'Сегодня';
-    } else if (diff == 2) {
+    } else if (diff == 1) {
       text = 'Вчера';
     } else {
       text =

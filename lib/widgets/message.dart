@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
 import 'package:provider/provider.dart';
+import 'package:skeleton_text/skeleton_text.dart';
 
 import 'package:vk_messenger_flutter/models/message.dart' as MessageModel;
 import 'package:vk_messenger_flutter/widgets/attachment.dart';
@@ -66,20 +67,29 @@ class Message extends StatelessWidget {
       );
     }
 
+    final bubbleBody = Container(
+      constraints: BoxConstraints(
+        maxWidth: width,
+      ),
+      child: Column(
+        children: rows,
+        crossAxisAlignment: CrossAxisAlignment.end,
+      ),
+    );
+
     return Bubble(
       margin: BubbleEdges.symmetric(vertical: 7),
       alignment: me ? Alignment.topRight : Alignment.topLeft,
       nip: me ? BubbleNip.rightTop : BubbleNip.leftTop,
       color: me ? Color.fromRGBO(225, 255, 199, 1.0) : null,
-      child: Container(
-        constraints: BoxConstraints(
-          maxWidth: width,
-        ),
-        child: Column(
-          children: rows,
-          crossAxisAlignment: CrossAxisAlignment.end,
-        ),
-      ),
+      child: item?.isSent == true
+          ? bubbleBody
+          : SkeletonAnimation(
+              child: Opacity(
+                opacity: .3,
+                child: bubbleBody,
+              ),
+            ),
     );
   }
 }

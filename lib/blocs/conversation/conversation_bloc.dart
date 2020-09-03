@@ -36,6 +36,9 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     if (event is ConversationFetchMore) {
       yield* _mapConversationFetchMoreToState();
     }
+    if (event is ConversationAppendOrReplaceMessage) {
+      yield* _mapConversationAppendOrReplaceMessageToState(event);
+    }
     if (event is ConversationToggleEmojiKeyboard) {
       yield* _mapToggleEmojiKeyboardToState();
     }
@@ -116,6 +119,28 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       );
     } catch (e) {
       yield ConversationError(message: e.toString());
+    }
+  }
+
+  Stream<ConversationState> _mapConversationAppendOrReplaceMessageToState(
+      ConversationAppendOrReplaceMessage event) async* {
+    var newData = Map<int, VkConversationResponse>.from(
+        (state as ConversationData).data ?? Map<int, VkConversationResponse>());
+
+    final index = newData[event.message.peerId]
+        .items
+        .indexWhere((element) => element.id == event.randomId);
+
+    if (index != -1) {
+      newData[event.message.peerId].items.removeAt(index);
+    }
+
+    if (event.message != null) {
+      newData[event.message.peerId].items.insert(0, event.message);
+
+      yield (state as ConversationData).copyWith(
+        data: newData,
+      );
     }
   }
 

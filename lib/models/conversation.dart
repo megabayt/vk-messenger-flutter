@@ -23,6 +23,28 @@ class Conversation {
   final ChatSettings chatSettings;
   final int unreadCount;
 
+  Conversation copyWith({
+    Peer peer,
+    int lastMessageId,
+    int inRead,
+    int outRead,
+    bool isMarkedUnread,
+    bool important,
+    ChatSettings chatSettings,
+    int unreadCount,
+  }) {
+    return Conversation(
+      peer: peer ?? this.peer,
+      lastMessageId: lastMessageId ?? this.lastMessageId,
+      inRead: inRead ?? this.inRead,
+      outRead: outRead ?? this.outRead,
+      isMarkedUnread: isMarkedUnread ?? this.isMarkedUnread,
+      important: important ?? this.important,
+      chatSettings: chatSettings ?? this.chatSettings,
+      unreadCount: unreadCount ?? this.unreadCount,
+    );
+  }
+
   factory Conversation.fromRawJson(String str) =>
       Conversation.fromJson(json.decode(str));
 

@@ -14,3 +14,10 @@ class ConversationFetch extends ConversationEvent {}
 class ConversationFetchMore extends ConversationEvent {}
 
 class ConversationToggleEmojiKeyboard extends ConversationEvent {}
+
+class ConversationAppendOrReplaceMessage extends ConversationEvent {
+  final int randomId;
+  final Message message;
+
+  ConversationAppendOrReplaceMessage(this.randomId, this.message);
+}

@@ -1,7 +1,9 @@
 import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
+import 'package:vk_messenger_flutter/blocs/send/send_bloc.dart';
 
 class MessageInput extends StatefulWidget {
   @override
@@ -16,14 +18,16 @@ class _MessageInputState extends State<MessageInput> {
   }
 
   Function _sendHandler(context) => () async {
-        // final wrId = Provider.of<ChatStore>(context, listen: false).peerId;
-        // int int32max = 1 << 32;
-        // await Provider.of<SendStore>(context, listen: false).sendMessage({
-        //   'peer_id': peerId.toString(),
-        //   'random_id': Random.secure().nextInt(int32max).toString(),
-        //   'message': textEditingController.text,
-        // });
-        // textEditingController.clear();
+        final peerId = (BlocProvider.of<ConversationBloc>(context).state
+                as ConversationData)
+            .peerId;
+        BlocProvider.of<SendBloc>(context).add(
+          SendMessage(
+            peerId: peerId,
+            message: textEditingController.text,
+          ),
+        );
+        textEditingController.clear();
       };
 
   @override
@@ -33,7 +37,8 @@ class _MessageInputState extends State<MessageInput> {
 
     return BlocBuilder<ConversationBloc, ConversationState>(
       builder: (_, state) {
-        final showEmojiKeyboard = (state as ConversationData)?.showEmojiKeyboard;
+        final showEmojiKeyboard =
+            (state as ConversationData)?.showEmojiKeyboard;
 
         final primaryColor = Theme.of(context).primaryColor;
         final textColor = Theme.of(context).textTheme.bodyText1.color;
@@ -46,7 +51,8 @@ class _MessageInputState extends State<MessageInput> {
                 Container(
                   child: IconButton(
                     icon: Icon(Icons.insert_emoticon),
-                    onPressed: () => conversationBloc.add(ConversationToggleEmojiKeyboard()),
+                    onPressed: () =>
+                        conversationBloc.add(ConversationToggleEmojiKeyboard()),
                     color: showEmojiKeyboard
                         ? primaryColor
                         : primaryColor.withOpacity(.5),
