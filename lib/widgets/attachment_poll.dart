@@ -17,6 +17,7 @@ class AttachmentPoll extends StatelessWidget {
     final captionTheme = Theme.of(context).textTheme.caption;
 
     final text = getAttachmentReplacer(attachment);
+
     return Text(
       text,
       textAlign: me ? TextAlign.right : TextAlign.left,

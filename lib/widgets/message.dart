@@ -3,19 +3,23 @@ import 'package:bubble/bubble.dart';
 import 'package:provider/provider.dart';
 
 import 'package:vk_messenger_flutter/models/message.dart' as MessageModel;
-import 'package:vk_messenger_flutter/store/chat_store.dart';
 import 'package:vk_messenger_flutter/widgets/attachment.dart';
+import 'package:vk_messenger_flutter/widgets/message_skeleton.dart';
 
 class Message extends StatelessWidget {
   _fwdMsgTapHandler(MessageModel.Message fwdMessage) {}
 
   @override
   Widget build(BuildContext context) {
-    final chatStore = Provider.of<ChatStore>(context);
-    final item = Provider.of<MessageModel.Message>(context);
+    final item = Provider.of<MessageModel.Message>(context, listen: false);
+
+    if (item == null) {
+      return MessageSkeleton();
+    }
+
     double width = MediaQuery.of(context).size.width * 0.8; // 80% of screen
 
-    final me = item?.fromId == chatStore?.currentUserId;
+    final me = item?.out == 1;
 
     final text = item?.text ?? '';
 

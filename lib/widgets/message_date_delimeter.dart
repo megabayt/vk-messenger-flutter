@@ -22,7 +22,7 @@ class MessageDateDelimeter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final item = Provider.of<Message>(context);
+    final item = Provider.of<Message>(context, listen: false);
 
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);

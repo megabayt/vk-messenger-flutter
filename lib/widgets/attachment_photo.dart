@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 
 import 'package:vk_messenger_flutter/models/attachment.dart';
 import 'package:vk_messenger_flutter/models/message.dart';
-import 'package:vk_messenger_flutter/screens/photos_page.dart';
-import 'package:vk_messenger_flutter/store/chat_store.dart';
+import 'package:vk_messenger_flutter/screens/photos_screen.dart';
+import 'package:vk_messenger_flutter/screens/router.dart';
 
 class AttachmentPhoto extends StatelessWidget {
   Function _tapHandler(BuildContext context) => () async {
         final attachment = Provider.of<Attachment>(context, listen: false);
 
-        final messages = Provider.of<ChatStore>(context, listen: false)
-                ?.data
-                ?.response
-                ?.items ??
+        final messages = (BlocProvider.of<ConversationBloc>(context)?.state
+                    as ConversationData)
+                ?.currentItems ??
             [];
         final message = Provider.of<Message>(context, listen: false);
         final messageIndex =
@@ -23,7 +24,7 @@ class AttachmentPhoto extends StatelessWidget {
         final attachmentIndex =
             attachments.indexWhere((element) => element == attachment);
 
-        Navigator.of(context).pushNamed(PhotosPage.routeUrl, arguments: {
+        Router.sailor.navigate(PhotosScreen.routeUrl, params: {
           "messageIndex": messageIndex,
           "attachmentIndex": attachmentIndex,
         });

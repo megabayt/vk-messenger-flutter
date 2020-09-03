@@ -29,7 +29,7 @@ class ProfilesServiceImpl implements ProfilesService {
       );
     }
 
-    if (_cache.containsKey(peerId)) {
+    if (_cache != null && _cache.containsKey(peerId)) {
       return _cache[peerId];
     }
 

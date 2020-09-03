@@ -10,7 +10,7 @@ class ConversationAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final item = Provider.of<VkConversationItem>(context);
+    final item = Provider.of<VkConversationItem>(context, listen: false);
 
     final profile = _profilesService.getProfile(item?.conversation?.peer?.id);
 

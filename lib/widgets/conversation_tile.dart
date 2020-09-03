@@ -1,27 +1,31 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 
-import 'package:vk_messenger_flutter/models/vk_conversations.dart' show VkConversationItem;
-import 'package:vk_messenger_flutter/screens/chat_page.dart';
+import 'package:vk_messenger_flutter/models/vk_conversations.dart'
+    show VkConversationItem;
 import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/utils/helpers.dart';
 import 'package:vk_messenger_flutter/widgets/conversation_avatar.dart';
+import 'package:vk_messenger_flutter/widgets/conversation_tile_skeleton.dart';
 
 class ConversationTile extends StatelessWidget {
   final _profilesService = locator<ProfilesService>();
 
   void _chatTapHandler(BuildContext context) {
     final item = Provider.of<VkConversationItem>(context, listen: false);
-    Navigator.pushNamed(context, ChatPage.routeUrl, arguments: {
-      'peerId': item?.conversation?.peer?.id,
-    });
+    // ignore: close_sinks
+    final conversationBloc = BlocProvider.of<ConversationBloc>(context);
+
+    conversationBloc.add(ConversationSetPeerId(item?.conversation?.peer?.id));
   }
 
   @override
   Widget build(BuildContext context) {
-    final item = Provider.of<VkConversationItem>(context);
+    final item = Provider.of<VkConversationItem>(context, listen: false);
 
     final profile = _profilesService.getProfile(item?.conversation?.peer?.id);
 
@@ -44,12 +48,7 @@ class ConversationTile extends StatelessWidget {
     }
 
     if (item == null) {
-      return Padding(
-        padding: EdgeInsets.symmetric(vertical: 15.0),
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return ConversationTileSkeleton();
     }
 
     return Material(

@@ -1,12 +1,21 @@
+import 'dart:convert';
+
 import 'package:flutter_login_vk/flutter_login_vk.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:vk_messenger_flutter/constants/api.dart' as api;
+import 'package:vk_messenger_flutter/models/vk_conversation.dart';
+import 'package:vk_messenger_flutter/models/vk_conversations.dart';
+import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
+import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/utils/errors.dart';
+import 'package:vk_messenger_flutter/utils/helpers.dart';
 
 class VkServiceImpl implements VKService {
   final _instance = VKLogin(); // Your application ID
   VKAccessToken _tokenObject;
+  ProfilesService _profilesService = locator<ProfilesService>();
 
   get token {
     return _tokenObject?.token;
@@ -45,5 +54,50 @@ class VkServiceImpl implements VKService {
       // Словили исключение, пробуем снова
       throw VKServiceError(error);
     }
+  }
+
+  Future<void> logout() {
+    return _instance.logOut();
+  }
+
+  Future<VkConversationsResponseBody> getConversations(Map<String, String> params) async {
+    final getConversationsUrl =
+        '${api.BASE_URL}messages.getConversations?access_token=$token&v=${api.VERSION}&extended=1${serialize(params)}';
+
+    final response = await http.get(getConversationsUrl);
+
+    Map<String, dynamic> responseBody =
+        response?.body != null ? json.decode(response?.body) : null;
+
+    if (responseBody == null) {
+      return null;
+    }
+
+    final conversations = VkConversationsResponseBody.fromJson(responseBody);
+
+    _profilesService.appendProfiles(conversations?.response?.profiles);
+    _profilesService.appendGroups(conversations?.response?.groups);
+
+    return conversations;
+  }
+
+  Future<VkConversationResponseBody> getHistory(Map<String, String> params) async {
+    final getConversationUrl =
+        '${api.BASE_URL}messages.getHistory?access_token=$token&v=${api.VERSION}&extended=1${serialize(params)}';
+
+    final response = await http.get(getConversationUrl);
+
+    Map<String, dynamic> responseBody =
+        response?.body != null ? json.decode(response?.body) : null;
+
+    if (responseBody == null) {
+      return null;
+    }
+    final conversation = VkConversationResponseBody.fromJson(responseBody);
+
+    _profilesService.appendProfiles(conversation?.response?.profiles);
+    _profilesService.appendGroups(conversation?.response?.groups);
+
+    return conversation;
   }
 }
