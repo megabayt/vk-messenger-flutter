@@ -4,11 +4,17 @@ import 'package:provider/provider.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 
 import 'package:vk_messenger_flutter/models/message.dart' as MessageModel;
+import 'package:vk_messenger_flutter/screens/forwarded_messages_screen.dart';
+import 'package:vk_messenger_flutter/screens/router.dart';
 import 'package:vk_messenger_flutter/widgets/attachment.dart';
 import 'package:vk_messenger_flutter/widgets/message_skeleton.dart';
 
 class Message extends StatelessWidget {
-  _fwdMsgTapHandler(MessageModel.Message fwdMessage) {}
+  void _fwdMsgTapHandler(List<MessageModel.Message> fwdMessages) {
+    Router.sailor.navigate(ForwardedMessagesScreen.routeUrl, params: {
+      "fwdMessages": fwdMessages,
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,15 +59,13 @@ class Message extends StatelessWidget {
     }
 
     if (fwdMessages.length != 0) {
-      rows.addAll(
-        fwdMessages.map(
-          (message) => GestureDetector(
-            onTap: () => _fwdMsgTapHandler(message),
-            child: Text(
-              'Пересланные сообщения',
-              textAlign: textAlign,
-              style: captionTheme,
-            ),
+      rows.add(
+        GestureDetector(
+          onTap: () => _fwdMsgTapHandler(fwdMessages),
+          child: Text(
+            'Пересланные сообщения',
+            textAlign: textAlign,
+            style: captionTheme,
           ),
         ),
       );

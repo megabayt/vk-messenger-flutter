@@ -1,7 +1,10 @@
 import 'package:sailor/sailor.dart';
-import 'package:vk_messenger_flutter/screens/conversation_screen.dart';
 
+import 'package:vk_messenger_flutter/models/attachment.dart';
+import 'package:vk_messenger_flutter/models/message.dart';
+import 'package:vk_messenger_flutter/screens/conversation_screen.dart';
 import 'package:vk_messenger_flutter/screens/conversations_screen.dart';
+import 'package:vk_messenger_flutter/screens/forwarded_messages_screen.dart';
 import 'package:vk_messenger_flutter/screens/photos_screen.dart';
 import 'package:vk_messenger_flutter/screens/splash_screen.dart';
 
@@ -26,12 +29,25 @@ class Router {
         SailorRoute(
           name: PhotosScreen.routeUrl,
           builder: (context, args, params) => PhotosScreen(
-              params.param('messageIndex'), params.param('attachmentIndex')),
+            params.param('fromId'),
+            params.param('attachmentIndex'),
+            params.param('attachments'),
+          ),
           params: [
-            SailorParam<int>(name: 'messageIndex'),
+            SailorParam<int>(name: 'fromId'),
             SailorParam<int>(name: 'attachmentIndex'),
+            SailorParam<List<Attachment>>(name: 'attachments'),
           ],
-        )
+        ),
+        SailorRoute(
+          name: ForwardedMessagesScreen.routeUrl,
+          builder: (context, args, params) => ForwardedMessagesScreen(
+            params.param('fwdMessages'),
+          ),
+          params: [
+            SailorParam<List<Message>>(name: 'fwdMessages'),
+          ],
+        ),
       ],
     );
   }
