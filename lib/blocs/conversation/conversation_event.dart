@@ -37,8 +37,6 @@ class ConversationUnSelectMessage extends ConversationEvent {
   ConversationUnSelectMessage(this.messageId);
 }
 
-class ConversationResetSelectedMessages extends ConversationEvent {}
-
 class ConversationForwardMessage extends ConversationEvent {}
 
 class ConversationRemoveMessage extends ConversationEvent {

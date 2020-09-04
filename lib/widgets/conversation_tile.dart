@@ -1,8 +1,6 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 
 import 'package:vk_messenger_flutter/models/vk_conversations.dart'
     show VkConversationItem;
@@ -14,14 +12,6 @@ import 'package:vk_messenger_flutter/widgets/conversation_tile_skeleton.dart';
 
 class ConversationTile extends StatelessWidget {
   final _profilesService = locator<ProfilesService>();
-
-  void _chatTapHandler(BuildContext context) {
-    final item = Provider.of<VkConversationItem>(context, listen: false);
-    // ignore: close_sinks
-    final conversationBloc = BlocProvider.of<ConversationBloc>(context);
-
-    conversationBloc.add(ConversationSetPeerId(item?.conversation?.peer?.id));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,31 +41,26 @@ class ConversationTile extends StatelessWidget {
       return ConversationTileSkeleton();
     }
 
-    return Material(
-      child: InkWell(
-        onTap: () => _chatTapHandler(context),
-        child: ListTile(
-          leading: ConversationAvatar(),
-          title: Text(name),
-          subtitle: Text(
-            text,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          trailing: unreadCount != null
-              ? Badge(
-                  padding: EdgeInsets.all(7),
-                  badgeContent: Text(
-                    unreadCount.toString(),
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                  child: null,
-                )
-              : null,
-        ),
+    return ListTile(
+      leading: ConversationAvatar(),
+      title: Text(name),
+      subtitle: Text(
+        text,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
       ),
+      trailing: unreadCount != null
+          ? Badge(
+              padding: EdgeInsets.all(7),
+              badgeContent: Text(
+                unreadCount.toString(),
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              child: null,
+            )
+          : null,
     );
   }
 }

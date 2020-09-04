@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
+import 'package:vk_messenger_flutter/blocs/friends/friends_bloc.dart';
 import 'package:vk_messenger_flutter/screens/router.dart';
 
 import 'package:vk_messenger_flutter/services/service_locator.dart';
@@ -21,6 +22,9 @@ void main() {
           create: (context) => ConversationBloc(
             BlocProvider.of<ConversationsBloc>(context),
           ),
+        ),
+        BlocProvider(
+          create: (_) => FriendsBloc()..add(FriendsFetch()),
         ),
         BlocProvider(
           create: (context) => AuthBloc(

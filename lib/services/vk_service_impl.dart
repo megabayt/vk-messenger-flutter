@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:vk_messenger_flutter/constants/api.dart' as api;
 import 'package:vk_messenger_flutter/models/vk_conversation.dart';
 import 'package:vk_messenger_flutter/models/vk_conversations.dart';
+import 'package:vk_messenger_flutter/models/vk_friends.dart';
+import 'package:vk_messenger_flutter/models/vk_messages.dart';
 import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
@@ -99,6 +101,40 @@ class VkServiceImpl implements VKService {
     _profilesService.appendGroups(conversation?.response?.groups);
 
     return conversation;
+  }
+
+  Future<VkMessagesResponseBody> getMessages(Map<String, String> params) async {
+    final getMessagesUrl =
+        '${api.BASE_URL}messages.getById?access_token=$token&v=${api.VERSION}&extended=1${serialize(params)}';
+
+    final response = await http.get(getMessagesUrl);
+
+    Map<String, dynamic> responseBody =
+        response?.body != null ? json.decode(response?.body) : null;
+
+    if (responseBody == null) {
+      return null;
+    }
+    final messages = VkMessagesResponseBody.fromJson(responseBody);
+
+    return messages;
+  }
+
+  Future<VkFriendsResponseBody> getFriends(Map<String, String> params) async {
+    final getFriendsUrl =
+        '${api.BASE_URL}friends.get?access_token=$token&v=${api.VERSION}&extended=1${serialize(params)}';
+
+    final response = await http.get(getFriendsUrl);
+
+    Map<String, dynamic> responseBody =
+        response?.body != null ? json.decode(response?.body) : null;
+
+    if (responseBody == null) {
+      return null;
+    }
+    final friends = VkFriendsResponseBody.fromJson(responseBody);
+
+    return friends;
   }
 
   Future<int> sendMessage(Map<String, String> params) async {

@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,27 +44,40 @@ class _MessageInputState extends State<MessageInput> {
         final textColor = Theme.of(context).textTheme.bodyText1.color;
         final hintColor = Theme.of(context).textTheme.caption.color;
 
+        var attachCount = 0;
+        if ((state as ConversationData).fwdMessages.length != 0) {
+          attachCount += 1;
+        }
+
+        final attachBtn = IconButton(
+          icon: Icon(Icons.attach_file),
+          onPressed: () {},
+          color: primaryColor.withOpacity(.5),
+        );
+
         return Column(
           children: <Widget>[
             Row(
               children: <Widget>[
-                Container(
-                  child: IconButton(
-                    icon: Icon(Icons.insert_emoticon),
-                    onPressed: () =>
-                        conversationBloc.add(ConversationToggleEmojiKeyboard()),
-                    color: showEmojiKeyboard
-                        ? primaryColor
-                        : primaryColor.withOpacity(.5),
-                  ),
+                IconButton(
+                  icon: Icon(Icons.insert_emoticon),
+                  onPressed: () =>
+                      conversationBloc.add(ConversationToggleEmojiKeyboard()),
+                  color: showEmojiKeyboard
+                      ? primaryColor
+                      : primaryColor.withOpacity(.5),
                 ),
-                Container(
-                  child: IconButton(
-                    icon: Icon(Icons.attach_file),
-                    onPressed: () {},
-                    color: primaryColor.withOpacity(.5),
-                  ),
-                ),
+                attachCount != 0
+                    ? Badge(
+                        badgeContent: Text(
+                          attachCount.toString(),
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        child: attachBtn,
+                      )
+                    : attachBtn,
                 // Edit text
                 Flexible(
                   child: Container(

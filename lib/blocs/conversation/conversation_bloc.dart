@@ -50,9 +50,6 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     if (event is ConversationSelectMessage) {
       yield* _mapConversationSelectMessageToState(event);
     }
-    if (event is ConversationResetSelectedMessages) {
-      yield* _mapConversationResetSelectedMessagesToState();
-    }
     if (event is ConversationForwardMessage) {
       yield* _mapConversationForwardMessageToState();
     }
@@ -72,8 +69,10 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
   Stream<ConversationState> _mapConversationSetPeerId(
       ConversationSetPeerId event) async* {
-    yield (state as ConversationData).copyWith(peerId: event.peerId);
-    this.add(ConversationResetSelectedMessages());
+    yield (state as ConversationData).copyWith(
+      peerId: event.peerId,
+      selectedMessages: [],
+    );
     Router.sailor.navigate(ConversationScreen.routeUrl);
     this.add(ConversationFetch());
   }
@@ -151,7 +150,9 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
   Stream<ConversationState> _mapConversationSendMessageToState(
       ConversationSendMessage event) async* {
-    if (event.message == '') {
+    final fwdMessages =
+        ((state as ConversationData).fwdMessages ?? []).join(',');
+    if (event.message == '' && fwdMessages == '') {
       return;
     }
     final int32max = 1 << 32;
@@ -173,23 +174,42 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       ),
     );
 
+    int messageId;
+
     try {
-      final id = await _vkService.sendMessage({
+      messageId = await _vkService.sendMessage({
         'peer_id': event.peerId.toString(),
         'random_id': Random.secure().nextInt(int32max).toString(),
         'message': event.message,
+        'forward_messages': fwdMessages,
       });
-
-      message = message.copyWith(
-        id: id,
-        isSent: true,
-      );
     } catch (e) {
       message = message.copyWith(
         isError: true,
       );
     }
+
+    try {
+      final messageQuery = await _vkService.getMessages({
+        'message_ids': messageId.toString(),
+      });
+
+      final messages = messageQuery?.response?.items ?? [];
+
+      if (messages?.length != 0) {
+        message = messageQuery?.response?.items[0];
+      } else {
+        throw Exception('no messages!');
+      }
+    } catch (_) {
+      message = message.copyWith(id: messageId);
+    }
+
     yield* _appendOrRemoveMessage(randomId, message);
+    yield (state as ConversationData).copyWith(
+      fwdMessages: [],
+      selectedMessages: [],
+    );
     _conversationsBloc.add(
       ConversationsChangeLastMessage(
         message,
@@ -213,9 +233,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     if (message != null) {
       newData[message.peerId].items.insert(0, message);
 
-      yield (state as ConversationData).copyWith(
-        data: newData,
-      );
+      yield (state as ConversationData).copyWith(data: newData);
     }
   }
 
@@ -245,30 +263,20 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     }
   }
 
-  Stream<ConversationState>
-      _mapConversationResetSelectedMessagesToState() async* {
+  Stream<ConversationState> _mapConversationForwardMessageToState() async* {
     yield (state as ConversationData).copyWith(
       selectedMessages: [],
+      fwdMessages: (state as ConversationData).selectedMessages,
     );
   }
 
-  Stream<ConversationState> _mapConversationForwardMessageToState() async* {
+  Stream<ConversationState> _mapConversationRemoveMessageToState(
+      ConversationRemoveMessage event) async* {}
 
-  }
+  Stream<ConversationState> _mapConversationReplyMessageToState() async* {}
 
-  Stream<ConversationState> _mapConversationRemoveMessageToState(ConversationRemoveMessage event) async* {
+  Stream<ConversationState>
+      _mapConversationMarkImportantMessageToState() async* {}
 
-  }
-
-  Stream<ConversationState> _mapConversationReplyMessageToState() async* {
-
-  }
-
-  Stream<ConversationState> _mapConversationMarkImportantMessageToState() async* {
-
-  }
-
-  Stream<ConversationState> _mapConversationEditMessageToState() async* {
-
-  }
+  Stream<ConversationState> _mapConversationEditMessageToState() async* {}
 }

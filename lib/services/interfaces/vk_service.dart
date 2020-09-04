@@ -1,5 +1,7 @@
 import 'package:vk_messenger_flutter/models/vk_conversations.dart';
 import 'package:vk_messenger_flutter/models/vk_conversation.dart';
+import 'package:vk_messenger_flutter/models/vk_friends.dart';
+import 'package:vk_messenger_flutter/models/vk_messages.dart';
 
 abstract class VKService {
   String get token;
@@ -9,5 +11,7 @@ abstract class VKService {
   Future<void> logout();
   Future<VkConversationsResponseBody> getConversations(Map<String, String> params);
   Future<VkConversationResponseBody> getHistory(Map<String, String> params);
+  Future<VkMessagesResponseBody> getMessages(Map<String, String> params);
+  Future<VkFriendsResponseBody> getFriends(Map<String, String> params);
   Future<int> sendMessage(Map<String, String> params);
 }
