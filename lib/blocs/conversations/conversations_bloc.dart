@@ -106,7 +106,7 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
 
       yield (state as ConversationsData).copyWith(
         items: newItems,
-        count: count + 1,
+        count: count,
       );
     }
   }
