@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
-import 'package:vk_messenger_flutter/blocs/send/send_bloc.dart';
 
 class MessageInput extends StatefulWidget {
   @override
@@ -21,8 +20,8 @@ class _MessageInputState extends State<MessageInput> {
         final peerId = (BlocProvider.of<ConversationBloc>(context).state
                 as ConversationData)
             .peerId;
-        BlocProvider.of<SendBloc>(context).add(
-          SendMessage(
+        BlocProvider.of<ConversationBloc>(context).add(
+          ConversationSendMessage(
             peerId: peerId,
             message: textEditingController.text,
           ),

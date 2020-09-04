@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
-import 'package:vk_messenger_flutter/blocs/send/send_bloc.dart';
 import 'package:vk_messenger_flutter/screens/router.dart';
 
 import 'package:vk_messenger_flutter/services/service_locator.dart';
@@ -15,30 +14,18 @@ void main() {
     MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => ConversationBloc(),
-        ),
-        BlocProvider(
           create: (_) => ConversationsBloc(),
           lazy: false,
         ),
         BlocProvider(
-          create: (context) {
-            return SendBloc(
-              BlocProvider.of<ConversationsBloc>(context),
-              BlocProvider.of<ConversationBloc>(context),
-            );
-          },
+          create: (context) => ConversationBloc(
+            BlocProvider.of<ConversationsBloc>(context),
+          ),
         ),
         BlocProvider(
-          create: (context) {
-            final authBloc = AuthBloc(
-              BlocProvider.of<ConversationsBloc>(context),
-            );
-
-            authBloc.add(UserLogIn());
-
-            return authBloc;
-          },
+          create: (context) => AuthBloc(
+            BlocProvider.of<ConversationsBloc>(context),
+          )..add(UserLogIn()),
           lazy: false,
         ),
       ],

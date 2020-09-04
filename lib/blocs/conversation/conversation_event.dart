@@ -15,9 +15,12 @@ class ConversationFetchMore extends ConversationEvent {}
 
 class ConversationToggleEmojiKeyboard extends ConversationEvent {}
 
-class ConversationAppendOrReplaceMessage extends ConversationEvent {
-  final int randomId;
-  final Message message;
+class ConversationSendMessage extends ConversationEvent {
+  final int peerId;
+  final String message;
 
-  ConversationAppendOrReplaceMessage(this.randomId, this.message);
+  ConversationSendMessage({
+    @required this.peerId,
+    @required this.message,
+  });
 }
