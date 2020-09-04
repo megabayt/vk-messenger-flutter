@@ -47,11 +47,33 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     if (event is ConversationToggleEmojiKeyboard) {
       yield* _mapToggleEmojiKeyboardToState();
     }
+    if (event is ConversationSelectMessage) {
+      yield* _mapConversationSelectMessageToState(event);
+    }
+    if (event is ConversationResetSelectedMessages) {
+      yield* _mapConversationResetSelectedMessagesToState();
+    }
+    if (event is ConversationForwardMessage) {
+      yield* _mapConversationForwardMessageToState();
+    }
+    if (event is ConversationRemoveMessage) {
+      yield* _mapConversationRemoveMessageToState(event);
+    }
+    if (event is ConversationReplyMessage) {
+      yield* _mapConversationReplyMessageToState();
+    }
+    if (event is ConversationMarkImportantMessage) {
+      yield* _mapConversationMarkImportantMessageToState();
+    }
+    if (event is ConversationEditMessage) {
+      yield* _mapConversationEditMessageToState();
+    }
   }
 
   Stream<ConversationState> _mapConversationSetPeerId(
       ConversationSetPeerId event) async* {
     yield (state as ConversationData).copyWith(peerId: event.peerId);
+    this.add(ConversationResetSelectedMessages());
     Router.sailor.navigate(ConversationScreen.routeUrl);
     this.add(ConversationFetch());
   }
@@ -201,5 +223,52 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     yield (state as ConversationData).copyWith(
       showEmojiKeyboard: !(state as ConversationData).showEmojiKeyboard,
     );
+  }
+
+  Stream<ConversationState> _mapConversationSelectMessageToState(
+      ConversationSelectMessage event) async* {
+    final selectedMessages =
+        List<int>.from((state as ConversationData).selectedMessages ?? []);
+
+    final index =
+        selectedMessages.indexWhere((element) => element == event.messageId);
+
+    if (index == -1) {
+      yield (state as ConversationData).copyWith(
+        selectedMessages: selectedMessages + [event.messageId],
+      );
+    } else {
+      selectedMessages.removeAt(index);
+      yield (state as ConversationData).copyWith(
+        selectedMessages: selectedMessages,
+      );
+    }
+  }
+
+  Stream<ConversationState>
+      _mapConversationResetSelectedMessagesToState() async* {
+    yield (state as ConversationData).copyWith(
+      selectedMessages: [],
+    );
+  }
+
+  Stream<ConversationState> _mapConversationForwardMessageToState() async* {
+
+  }
+
+  Stream<ConversationState> _mapConversationRemoveMessageToState(ConversationRemoveMessage event) async* {
+
+  }
+
+  Stream<ConversationState> _mapConversationReplyMessageToState() async* {
+
+  }
+
+  Stream<ConversationState> _mapConversationMarkImportantMessageToState() async* {
+
+  }
+
+  Stream<ConversationState> _mapConversationEditMessageToState() async* {
+
   }
 }

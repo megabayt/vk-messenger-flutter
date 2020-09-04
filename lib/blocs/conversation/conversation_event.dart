@@ -24,3 +24,31 @@ class ConversationSendMessage extends ConversationEvent {
     @required this.message,
   });
 }
+
+class ConversationSelectMessage extends ConversationEvent {
+  final int messageId;
+
+  ConversationSelectMessage(this.messageId);
+}
+
+class ConversationUnSelectMessage extends ConversationEvent {
+  final int messageId;
+
+  ConversationUnSelectMessage(this.messageId);
+}
+
+class ConversationResetSelectedMessages extends ConversationEvent {}
+
+class ConversationForwardMessage extends ConversationEvent {}
+
+class ConversationRemoveMessage extends ConversationEvent {
+  final bool removeForEveryone;
+
+  ConversationRemoveMessage([this.removeForEveryone = false]);
+}
+
+class ConversationReplyMessage extends ConversationEvent {}
+
+class ConversationMarkImportantMessage extends ConversationEvent {}
+
+class ConversationEditMessage extends ConversationEvent {}

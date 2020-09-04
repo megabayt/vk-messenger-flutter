@@ -40,3 +40,5 @@ String getAttachmentReplacer(Attachment attachment) {
       return 'Вложение';
   }
 }
+
+void noop () {}

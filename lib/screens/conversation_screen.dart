@@ -21,6 +21,32 @@ class ConversationScreen extends StatelessWidget {
         conversationBloc.add(ConversationFetch());
       };
 
+  Function _popupMenuHandler(BuildContext context) => (PopupMenuAction action) {
+        // ignore: close_sinks
+        final conversationBloc = BlocProvider.of<ConversationBloc>(context);
+
+        switch (action) {
+          case PopupMenuAction.FORWARD:
+            conversationBloc.add(ConversationForwardMessage());
+            break;
+          case PopupMenuAction.REMOVE:
+            conversationBloc.add(ConversationRemoveMessage());
+            break;
+          case PopupMenuAction.REMOVE_FOR_EVERYONE:
+            conversationBloc.add(ConversationRemoveMessage(true));
+            break;
+          case PopupMenuAction.REPLY:
+            conversationBloc.add(ConversationReplyMessage());
+            break;
+          case PopupMenuAction.MARK_IMPORTANT:
+            conversationBloc.add(ConversationMarkImportantMessage());
+            break;
+          case PopupMenuAction.EDIT:
+            conversationBloc.add(ConversationEditMessage());
+            break;
+        }
+      };
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ConversationBloc, ConversationState>(
@@ -54,11 +80,56 @@ class ConversationScreen extends StatelessWidget {
             bottomOffset -
             inputHeight;
 
+        final selectedMessages =
+            (state as ConversationData)?.selectedMessages ?? [];
+
         return Scaffold(
           appBar: AppBar(
             title: Text(_profilesService
                 .getProfile((state as ConversationData).peerId)
                 .name),
+            actions: [
+              if (selectedMessages.length > 0)
+                PopupMenuButton<PopupMenuAction>(
+                  icon: Icon(Icons.more_vert),
+                  onSelected: _popupMenuHandler(context),
+                  itemBuilder: (BuildContext context) {
+                    var singleMessageRows = [];
+                    if (selectedMessages.length == 1) {
+                      singleMessageRows.addAll([
+                        PopupMenuItem(
+                          child: Text('Ответить'),
+                          value: PopupMenuAction.REPLY,
+                        ),
+                        PopupMenuItem(
+                          child: Text('Пометить как важное'),
+                          value: PopupMenuAction.MARK_IMPORTANT,
+                        ),
+                        PopupMenuItem(
+                          child: Text('Редактировать'),
+                          value: PopupMenuAction.EDIT,
+                        ),
+                      ]);
+                    }
+
+                    return [
+                      PopupMenuItem(
+                        child: Text('Переслать'),
+                        value: PopupMenuAction.FORWARD,
+                      ),
+                      PopupMenuItem(
+                        child: Text('Удалить (у меня)'),
+                        value: PopupMenuAction.REMOVE,
+                      ),
+                      PopupMenuItem(
+                        child: Text('Удалить (у всех)'),
+                        value: PopupMenuAction.REMOVE_FOR_EVERYONE,
+                      ),
+                      ...singleMessageRows,
+                    ];
+                  },
+                ),
+            ],
           ),
           body: Column(
             children: <Widget>[
@@ -88,4 +159,13 @@ class ConversationScreen extends StatelessWidget {
       },
     );
   }
+}
+
+enum PopupMenuAction {
+  FORWARD,
+  REMOVE,
+  REMOVE_FOR_EVERYONE,
+  REPLY,
+  MARK_IMPORTANT,
+  EDIT,
 }

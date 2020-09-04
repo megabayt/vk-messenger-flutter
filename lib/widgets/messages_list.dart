@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 
+import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 import 'package:vk_messenger_flutter/widgets/creation_aware_list_item.dart';
 import 'package:vk_messenger_flutter/widgets/message.dart';
 import 'package:vk_messenger_flutter/widgets/message_date_delimeter.dart';
@@ -53,7 +53,8 @@ class _MessagesListState extends State<MessagesList> {
             reverse: true,
             itemCount: items.length,
             itemBuilder: (BuildContext _, int index) {
-              final nextItem = index < items.length - 1 ? items[index + 1] : null;
+              final nextItem =
+                  index < items.length - 1 ? items[index + 1] : null;
 
               return CreationAwareListItem(
                 key: ValueKey(items[index]?.id),
