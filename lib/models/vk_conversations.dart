@@ -4,13 +4,16 @@ import 'package:vk_messenger_flutter/models/conversation.dart';
 import 'package:vk_messenger_flutter/models/group.dart';
 import 'package:vk_messenger_flutter/models/profile.dart';
 import 'package:vk_messenger_flutter/models/message.dart';
+import 'package:vk_messenger_flutter/models/vk_error.dart';
 
 class VkConversationsResponseBody {
   VkConversationsResponseBody({
     this.response,
+    this.error,
   });
 
   final VkConversationsResponse response;
+  final VkError error;
 
   factory VkConversationsResponseBody.fromRawJson(String str) =>
       VkConversationsResponseBody.fromJson(json.decode(str));
@@ -22,10 +25,12 @@ class VkConversationsResponseBody {
         response: json["response"] == null
             ? null
             : VkConversationsResponse.fromJson(json["response"]),
+        error: json["error"] == null ? null : VkError.fromJson(json["error"]),
       );
 
   Map<String, dynamic> toJson() => {
         "response": response == null ? null : response.toJson(),
+        "error": error == null ? null : error.toJson(),
       };
 }
 
