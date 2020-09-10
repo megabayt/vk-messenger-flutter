@@ -8,7 +8,7 @@ class ConversationData extends ConversationState {
   final Map<int, VkConversationResponse> data;
   final bool isFetching;
   final bool showEmojiKeyboard;
-  final List<int> selectedMessages;
+  final List<int> selectedMessagesIds;
   final List<int> fwdMessages;
 
   int get currentCount {
@@ -17,10 +17,19 @@ class ConversationData extends ConversationState {
         : null;
   }
 
-  List<Message> get currentItems {
+  List<Message> get currentMessages {
     return data != null && data.containsKey(peerId)
         ? data[peerId]?.items
         : null;
+  }
+
+  List<Message> get selectedMessages {
+    return currentMessages
+        .where((message) =>
+            selectedMessagesIds.indexWhere(
+                (selectedMessage) => selectedMessage == message?.id) !=
+            -1)
+        .toList();
   }
 
   ConversationData({
@@ -28,7 +37,7 @@ class ConversationData extends ConversationState {
     this.data,
     this.isFetching = false,
     this.showEmojiKeyboard = false,
-    this.selectedMessages = const [],
+    this.selectedMessagesIds = const [],
     this.fwdMessages = const [],
   });
 
@@ -37,7 +46,7 @@ class ConversationData extends ConversationState {
     Map<int, VkConversationResponse> data,
     bool isFetching,
     bool showEmojiKeyboard,
-    List<int> selectedMessages,
+    List<int> selectedMessagesIds,
     List<int> fwdMessages,
   }) =>
       ConversationData(
@@ -45,7 +54,7 @@ class ConversationData extends ConversationState {
         data: data ?? this.data,
         isFetching: isFetching ?? this.isFetching,
         showEmojiKeyboard: showEmojiKeyboard ?? this.showEmojiKeyboard,
-        selectedMessages: selectedMessages ?? this.selectedMessages,
+        selectedMessagesIds: selectedMessagesIds ?? this.selectedMessagesIds,
         fwdMessages: fwdMessages ?? this.fwdMessages,
       );
 }

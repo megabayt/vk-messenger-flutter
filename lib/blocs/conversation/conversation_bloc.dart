@@ -71,7 +71,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       ConversationSetPeerId event) async* {
     yield (state as ConversationData).copyWith(
       peerId: event.peerId,
-      selectedMessages: [],
+      selectedMessagesIds: [],
     );
     Router.sailor.navigate(ConversationScreen.routeUrl);
     this.add(ConversationFetch());
@@ -112,7 +112,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     }
     final currentState = state as ConversationData;
 
-    final itemsCount = currentState?.currentItems?.length ?? 0;
+    final itemsCount = currentState?.currentMessages?.length ?? 0;
     final totalCount = currentState?.currentCount ?? 0;
 
     if (currentState.isFetching || itemsCount >= totalCount) {
@@ -208,7 +208,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     yield* _appendOrRemoveMessage(randomId, message);
     yield (state as ConversationData).copyWith(
       fwdMessages: [],
-      selectedMessages: [],
+      selectedMessagesIds: [],
     );
     _conversationsBloc.add(
       ConversationsChangeLastMessage(
@@ -245,33 +245,51 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
   Stream<ConversationState> _mapConversationSelectMessageToState(
       ConversationSelectMessage event) async* {
-    final selectedMessages =
-        List<int>.from((state as ConversationData).selectedMessages ?? []);
+    final selectedMessagesIds =
+        List<int>.from((state as ConversationData).selectedMessagesIds ?? []);
 
     final index =
-        selectedMessages.indexWhere((element) => element == event.messageId);
+        selectedMessagesIds.indexWhere((element) => element == event.messageId);
 
     if (index == -1) {
       yield (state as ConversationData).copyWith(
-        selectedMessages: selectedMessages + [event.messageId],
+        selectedMessagesIds: selectedMessagesIds + [event.messageId],
       );
     } else {
-      selectedMessages.removeAt(index);
+      selectedMessagesIds.removeAt(index);
       yield (state as ConversationData).copyWith(
-        selectedMessages: selectedMessages,
+        selectedMessagesIds: selectedMessagesIds,
       );
     }
   }
 
   Stream<ConversationState> _mapConversationForwardMessageToState() async* {
     yield (state as ConversationData).copyWith(
-      selectedMessages: [],
-      fwdMessages: (state as ConversationData).selectedMessages,
+      selectedMessagesIds: [],
+      fwdMessages: (state as ConversationData).selectedMessagesIds,
     );
   }
 
   Stream<ConversationState> _mapConversationRemoveMessageToState(
-      ConversationRemoveMessage event) async* {}
+      ConversationRemoveMessage event) async* {
+    final deleteForAll = event.removeForEveryone;
+    final selectedMessagesIds =
+        List<int>.from((state as ConversationData).selectedMessagesIds ?? []);
+    final newData = Map<int, VkConversationResponse>.from(
+        (state as ConversationData).data ?? Map<int, VkConversationResponse>());
+    await _vkService.deleteMessages({
+      'message_ids': selectedMessagesIds.join(','),
+      'delete_for_all': deleteForAll ? '1' : '0',
+    });
+    newData[_peerId].items.removeWhere((message) =>
+        selectedMessagesIds
+            .indexWhere((selectedMessage) => selectedMessage == message?.id) !=
+        -1);
+    yield (state as ConversationData).copyWith(
+      selectedMessagesIds: [],
+      data: newData,
+    );
+  }
 
   Stream<ConversationState> _mapConversationReplyMessageToState() async* {}
 

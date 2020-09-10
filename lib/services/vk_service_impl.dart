@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:vk_messenger_flutter/constants/api.dart' as api;
 import 'package:vk_messenger_flutter/models/vk_conversation.dart';
 import 'package:vk_messenger_flutter/models/vk_conversations.dart';
+import 'package:vk_messenger_flutter/models/vk_delete_messages.dart';
 import 'package:vk_messenger_flutter/models/vk_friends.dart';
 import 'package:vk_messenger_flutter/models/vk_messages.dart';
 import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
@@ -62,7 +63,8 @@ class VkServiceImpl implements VKService {
     return _instance.logOut();
   }
 
-  Future<VkConversationsResponseBody> getConversations(Map<String, String> params) async {
+  Future<VkConversationsResponseBody> getConversations(
+      Map<String, String> params) async {
     final getConversationsUrl =
         '${api.BASE_URL}messages.getConversations?access_token=$token&v=${api.VERSION}&extended=1${serialize(params)}';
 
@@ -83,7 +85,8 @@ class VkServiceImpl implements VKService {
     return conversations;
   }
 
-  Future<VkConversationResponseBody> getHistory(Map<String, String> params) async {
+  Future<VkConversationResponseBody> getHistory(
+      Map<String, String> params) async {
     final getConversationUrl =
         '${api.BASE_URL}messages.getHistory?access_token=$token&v=${api.VERSION}&extended=1${serialize(params)}';
 
@@ -139,8 +142,8 @@ class VkServiceImpl implements VKService {
 
   Future<int> sendMessage(Map<String, String> params) async {
     final sendMessageUrl =
-        '${api.BASE_URL}messages.send?access_token=$token&v=${api.VERSION}&extended=1'
-        +'${serialize(params)}';
+        '${api.BASE_URL}messages.send?access_token=$token&v=${api.VERSION}&extended=1' +
+            '${serialize(params)}';
 
     final response = await http.get(sendMessageUrl);
 
@@ -148,5 +151,22 @@ class VkServiceImpl implements VKService {
         response?.body != null ? json.decode(response?.body) : null;
 
     return responseBody != null ? responseBody['response'] : null;
+  }
+
+  Future<VkDeleteMessagesResponseBody> deleteMessages(
+      Map<String, String> params) async {
+    final deleteMessagesUrl =
+        '${api.BASE_URL}messages.delete?access_token=$token&v=${api.VERSION}&extended=1' +
+            '${serialize(params)}';
+
+    final response = await http.get(deleteMessagesUrl);
+
+    Map<String, dynamic> responseBody =
+        response?.body != null ? json.decode(response?.body) : null;
+
+    if (responseBody == null) {
+      return null;
+    }
+    return VkDeleteMessagesResponseBody.fromJson(responseBody);
   }
 }

@@ -82,8 +82,8 @@ class ConversationScreen extends StatelessWidget {
             bottomOffset -
             inputHeight;
 
-        final selectedMessages =
-            (state as ConversationData)?.selectedMessages ?? [];
+        final selectedMessagesIds =
+            (state as ConversationData)?.selectedMessagesIds ?? [];
 
         return Scaffold(
           appBar: AppBar(
@@ -91,13 +91,13 @@ class ConversationScreen extends StatelessWidget {
                 .getProfile((state as ConversationData).peerId)
                 .name),
             actions: [
-              if (selectedMessages.length > 0)
+              if (selectedMessagesIds.length > 0)
                 PopupMenuButton<PopupMenuAction>(
                   icon: Icon(Icons.more_vert),
                   onSelected: _popupMenuHandler(context),
                   itemBuilder: (BuildContext context) {
                     var singleMessageRows = [];
-                    if (selectedMessages.length == 1) {
+                    if (selectedMessagesIds.length == 1) {
                       singleMessageRows.addAll([
                         PopupMenuItem(
                           child: Text('Ответить'),
@@ -114,6 +114,15 @@ class ConversationScreen extends StatelessWidget {
                       ]);
                     }
 
+                    final canRemoveForEveryone = (state as ConversationData)
+                        .selectedMessages
+                        .every((element) {
+                      final date = DateTime.fromMillisecondsSinceEpoch(
+                          element.date * 1000);
+                      return element.out == 1 &&
+                          DateTime.now().difference(date).inMinutes < 1440;
+                    });
+
                     return [
                       PopupMenuItem(
                         child: Text('Переслать'),
@@ -123,10 +132,11 @@ class ConversationScreen extends StatelessWidget {
                         child: Text('Удалить (у меня)'),
                         value: PopupMenuAction.REMOVE,
                       ),
-                      PopupMenuItem(
-                        child: Text('Удалить (у всех)'),
-                        value: PopupMenuAction.REMOVE_FOR_EVERYONE,
-                      ),
+                      if (canRemoveForEveryone)
+                        PopupMenuItem(
+                          child: Text('Удалить (у всех)'),
+                          value: PopupMenuAction.REMOVE_FOR_EVERYONE,
+                        ),
                       ...singleMessageRows,
                     ];
                   },

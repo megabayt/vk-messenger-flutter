@@ -18,7 +18,7 @@ class _MessagesListState extends State<MessagesList> {
   Future<void> _itemCreatedHandler(
       ConversationBloc conversationBloc, int index) async {
     final items =
-        (conversationBloc?.state as ConversationData)?.currentItems ?? [];
+        (conversationBloc?.state as ConversationData)?.currentMessages ?? [];
 
     if (index == items.length - 1) {
       conversationBloc.add(ConversationFetchMore());
@@ -33,7 +33,7 @@ class _MessagesListState extends State<MessagesList> {
     return BlocBuilder<ConversationBloc, ConversationState>(
       builder: (_, state) {
         final totalCount = (state as ConversationData)?.currentCount ?? 0;
-        var items = (state as ConversationData)?.currentItems ?? [];
+        var items = (state as ConversationData)?.currentMessages ?? [];
         final needFetchMore = totalCount > items.length;
 
         if (items.length == 0 && (state as ConversationData).isFetching) {

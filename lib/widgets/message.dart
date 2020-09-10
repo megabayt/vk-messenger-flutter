@@ -120,13 +120,13 @@ class Message extends StatelessWidget {
 
     return BlocBuilder<ConversationBloc, ConversationState>(
       builder: (_, state) {
-        final selectedMessages =
-            (state as ConversationData).selectedMessages ?? [];
+        final selectedMessagesIds =
+            (state as ConversationData).selectedMessagesIds ?? [];
 
         final selected =
-            selectedMessages.indexWhere((element) => element == item?.id) != -1;
+            selectedMessagesIds.indexWhere((element) => element == item?.id) != -1;
 
-        final showCheckbox = selectedMessages.length > 0;
+        final showCheckbox = selectedMessagesIds.length > 0;
 
         return InkWell(
           onTap: showCheckbox ? _selectMessageHandler(context) : noop,
