@@ -1,33 +1,29 @@
 part of 'friends_bloc.dart';
 
 @immutable
-abstract class FriendsState {}
-
-class FriendsData extends FriendsState {
+class FriendsState {
   final List<Profile> items;
   final int count;
   final bool isFetching;
+  final String error;
 
-  FriendsData({
+  FriendsState({
     this.items = const [],
     this.count = 0,
     this.isFetching = false,
+    this.error,
   });
 
-  FriendsData copyWith({
+  FriendsState copyWith({
     List<Profile> items,
     int count,
     bool isFetching,
+    String error,
   }) =>
-      FriendsData(
+      FriendsState(
         items: items ?? this.items,
         count: count ?? this.count,
         isFetching: isFetching ?? this.isFetching,
+        error: error,
       );
-}
-
-class FriendsError extends FriendsState {
-  final String message;
-
-  FriendsError({@required this.message});
 }

@@ -14,7 +14,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
   static const PAGE_COUNT = '20';
   final VKService _vkService = locator<VKService>();
 
-  FriendsBloc() : super(FriendsData());
+  FriendsBloc() : super(FriendsState());
 
   @override
   Stream<FriendsState> mapEventToState(
@@ -29,15 +29,15 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
   }
 
   Stream<FriendsState> _mapFriendsFetchToState() async* {
-    if ((state is FriendsError)) {
-      yield FriendsData();
-    }
-    if ((state as FriendsData).isFetching) {
+    if (state.isFetching) {
       return;
     }
 
     try {
-      yield (state as FriendsData).copyWith(isFetching: true);
+      yield state.copyWith(
+        isFetching: true,
+        error: null,
+      );
       final result = await _vkService.getFriends({
         'user_id': _vkService.userId.toString(),
         'order': 'hints',
@@ -45,21 +45,27 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
         'count': PAGE_COUNT,
         'offset': '0',
       });
-      yield (state as FriendsData).copyWith(
+
+      if (result.error != null) {
+        // TODO: throw custom error
+        throw Exception();
+      }
+
+      yield state.copyWith(
         items: result?.response?.items ?? [],
         count: result?.response?.count ?? 0,
         isFetching: false,
       );
     } catch (e) {
-      yield FriendsError(message: e.toString());
+      yield state.copyWith(
+        error: 'Произошла ошибка при получении списка друзей.',
+        isFetching: false,
+      );
     }
   }
 
   Stream<FriendsState> _mapFriendsFetchMoreToState() async* {
-    if ((state is FriendsError)) {
-      yield FriendsData();
-    }
-    final currentState = state as FriendsData;
+    final currentState = state;
 
     if (currentState.isFetching ||
         currentState.items.length >= currentState.count) {
@@ -71,7 +77,10 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
       return;
     }
 
-    yield (state as FriendsData).copyWith(isFetching: true);
+    yield state.copyWith(
+      isFetching: true,
+      error: null,
+    );
 
     try {
       final data = await _vkService.getFriends({
@@ -82,13 +91,21 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
         'offset': currentState.items.length.toString(),
       });
 
-      yield (state as FriendsData).copyWith(
+      if (data.error != null) {
+        // TODO: throw custom error
+        throw Exception();
+      }
+
+      yield state.copyWith(
         count: data?.response?.count ?? 0,
         items: currentState.items + (data?.response?.items ?? []),
         isFetching: false,
       );
     } catch (e) {
-      yield FriendsError(message: e.toString());
+      yield state.copyWith(
+        error: 'Произошла ошибка при получении списка друзей.',
+        isFetching: false,
+      );
     }
   }
 }

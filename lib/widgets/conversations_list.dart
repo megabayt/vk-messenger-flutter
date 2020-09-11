@@ -17,7 +17,7 @@ class ConversationsList extends StatelessWidget {
   ConversationsList({this.fwdSelectMode = false});
 
   void _itemCreatedHandler(ConversationsBloc conversationsBloc, int index) {
-    final items = (conversationsBloc?.state as ConversationsData)?.items ?? [];
+    final items = conversationsBloc?.state?.items ?? [];
 
     if (index == items.length - 1) {
       conversationsBloc.add(ConversationsFetchMore());
@@ -57,11 +57,15 @@ class ConversationsList extends StatelessWidget {
 
     return BlocBuilder<ConversationsBloc, ConversationsState>(
       builder: (_, state) {
-        if (state is ConversationsError) {
+        if (state.error != null) {
           return Center(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(state.message),
+                Text(state.error),
+                Padding(
+                  padding: EdgeInsets.only(top: 15),
+                ),
                 RaisedButton(
                   onPressed: _retryHandler(context),
                   child: Text('Повторить'),
@@ -70,11 +74,11 @@ class ConversationsList extends StatelessWidget {
             ),
           );
         }
-        final totalCount = (state as ConversationsData)?.count ?? 0;
-        var items = (state as ConversationsData)?.items ?? [];
+        final totalCount = state?.count ?? 0;
+        var items = state?.items ?? [];
         final needFetchMore = totalCount > items.length;
 
-        if (items.length == 0 && (state as ConversationsData).isFetching) {
+        if (items.length == 0 && state.isFetching) {
           items = new List(15);
         }
 

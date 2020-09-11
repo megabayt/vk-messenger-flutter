@@ -15,7 +15,7 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
   static const PAGE_COUNT = '20';
   final VKService _vkService = locator<VKService>();
 
-  ConversationsBloc() : super(ConversationsData());
+  ConversationsBloc() : super(ConversationsState());
 
   @override
   Stream<ConversationsState> mapEventToState(
@@ -33,34 +33,40 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
   }
 
   Stream<ConversationsState> _mapConversationsFetchToState() async* {
-    if ((state is ConversationsError)) {
-      yield ConversationsData();
-    }
-    if ((state as ConversationsData).isFetching) {
+    if (state.isFetching) {
       return;
     }
 
     try {
-      yield (state as ConversationsData).copyWith(isFetching: true);
+      yield state.copyWith(
+        isFetching: true,
+        error: null,
+      );
       final result = await _vkService.getConversations({
         'count': PAGE_COUNT,
         'offset': '0',
       });
-      yield (state as ConversationsData).copyWith(
+
+      if (result.error != null) {
+        // TODO: throw custom error
+        throw Exception();
+      }
+
+      yield state.copyWith(
         items: result?.response?.items ?? [],
         count: result?.response?.count ?? 0,
         isFetching: false,
       );
     } catch (e) {
-      yield ConversationsError(message: e.toString());
+      yield state.copyWith(
+        error: 'Произошла ошибка при получении списка сообщений.',
+        isFetching: false,
+      );
     }
   }
 
   Stream<ConversationsState> _mapConversationsFetchMoreToState() async* {
-    if ((state is ConversationsError)) {
-      yield ConversationsData();
-    }
-    final currentState = state as ConversationsData;
+    final currentState = state;
 
     if (currentState.isFetching ||
         currentState.items.length >= currentState.count) {
@@ -72,7 +78,10 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
       return;
     }
 
-    yield (state as ConversationsData).copyWith(isFetching: true);
+    yield state.copyWith(
+      isFetching: true,
+      error: null,
+    );
 
     try {
       final data = await _vkService.getConversations({
@@ -80,21 +89,29 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
         'offset': currentState.items.length.toString(),
       });
 
-      yield (state as ConversationsData).copyWith(
+      if (data.error != null) {
+        // TODO: throw custom error
+        throw Exception();
+      }
+
+      yield state.copyWith(
         count: data?.response?.count ?? 0,
         items: currentState.items + (data?.response?.items ?? []),
         isFetching: false,
       );
     } catch (e) {
-      yield ConversationsError(message: e.toString());
+      yield state.copyWith(
+        error: 'Произошла ошибка при получении списка сообщений.',
+        isFetching: false,
+      );
     }
   }
 
   Stream<ConversationsState> _mapConversationsChangeLastMessageToState(
       ConversationsChangeLastMessage event) async* {
-    final count = (state as ConversationsData).count;
+    final count = state.count;
     var newItems = List<VkConversationItem>.from(
-        (state as ConversationsData).items ?? List<VkConversationItem>());
+        state.items ?? List<VkConversationItem>());
 
     final index = newItems.indexWhere(
         (element) => element.conversation.peer.id == event.message.peerId);
@@ -104,7 +121,7 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
         lastMessage: event.message,
       );
 
-      yield (state as ConversationsData).copyWith(
+      yield state.copyWith(
         items: newItems,
         count: count,
       );

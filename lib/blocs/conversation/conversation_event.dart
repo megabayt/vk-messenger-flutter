@@ -39,10 +39,10 @@ class ConversationUnSelectMessage extends ConversationEvent {
 
 class ConversationForwardMessage extends ConversationEvent {}
 
-class ConversationRemoveMessage extends ConversationEvent {
+class ConversationDeleteMessage extends ConversationEvent {
   final bool removeForEveryone;
 
-  ConversationRemoveMessage([this.removeForEveryone = false]);
+  ConversationDeleteMessage([this.removeForEveryone = false]);
 }
 
 class ConversationReplyMessage extends ConversationEvent {}

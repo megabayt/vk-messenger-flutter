@@ -9,6 +9,7 @@ import 'package:vk_messenger_flutter/models/vk_conversations.dart';
 import 'package:vk_messenger_flutter/models/vk_delete_messages.dart';
 import 'package:vk_messenger_flutter/models/vk_friends.dart';
 import 'package:vk_messenger_flutter/models/vk_messages.dart';
+import 'package:vk_messenger_flutter/models/vk_send_message.dart';
 import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
@@ -140,7 +141,7 @@ class VkServiceImpl implements VKService {
     return friends;
   }
 
-  Future<int> sendMessage(Map<String, String> params) async {
+  Future<VkSendMessageResponseBody> sendMessage(Map<String, String> params) async {
     final sendMessageUrl =
         '${api.BASE_URL}messages.send?access_token=$token&v=${api.VERSION}&extended=1' +
             '${serialize(params)}';
@@ -150,7 +151,10 @@ class VkServiceImpl implements VKService {
     Map<String, dynamic> responseBody =
         response?.body != null ? json.decode(response?.body) : null;
 
-    return responseBody != null ? responseBody['response'] : null;
+    if (responseBody == null) {
+      return null;
+    }
+    return VkSendMessageResponseBody.fromJson(responseBody);
   }
 
   Future<VkDeleteMessagesResponseBody> deleteMessages(

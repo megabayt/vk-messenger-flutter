@@ -10,7 +10,7 @@ class FriendsList extends StatelessWidget {
   final _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
 
   void _itemCreatedHandler(FriendsBloc friendsBloc, int index) {
-    final items = (friendsBloc?.state as FriendsData)?.items ?? [];
+    final items = friendsBloc?.state?.items ?? [];
 
     if (index == items.length - 1) {
       friendsBloc.add(FriendsFetchMore());
@@ -23,7 +23,6 @@ class FriendsList extends StatelessWidget {
 
         friendsBloc.add(FriendsFetch());
       };
-
   @override
   Widget build(BuildContext context) {
     // ignore: close_sinks
@@ -31,11 +30,15 @@ class FriendsList extends StatelessWidget {
 
     return BlocBuilder<FriendsBloc, FriendsState>(
       builder: (_, state) {
-        if (state is FriendsError) {
+        if (state.error != null) {
           return Center(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(state.message),
+                Text(state.error),
+                Padding(
+                  padding: EdgeInsets.only(top: 15),
+                ),
                 RaisedButton(
                   onPressed: _retryHandler(context),
                   child: Text('Повторить'),
@@ -44,11 +47,11 @@ class FriendsList extends StatelessWidget {
             ),
           );
         }
-        final totalCount = (state as FriendsData)?.count ?? 0;
-        var items = (state as FriendsData)?.items ?? [];
+        final totalCount = state?.count ?? 0;
+        var items = state?.items ?? [];
         final needFetchMore = totalCount > items.length;
 
-        if (items.length == 0 && (state as FriendsData).isFetching) {
+        if (items.length == 0 && state.isFetching) {
           items = new List(15);
         }
 

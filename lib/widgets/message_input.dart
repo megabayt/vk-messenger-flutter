@@ -18,9 +18,8 @@ class _MessageInputState extends State<MessageInput> {
   }
 
   Function _sendHandler(context) => () async {
-        final peerId = (BlocProvider.of<ConversationBloc>(context).state
-                as ConversationData)
-            .peerId;
+        final peerId = BlocProvider.of<ConversationBloc>(context).state.peerId;
+
         BlocProvider.of<ConversationBloc>(context).add(
           ConversationSendMessage(
             peerId: peerId,
@@ -37,15 +36,14 @@ class _MessageInputState extends State<MessageInput> {
 
     return BlocBuilder<ConversationBloc, ConversationState>(
       builder: (_, state) {
-        final showEmojiKeyboard =
-            (state as ConversationData)?.showEmojiKeyboard;
+        final showEmojiKeyboard = state?.showEmojiKeyboard;
 
         final primaryColor = Theme.of(context).primaryColor;
         final textColor = Theme.of(context).textTheme.bodyText1.color;
         final hintColor = Theme.of(context).textTheme.caption.color;
 
         var attachCount = 0;
-        if ((state as ConversationData).fwdMessages.length != 0) {
+        if (state.fwdMessages.length != 0) {
           attachCount += 1;
         }
 
@@ -55,62 +53,75 @@ class _MessageInputState extends State<MessageInput> {
           color: primaryColor.withOpacity(.5),
         );
 
-        return Column(
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.insert_emoticon),
-                  onPressed: () =>
-                      conversationBloc.add(ConversationToggleEmojiKeyboard()),
-                  color: showEmojiKeyboard
-                      ? primaryColor
-                      : primaryColor.withOpacity(.5),
-                ),
-                attachCount != 0
-                    ? Badge(
-                        badgeContent: Text(
-                          attachCount.toString(),
-                          style: TextStyle(
-                            color: Colors.white,
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Color.fromRGBO(0, 0, 0, .1),
+                blurRadius: 10,
+                offset: Offset.zero,
+                spreadRadius: 0,
+              ),
+            ],
+          ),
+          child: Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.insert_emoticon),
+                    onPressed: () =>
+                        conversationBloc.add(ConversationToggleEmojiKeyboard()),
+                    color: showEmojiKeyboard
+                        ? primaryColor
+                        : primaryColor.withOpacity(.5),
+                  ),
+                  attachCount != 0
+                      ? Badge(
+                          badgeContent: Text(
+                            attachCount.toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
                           ),
+                          child: attachBtn,
+                        )
+                      : attachBtn,
+                  // Edit text
+                  Flexible(
+                    child: Container(
+                      child: TextField(
+                        style: TextStyle(color: textColor, fontSize: 15.0),
+                        controller: textEditingController,
+                        decoration: InputDecoration.collapsed(
+                          hintText: 'Сообщение',
+                          hintStyle: TextStyle(color: hintColor),
                         ),
-                        child: attachBtn,
-                      )
-                    : attachBtn,
-                // Edit text
-                Flexible(
-                  child: Container(
-                    child: TextField(
-                      style: TextStyle(color: textColor, fontSize: 15.0),
-                      controller: textEditingController,
-                      decoration: InputDecoration.collapsed(
-                        hintText: 'Сообщение',
-                        hintStyle: TextStyle(color: hintColor),
                       ),
                     ),
                   ),
-                ),
 
-                // Button send message
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: _sendHandler(context),
-                    color: primaryColor,
+                  // Button send message
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: IconButton(
+                      icon: Icon(Icons.send),
+                      onPressed: _sendHandler(context),
+                      color: primaryColor,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            if (showEmojiKeyboard)
-              EmojiPicker(
-                rows: 3,
-                columns: 7,
-                numRecommended: 10,
-                onEmojiSelected: _pickEmojiHandler,
+                ],
               ),
-          ],
+              if (showEmojiKeyboard)
+                EmojiPicker(
+                  rows: 3,
+                  columns: 7,
+                  numRecommended: 10,
+                  onEmojiSelected: _pickEmojiHandler,
+                ),
+            ],
+          ),
         );
       },
     );

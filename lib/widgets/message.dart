@@ -121,7 +121,7 @@ class Message extends StatelessWidget {
     return BlocBuilder<ConversationBloc, ConversationState>(
       builder: (_, state) {
         final selectedMessagesIds =
-            (state as ConversationData).selectedMessagesIds ?? [];
+            state.selectedMessagesIds ?? [];
 
         final selected =
             selectedMessagesIds.indexWhere((element) => element == item?.id) != -1;

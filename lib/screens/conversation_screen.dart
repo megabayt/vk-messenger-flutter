@@ -7,7 +7,6 @@ import 'package:vk_messenger_flutter/screens/router.dart';
 import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/widgets/messages_list.dart';
-import 'package:vk_messenger_flutter/widgets/message_input.dart';
 
 class ConversationScreen extends StatelessWidget {
   static const routeUrl = '/chat';
@@ -15,13 +14,6 @@ class ConversationScreen extends StatelessWidget {
   ConversationScreen();
 
   final _profilesService = locator<ProfilesService>();
-
-  Function _retryHandler(BuildContext context) => () {
-        // ignore: close_sinks
-        final conversationBloc = BlocProvider.of<ConversationBloc>(context);
-
-        conversationBloc.add(ConversationFetch());
-      };
 
   Function _popupMenuHandler(BuildContext context) => (PopupMenuAction action) {
         // ignore: close_sinks
@@ -32,10 +24,10 @@ class ConversationScreen extends StatelessWidget {
             Router.sailor.navigate(ForwardMessagesSelect.routeUrl);
             break;
           case PopupMenuAction.REMOVE:
-            conversationBloc.add(ConversationRemoveMessage());
+            conversationBloc.add(ConversationDeleteMessage());
             break;
           case PopupMenuAction.REMOVE_FOR_EVERYONE:
-            conversationBloc.add(ConversationRemoveMessage(true));
+            conversationBloc.add(ConversationDeleteMessage(true));
             break;
           case PopupMenuAction.REPLY:
             conversationBloc.add(ConversationReplyMessage());
@@ -53,43 +45,11 @@ class ConversationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ConversationBloc, ConversationState>(
       builder: (_, state) {
-        if (state is ConversationError) {
-          return Center(
-            child: Column(
-              children: <Widget>[
-                Text(state.message),
-                RaisedButton(
-                  onPressed: _retryHandler(context),
-                  child: Text('Повторить'),
-                )
-              ],
-            ),
-          );
-        }
-        final showEmojiKeyboard = (state as ConversationData).showEmojiKeyboard;
-
-        final statusBarHeight = MediaQuery.of(context).padding.top;
-        final appBarHeight = AppBar().preferredSize.height;
-        final screenHeight = MediaQuery.of(context).size.height;
-        final bottomOffset = MediaQuery.of(context).viewInsets.bottom;
-        final emojiKeyboardHeight = showEmojiKeyboard ? 215.0 : 0.0;
-
-        final inputHeight = 50.0 + emojiKeyboardHeight;
-
-        final messagesListHeight = screenHeight -
-            appBarHeight -
-            statusBarHeight -
-            bottomOffset -
-            inputHeight;
-
-        final selectedMessagesIds =
-            (state as ConversationData)?.selectedMessagesIds ?? [];
+        final selectedMessagesIds = state?.selectedMessagesIds ?? [];
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(_profilesService
-                .getProfile((state as ConversationData).peerId)
-                .name),
+            title: Text(_profilesService.getProfile(state.peerId).name),
             actions: [
               if (selectedMessagesIds.length > 0)
                 PopupMenuButton<PopupMenuAction>(
@@ -114,9 +74,8 @@ class ConversationScreen extends StatelessWidget {
                       ]);
                     }
 
-                    final canRemoveForEveryone = (state as ConversationData)
-                        .selectedMessages
-                        .every((element) {
+                    final canRemoveForEveryone =
+                        state.selectedMessages.every((element) {
                       final date = DateTime.fromMillisecondsSinceEpoch(
                           element.date * 1000);
                       return element.out == 1 &&
@@ -143,30 +102,7 @@ class ConversationScreen extends StatelessWidget {
                 ),
             ],
           ),
-          body: Column(
-            children: <Widget>[
-              Container(
-                height: messagesListHeight,
-                child: MessagesList(),
-              ),
-              Container(
-                width: double.infinity,
-                height: inputHeight,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color.fromRGBO(0, 0, 0, .1),
-                      blurRadius: 10,
-                      offset: Offset.zero,
-                      spreadRadius: 0,
-                    ),
-                  ],
-                ),
-                child: MessageInput(),
-              )
-            ],
-          ),
+          body: MessagesList(),
         );
       },
     );

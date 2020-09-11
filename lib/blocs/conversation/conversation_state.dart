@@ -1,12 +1,11 @@
 part of 'conversation_bloc.dart';
 
 @immutable
-abstract class ConversationState {}
-
-class ConversationData extends ConversationState {
+class ConversationState {
   final int peerId;
   final Map<int, VkConversationResponse> data;
   final bool isFetching;
+  final String error;
   final bool showEmojiKeyboard;
   final List<int> selectedMessagesIds;
   final List<int> fwdMessages;
@@ -32,35 +31,32 @@ class ConversationData extends ConversationState {
         .toList();
   }
 
-  ConversationData({
+  ConversationState({
     this.peerId,
     this.data,
     this.isFetching = false,
+    this.error,
     this.showEmojiKeyboard = false,
     this.selectedMessagesIds = const [],
     this.fwdMessages = const [],
   });
 
-  ConversationData copyWith({
+  ConversationState copyWith({
     int peerId,
     Map<int, VkConversationResponse> data,
     bool isFetching,
+    String error,
     bool showEmojiKeyboard,
     List<int> selectedMessagesIds,
     List<int> fwdMessages,
   }) =>
-      ConversationData(
+      ConversationState(
         peerId: peerId ?? this.peerId,
         data: data ?? this.data,
         isFetching: isFetching ?? this.isFetching,
+        error: error,
         showEmojiKeyboard: showEmojiKeyboard ?? this.showEmojiKeyboard,
         selectedMessagesIds: selectedMessagesIds ?? this.selectedMessagesIds,
         fwdMessages: fwdMessages ?? this.fwdMessages,
       );
-}
-
-class ConversationError extends ConversationState {
-  final String message;
-
-  ConversationError({@required this.message});
 }

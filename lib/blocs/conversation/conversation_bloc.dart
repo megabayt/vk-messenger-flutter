@@ -22,10 +22,10 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
   ConversationBloc(ConversationsBloc conversationsBloc)
       : _conversationsBloc = conversationsBloc,
-        super(ConversationData());
+        super(ConversationState());
 
   get _peerId {
-    return (state as ConversationData).peerId;
+    return state.peerId;
   }
 
   @override
@@ -53,8 +53,8 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     if (event is ConversationForwardMessage) {
       yield* _mapConversationForwardMessageToState();
     }
-    if (event is ConversationRemoveMessage) {
-      yield* _mapConversationRemoveMessageToState(event);
+    if (event is ConversationDeleteMessage) {
+      yield* _mapConversationDeleteMessageToState(event);
     }
     if (event is ConversationReplyMessage) {
       yield* _mapConversationReplyMessageToState();
@@ -69,7 +69,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
   Stream<ConversationState> _mapConversationSetPeerId(
       ConversationSetPeerId event) async* {
-    yield (state as ConversationData).copyWith(
+    yield state.copyWith(
       peerId: event.peerId,
       selectedMessagesIds: [],
     );
@@ -78,39 +78,43 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
   }
 
   Stream<ConversationState> _mapConversationFetchToState() async* {
-    if ((state is ConversationError)) {
-      yield ConversationData();
-    }
-    if ((state as ConversationData).isFetching) {
+    if (state.isFetching) {
       return;
     }
 
     try {
-      yield (state as ConversationData).copyWith(isFetching: true);
+      yield state.copyWith(
+        isFetching: true,
+        error: null,
+      );
 
       final result = await _vkService.getHistory(
           {'count': PAGE_COUNT, 'offset': '0', 'peer_id': _peerId.toString()});
 
+      if (result.error != null) {
+        // TODO: throw custom error
+        throw Exception();
+      }
+
       var newData = Map<int, VkConversationResponse>.from(
-          (state as ConversationData).data ??
-              Map<int, VkConversationResponse>());
+          state.data ?? Map<int, VkConversationResponse>());
 
       newData[_peerId] = result?.response ?? [];
 
-      yield (state as ConversationData).copyWith(
+      yield state.copyWith(
         isFetching: false,
         data: newData,
       );
     } catch (e) {
-      yield ConversationError(message: e.toString());
+      yield state.copyWith(
+        isFetching: false,
+        error: 'Произошла ошибка при получении списка сообщений.',
+      );
     }
   }
 
   Stream<ConversationState> _mapConversationFetchMoreToState() async* {
-    if ((state is ConversationError)) {
-      yield ConversationData();
-    }
-    final currentState = state as ConversationData;
+    final currentState = state;
 
     final itemsCount = currentState?.currentMessages?.length ?? 0;
     final totalCount = currentState?.currentCount ?? 0;
@@ -124,7 +128,10 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       return;
     }
 
-    yield (state as ConversationData).copyWith(isFetching: true);
+    yield state.copyWith(
+      isFetching: true,
+      error: null,
+    );
 
     try {
       final data = await _vkService.getHistory({
@@ -133,25 +140,31 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
         'peer_id': _peerId.toString(),
       });
 
+      if (data.error != null) {
+        // TODO: throw custom error
+        throw Exception();
+      }
+
       final newData = Map<int, VkConversationResponse>.from(
-          (state as ConversationData).data ??
-              Map<int, VkConversationResponse>());
+          state.data ?? Map<int, VkConversationResponse>());
 
       newData[_peerId].items.addAll(data?.response?.items ?? []);
 
-      yield (state as ConversationData).copyWith(
+      yield state.copyWith(
         data: newData,
         isFetching: false,
       );
     } catch (e) {
-      yield ConversationError(message: e.toString());
+      yield state.copyWith(
+        error: 'Произошла ошибка при получении списка сообщений.',
+        isFetching: false,
+      );
     }
   }
 
   Stream<ConversationState> _mapConversationSendMessageToState(
       ConversationSendMessage event) async* {
-    final fwdMessages =
-        ((state as ConversationData).fwdMessages ?? []).join(',');
+    final fwdMessages = (state.fwdMessages ?? []).join(',');
     if (event.message == '' && fwdMessages == '') {
       return;
     }
@@ -177,12 +190,17 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     int messageId;
 
     try {
-      messageId = await _vkService.sendMessage({
+      final result = await _vkService.sendMessage({
         'peer_id': event.peerId.toString(),
         'random_id': Random.secure().nextInt(int32max).toString(),
         'message': event.message,
         'forward_messages': fwdMessages,
       });
+      if (result.error != null) {
+        // TODO: throw custom error
+        throw Exception();
+      }
+      messageId = result.response;
     } catch (e) {
       message = message.copyWith(
         isError: true,
@@ -193,6 +211,11 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       final messageQuery = await _vkService.getMessages({
         'message_ids': messageId.toString(),
       });
+
+      if (messageQuery.error != null) {
+        // TODO: throw custom error
+        throw Exception();
+      }
 
       final messages = messageQuery?.response?.items ?? [];
 
@@ -206,7 +229,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     }
 
     yield* _appendOrRemoveMessage(randomId, message);
-    yield (state as ConversationData).copyWith(
+    yield state.copyWith(
       fwdMessages: [],
       selectedMessagesIds: [],
     );
@@ -220,7 +243,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
   Stream<ConversationState> _appendOrRemoveMessage(
       int randomId, Message message) async* {
     var newData = Map<int, VkConversationResponse>.from(
-        (state as ConversationData).data ?? Map<int, VkConversationResponse>());
+        state.data ?? Map<int, VkConversationResponse>());
 
     final index = newData[message.peerId]
         .items
@@ -233,62 +256,74 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     if (message != null) {
       newData[message.peerId].items.insert(0, message);
 
-      yield (state as ConversationData).copyWith(data: newData);
+      yield state.copyWith(data: newData);
     }
   }
 
   Stream<ConversationState> _mapToggleEmojiKeyboardToState() async* {
-    yield (state as ConversationData).copyWith(
-      showEmojiKeyboard: !(state as ConversationData).showEmojiKeyboard,
+    yield state.copyWith(
+      showEmojiKeyboard: !state.showEmojiKeyboard,
     );
   }
 
   Stream<ConversationState> _mapConversationSelectMessageToState(
       ConversationSelectMessage event) async* {
-    final selectedMessagesIds =
-        List<int>.from((state as ConversationData).selectedMessagesIds ?? []);
+    final selectedMessagesIds = List<int>.from(state.selectedMessagesIds ?? []);
 
     final index =
         selectedMessagesIds.indexWhere((element) => element == event.messageId);
 
     if (index == -1) {
-      yield (state as ConversationData).copyWith(
+      yield state.copyWith(
         selectedMessagesIds: selectedMessagesIds + [event.messageId],
       );
     } else {
       selectedMessagesIds.removeAt(index);
-      yield (state as ConversationData).copyWith(
+      yield state.copyWith(
         selectedMessagesIds: selectedMessagesIds,
       );
     }
   }
 
   Stream<ConversationState> _mapConversationForwardMessageToState() async* {
-    yield (state as ConversationData).copyWith(
+    yield state.copyWith(
       selectedMessagesIds: [],
-      fwdMessages: (state as ConversationData).selectedMessagesIds,
+      fwdMessages: state.selectedMessagesIds,
     );
   }
 
-  Stream<ConversationState> _mapConversationRemoveMessageToState(
-      ConversationRemoveMessage event) async* {
-    final deleteForAll = event.removeForEveryone;
-    final selectedMessagesIds =
-        List<int>.from((state as ConversationData).selectedMessagesIds ?? []);
-    final newData = Map<int, VkConversationResponse>.from(
-        (state as ConversationData).data ?? Map<int, VkConversationResponse>());
-    await _vkService.deleteMessages({
-      'message_ids': selectedMessagesIds.join(','),
-      'delete_for_all': deleteForAll ? '1' : '0',
-    });
-    newData[_peerId].items.removeWhere((message) =>
-        selectedMessagesIds
-            .indexWhere((selectedMessage) => selectedMessage == message?.id) !=
-        -1);
-    yield (state as ConversationData).copyWith(
-      selectedMessagesIds: [],
-      data: newData,
-    );
+  Stream<ConversationState> _mapConversationDeleteMessageToState(
+      ConversationDeleteMessage event) async* {
+    try {
+      final deleteForAll = event.removeForEveryone;
+      final selectedMessagesIds =
+          List<int>.from(state.selectedMessagesIds ?? []);
+      final newData = Map<int, VkConversationResponse>.from(
+          state.data ?? Map<int, VkConversationResponse>());
+      final result = await _vkService.deleteMessages({
+        'message_ids': selectedMessagesIds.join(','),
+        'delete_for_all': deleteForAll ? '1' : '0',
+      });
+
+      if (result.error != null) {
+        // TODO: throw custom error
+        throw Exception();
+      }
+
+      newData[_peerId].items.removeWhere((message) =>
+          selectedMessagesIds.indexWhere(
+              (selectedMessage) => selectedMessage == message?.id) !=
+          -1);
+      yield state.copyWith(
+        selectedMessagesIds: [],
+        data: newData,
+      );
+    } catch (e) {
+      yield state.copyWith(
+        error: 'Произошла ошибка при удалении сообщения.',
+        isFetching: false,
+      );
+    }
   }
 
   Stream<ConversationState> _mapConversationReplyMessageToState() async* {}
