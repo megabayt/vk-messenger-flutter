@@ -37,25 +37,21 @@ class _MessagesListState extends State<MessagesList> {
     // ignore: close_sinks
     final conversationBloc = BlocProvider.of<ConversationBloc>(context);
 
-    return BlocBuilder<ConversationBloc, ConversationState>(
-      builder: (_, state) {
-        if (state.error != null)
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(state.error),
-                Padding(
-                  padding: EdgeInsets.only(top: 15),
-                ),
-                RaisedButton(
-                  onPressed: () => _retryHandler(context),
-                  child: Text('Повторить'),
-                )
-              ],
+    return BlocConsumer<ConversationBloc, ConversationState>(
+      listener: (_, state) {
+        if (state.error != null) {
+          final snackBar = SnackBar(
+            content: Text(state.error),
+            action: SnackBarAction(
+              label: 'Повторить',
+              onPressed: () => _retryHandler(context),
             ),
           );
 
+          Scaffold.of(context).showSnackBar(snackBar);
+        }
+      },
+      builder: (_, state) {
         final totalCount = state?.currentCount ?? 0;
         var items = state?.currentMessages ?? [];
         final needFetchMore = totalCount > items.length;

@@ -53,25 +53,21 @@ class ConversationsList extends StatelessWidget {
     // ignore: close_sinks
     final conversationsBloc = BlocProvider.of<ConversationsBloc>(context);
 
-    return BlocBuilder<ConversationsBloc, ConversationsState>(
-      builder: (_, state) {
+    return BlocConsumer<ConversationsBloc, ConversationsState>(
+      listener: (_, state) {
         if (state.error != null) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(state.error),
-                Padding(
-                  padding: EdgeInsets.only(top: 15),
-                ),
-                RaisedButton(
-                  onPressed: () => _retryHandler(context),
-                  child: Text('Повторить'),
-                )
-              ],
+          final snackBar = SnackBar(
+            content: Text(state.error),
+            action: SnackBarAction(
+              label: 'Повторить',
+              onPressed: () => _retryHandler(context),
             ),
           );
+
+          Scaffold.of(context).showSnackBar(snackBar);
         }
+      },
+      builder: (_, state) {
         final totalCount = state?.count ?? 0;
         var items = state?.items ?? [];
         final needFetchMore = totalCount > items.length;
