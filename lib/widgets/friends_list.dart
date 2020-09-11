@@ -21,7 +21,7 @@ class FriendsList extends StatelessWidget {
     // ignore: close_sinks
     final friendsBloc = BlocProvider.of<FriendsBloc>(context);
 
-    friendsBloc.add(FriendsFetch());
+    friendsBloc.add(FriendsRetry());
   }
 
   @override

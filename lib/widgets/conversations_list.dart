@@ -28,7 +28,7 @@ class ConversationsList extends StatelessWidget {
     // ignore: close_sinks
     final conversationsBloc = BlocProvider.of<ConversationsBloc>(context);
 
-    conversationsBloc.add(ConversationsFetch());
+    conversationsBloc.add(ConversationsRetry());
   }
 
   void _chatTapHandler(BuildContext context, VkConversationItem item) {

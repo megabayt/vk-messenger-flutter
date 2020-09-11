@@ -6,6 +6,7 @@ class ConversationState {
   final Map<int, VkConversationResponse> data;
   final bool isFetching;
   final String error;
+  final ConversationEvent lastEvent;
   final bool showEmojiKeyboard;
   final List<int> selectedMessagesIds;
   final List<int> fwdMessages;
@@ -36,6 +37,7 @@ class ConversationState {
     this.data,
     this.isFetching = false,
     this.error,
+    this.lastEvent,
     this.showEmojiKeyboard = false,
     this.selectedMessagesIds = const [],
     this.fwdMessages = const [],
@@ -46,6 +48,7 @@ class ConversationState {
     Map<int, VkConversationResponse> data,
     bool isFetching,
     String error,
+    ConversationEvent lastEvent,
     bool showEmojiKeyboard,
     List<int> selectedMessagesIds,
     List<int> fwdMessages,
@@ -55,6 +58,7 @@ class ConversationState {
         data: data ?? this.data,
         isFetching: isFetching ?? this.isFetching,
         error: error,
+        lastEvent: lastEvent ?? this.lastEvent,
         showEmojiKeyboard: showEmojiKeyboard ?? this.showEmojiKeyboard,
         selectedMessagesIds: selectedMessagesIds ?? this.selectedMessagesIds,
         fwdMessages: fwdMessages ?? this.fwdMessages,

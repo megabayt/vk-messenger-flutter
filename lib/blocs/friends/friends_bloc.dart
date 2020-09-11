@@ -21,14 +21,17 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     FriendsEvent event,
   ) async* {
     if (event is FriendsFetch) {
-      yield* _mapFriendsFetchToState();
+      yield* _mapFriendsFetchToState(event);
     }
     if (event is FriendsFetchMore) {
-      yield* _mapFriendsFetchMoreToState();
+      yield* _mapFriendsFetchMoreToState(event);
+    }
+    if (event is FriendsRetry && state.lastEvent != null) {
+      this.add(state.lastEvent);
     }
   }
 
-  Stream<FriendsState> _mapFriendsFetchToState() async* {
+  Stream<FriendsState> _mapFriendsFetchToState(FriendsEvent event) async* {
     if (state.isFetching) {
       return;
     }
@@ -59,12 +62,13 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     } catch (e) {
       yield state.copyWith(
         error: 'Произошла ошибка при получении списка друзей.',
+        lastEvent: event,
         isFetching: false,
       );
     }
   }
 
-  Stream<FriendsState> _mapFriendsFetchMoreToState() async* {
+  Stream<FriendsState> _mapFriendsFetchMoreToState(FriendsEvent event) async* {
     final currentState = state;
 
     if (currentState.isFetching ||
@@ -73,7 +77,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     }
 
     if (currentState.items.length == 0) {
-      yield* _mapFriendsFetchToState();
+      yield* _mapFriendsFetchToState(event);
       return;
     }
 
@@ -104,6 +108,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     } catch (e) {
       yield state.copyWith(
         error: 'Произошла ошибка при получении списка друзей.',
+        lastEvent: event,
         isFetching: false,
       );
     }

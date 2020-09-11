@@ -22,17 +22,20 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
     ConversationsEvent event,
   ) async* {
     if (event is ConversationsFetch) {
-      yield* _mapConversationsFetchToState();
+      yield* _mapConversationsFetchToState(event);
     }
     if (event is ConversationsFetchMore) {
-      yield* _mapConversationsFetchMoreToState();
+      yield* _mapConversationsFetchMoreToState(event);
     }
     if (event is ConversationsChangeLastMessage) {
       yield* _mapConversationsChangeLastMessageToState(event);
     }
+    if (event is ConversationsRetry && state.lastEvent != null) {
+      this.add(state.lastEvent);
+    }
   }
 
-  Stream<ConversationsState> _mapConversationsFetchToState() async* {
+  Stream<ConversationsState> _mapConversationsFetchToState(ConversationsEvent event) async* {
     if (state.isFetching) {
       return;
     }
@@ -60,12 +63,13 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
     } catch (e) {
       yield state.copyWith(
         error: 'Произошла ошибка при получении списка сообщений.',
+        lastEvent: event,
         isFetching: false,
       );
     }
   }
 
-  Stream<ConversationsState> _mapConversationsFetchMoreToState() async* {
+  Stream<ConversationsState> _mapConversationsFetchMoreToState(ConversationsEvent event) async* {
     final currentState = state;
 
     if (currentState.isFetching ||
@@ -74,7 +78,7 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
     }
 
     if (currentState.items.length == 0) {
-      yield* _mapConversationsFetchToState();
+      yield* _mapConversationsFetchToState(event);
       return;
     }
 
@@ -102,6 +106,7 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
     } catch (e) {
       yield state.copyWith(
         error: 'Произошла ошибка при получении списка сообщений.',
+        lastEvent: event,
         isFetching: false,
       );
     }

@@ -29,7 +29,7 @@ class _MessagesListState extends State<MessagesList> {
     // ignore: close_sinks
     final conversationBloc = BlocProvider.of<ConversationBloc>(context);
 
-    conversationBloc.add(ConversationFetch());
+    conversationBloc.add(ConversationRetry());
   }
 
   @override

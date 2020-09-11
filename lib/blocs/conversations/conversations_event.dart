@@ -12,3 +12,5 @@ class ConversationsChangeLastMessage extends ConversationsEvent {
 
   ConversationsChangeLastMessage(this.message);
 }
+
+class ConversationsRetry extends ConversationsEvent {}

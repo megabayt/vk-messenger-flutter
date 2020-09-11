@@ -50,3 +50,5 @@ class ConversationReplyMessage extends ConversationEvent {}
 class ConversationMarkImportantMessage extends ConversationEvent {}
 
 class ConversationEditMessage extends ConversationEvent {}
+
+class ConversationRetry extends ConversationEvent {}

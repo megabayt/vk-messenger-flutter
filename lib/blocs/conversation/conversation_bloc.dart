@@ -36,10 +36,10 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       yield* _mapConversationSetPeerId(event);
     }
     if (event is ConversationFetch) {
-      yield* _mapConversationFetchToState();
+      yield* _mapConversationFetchToState(event);
     }
     if (event is ConversationFetchMore) {
-      yield* _mapConversationFetchMoreToState();
+      yield* _mapConversationFetchMoreToState(event);
     }
     if (event is ConversationSendMessage) {
       yield* _mapConversationSendMessageToState(event);
@@ -65,6 +65,9 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     if (event is ConversationEditMessage) {
       yield* _mapConversationEditMessageToState();
     }
+    if (event is ConversationRetry && state.lastEvent != null) {
+      this.add(state.lastEvent);
+    }
   }
 
   Stream<ConversationState> _mapConversationSetPeerId(
@@ -77,7 +80,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     this.add(ConversationFetch());
   }
 
-  Stream<ConversationState> _mapConversationFetchToState() async* {
+  Stream<ConversationState> _mapConversationFetchToState(ConversationEvent event) async* {
     if (state.isFetching) {
       return;
     }
@@ -109,11 +112,12 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       yield state.copyWith(
         isFetching: false,
         error: 'Произошла ошибка при получении списка сообщений.',
+        lastEvent: event,
       );
     }
   }
 
-  Stream<ConversationState> _mapConversationFetchMoreToState() async* {
+  Stream<ConversationState> _mapConversationFetchMoreToState(ConversationEvent event) async* {
     final currentState = state;
 
     final itemsCount = currentState?.currentMessages?.length ?? 0;
@@ -124,7 +128,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     }
 
     if (itemsCount == 0) {
-      yield* _mapConversationFetchToState();
+      yield* _mapConversationFetchToState(event);
       return;
     }
 
@@ -157,6 +161,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     } catch (e) {
       yield state.copyWith(
         error: 'Произошла ошибка при получении списка сообщений.',
+        lastEvent: event,
         isFetching: false,
       );
     }
@@ -321,6 +326,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     } catch (e) {
       yield state.copyWith(
         error: 'Произошла ошибка при удалении сообщения.',
+        lastEvent: event,
         isFetching: false,
       );
     }
