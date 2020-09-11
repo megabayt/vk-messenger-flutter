@@ -74,13 +74,15 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       ConversationSetPeerId event) async* {
     yield state.copyWith(
       peerId: event.peerId,
+      fwdMessages: event.fwdMode == true ? state.fwdMessages : [],
       selectedMessagesIds: [],
     );
     Router.sailor.navigate(ConversationScreen.routeUrl);
     this.add(ConversationFetch());
   }
 
-  Stream<ConversationState> _mapConversationFetchToState(ConversationEvent event) async* {
+  Stream<ConversationState> _mapConversationFetchToState(
+      ConversationEvent event) async* {
     if (state.isFetching) {
       return;
     }
@@ -117,7 +119,8 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     }
   }
 
-  Stream<ConversationState> _mapConversationFetchMoreToState(ConversationEvent event) async* {
+  Stream<ConversationState> _mapConversationFetchMoreToState(
+      ConversationEvent event) async* {
     final currentState = state;
 
     final itemsCount = currentState?.currentMessages?.length ?? 0;

@@ -45,7 +45,7 @@ class ConversationsList extends StatelessWidget {
       });
     }
 
-    conversationBloc.add(ConversationSetPeerId(item?.conversation?.peer?.id));
+    conversationBloc.add(ConversationSetPeerId(item?.conversation?.peer?.id, fwdSelectMode));
   }
 
   @override

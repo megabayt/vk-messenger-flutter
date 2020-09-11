@@ -5,8 +5,9 @@ abstract class ConversationEvent {}
 
 class ConversationSetPeerId extends ConversationEvent {
   final int peerId;
+  final bool fwdMode;
 
-  ConversationSetPeerId(this.peerId);
+  ConversationSetPeerId(this.peerId, [this.fwdMode]);
 }
 
 class ConversationFetch extends ConversationEvent {}

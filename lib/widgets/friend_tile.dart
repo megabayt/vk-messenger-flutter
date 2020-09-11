@@ -23,7 +23,7 @@ class FriendTile extends StatelessWidget {
       return false;
     });
 
-    conversationBloc.add(ConversationSetPeerId(profile?.id));
+    conversationBloc.add(ConversationSetPeerId(profile?.id, true));
   }
 
   @override
