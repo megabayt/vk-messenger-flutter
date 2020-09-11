@@ -12,7 +12,7 @@ class FriendsState {
     this.items = const [],
     this.count = 0,
     this.isFetching = false,
-    this.error,
+    this.error = '',
     this.lastEvent,
   });
 
@@ -27,7 +27,7 @@ class FriendsState {
         items: items ?? this.items,
         count: count ?? this.count,
         isFetching: isFetching ?? this.isFetching,
-        error: error,
+        error: error ?? this.error,
         lastEvent: lastEvent ?? this.lastEvent,
       );
 }

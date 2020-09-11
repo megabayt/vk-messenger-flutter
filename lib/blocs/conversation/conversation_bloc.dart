@@ -90,7 +90,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     try {
       yield state.copyWith(
         isFetching: true,
-        error: null,
+        error: '',
       );
 
       final result = await _vkService.getHistory(
@@ -137,7 +137,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
     yield state.copyWith(
       isFetching: true,
-      error: null,
+      error: '',
     );
 
     try {

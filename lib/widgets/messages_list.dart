@@ -39,7 +39,7 @@ class _MessagesListState extends State<MessagesList> {
 
     return BlocConsumer<ConversationBloc, ConversationState>(
       listener: (_, state) {
-        if (state.error != null) {
+        if (state.error != '') {
           final snackBar = SnackBar(
             content: Text(state.error),
             action: SnackBarAction(

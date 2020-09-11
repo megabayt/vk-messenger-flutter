@@ -39,7 +39,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     try {
       yield state.copyWith(
         isFetching: true,
-        error: null,
+        error: '',
       );
       final result = await _vkService.getFriends({
         'user_id': _vkService.userId.toString(),
@@ -83,7 +83,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
 
     yield state.copyWith(
       isFetching: true,
-      error: null,
+      error: '',
     );
 
     try {

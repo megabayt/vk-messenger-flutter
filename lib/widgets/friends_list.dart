@@ -31,7 +31,7 @@ class FriendsList extends StatelessWidget {
 
     return BlocConsumer<FriendsBloc, FriendsState>(
       listener: (_, state) {
-        if (state.error != null) {
+        if (state.error != '') {
           final snackBar = SnackBar(
             content: Text(state.error),
             action: SnackBarAction(

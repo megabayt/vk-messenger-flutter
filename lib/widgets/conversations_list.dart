@@ -55,7 +55,7 @@ class ConversationsList extends StatelessWidget {
 
     return BlocConsumer<ConversationsBloc, ConversationsState>(
       listener: (_, state) {
-        if (state.error != null) {
+        if (state.error != '') {
           final snackBar = SnackBar(
             content: Text(state.error),
             action: SnackBarAction(

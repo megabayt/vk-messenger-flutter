@@ -43,7 +43,7 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
     try {
       yield state.copyWith(
         isFetching: true,
-        error: null,
+        error: '',
       );
       final result = await _vkService.getConversations({
         'count': PAGE_COUNT,
@@ -84,7 +84,7 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
 
     yield state.copyWith(
       isFetching: true,
-      error: null,
+      error: '',
     );
 
     try {
