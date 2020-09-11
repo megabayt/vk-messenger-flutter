@@ -51,7 +51,7 @@ class _AttachmentAudioState extends State<AttachmentAudio> {
         _playerService.getUrl() != url ||
                 _playerService.getPlayerState() != AudioPlayerState.PLAYING
             ? GestureDetector(
-                onTap: _playerService.start(url),
+                onTap: () => _playerService.start(url),
                 child: Image(
                   image: ResizeImage(
                     AssetImage('assets/audio_play_small_2x.png'),

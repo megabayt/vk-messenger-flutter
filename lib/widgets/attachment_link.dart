@@ -7,15 +7,15 @@ import 'package:vk_messenger_flutter/models/message.dart';
 import 'package:vk_messenger_flutter/utils/helpers.dart';
 
 class AttachmentLink extends StatelessWidget {
-  Function _tapHandler(BuildContext context) => () async {
-        final attachment = Provider.of<Attachment>(context, listen: false);
+  Future<void> _tapHandler(BuildContext context) async {
+    final attachment = Provider.of<Attachment>(context, listen: false);
 
-        final url = attachment?.link?.url ?? '';
+    final url = attachment?.link?.url ?? '';
 
-        if (url != '' && await canLaunch(url)) {
-          await launch(url);
-        }
-      };
+    if (url != '' && await canLaunch(url)) {
+      await launch(url);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class AttachmentLink extends StatelessWidget {
 
     final text = getAttachmentReplacer(attachment);
     return GestureDetector(
-      onTap: _tapHandler(context),
+      onTap: () => _tapHandler(context),
       child: Text(
         text,
         textAlign: me ? TextAlign.right : TextAlign.left,

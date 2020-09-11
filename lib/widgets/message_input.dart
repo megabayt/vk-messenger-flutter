@@ -17,17 +17,17 @@ class _MessageInputState extends State<MessageInput> {
     textEditingController.text += emoji.emoji;
   }
 
-  Function _sendHandler(context) => () async {
-        final peerId = BlocProvider.of<ConversationBloc>(context).state.peerId;
+  Future<void> _sendHandler(context) async {
+    final peerId = BlocProvider.of<ConversationBloc>(context).state.peerId;
 
-        BlocProvider.of<ConversationBloc>(context).add(
-          ConversationSendMessage(
-            peerId: peerId,
-            message: textEditingController.text,
-          ),
-        );
-        textEditingController.clear();
-      };
+    BlocProvider.of<ConversationBloc>(context).add(
+      ConversationSendMessage(
+        peerId: peerId,
+        message: textEditingController.text,
+      ),
+    );
+    textEditingController.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +107,7 @@ class _MessageInputState extends State<MessageInput> {
                     margin: EdgeInsets.symmetric(horizontal: 8.0),
                     child: IconButton(
                       icon: Icon(Icons.send),
-                      onPressed: _sendHandler(context),
+                      onPressed: () => _sendHandler(context),
                       color: primaryColor,
                     ),
                   ),

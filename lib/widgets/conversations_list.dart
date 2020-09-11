@@ -24,31 +24,29 @@ class ConversationsList extends StatelessWidget {
     }
   }
 
-  Function _retryHandler(BuildContext context) => () {
-        // ignore: close_sinks
-        final conversationsBloc = BlocProvider.of<ConversationsBloc>(context);
+  void _retryHandler(BuildContext context) {
+    // ignore: close_sinks
+    final conversationsBloc = BlocProvider.of<ConversationsBloc>(context);
 
-        conversationsBloc.add(ConversationsFetch());
-      };
+    conversationsBloc.add(ConversationsFetch());
+  }
 
-  Function _chatTapHandler(BuildContext context, VkConversationItem item) =>
-      () {
-        // ignore: close_sinks
-        final conversationBloc = BlocProvider.of<ConversationBloc>(context);
+  void _chatTapHandler(BuildContext context, VkConversationItem item) {
+    // ignore: close_sinks
+    final conversationBloc = BlocProvider.of<ConversationBloc>(context);
 
-        if (fwdSelectMode) {
-          conversationBloc.add(ConversationForwardMessage());
-          Router.sailor.popUntil((route) {
-            if (route.settings.name == ConversationsScreen.routeUrl) {
-              return true;
-            }
-            return false;
-          });
+    if (fwdSelectMode) {
+      conversationBloc.add(ConversationForwardMessage());
+      Router.sailor.popUntil((route) {
+        if (route.settings.name == ConversationsScreen.routeUrl) {
+          return true;
         }
+        return false;
+      });
+    }
 
-        conversationBloc
-            .add(ConversationSetPeerId(item?.conversation?.peer?.id));
-      };
+    conversationBloc.add(ConversationSetPeerId(item?.conversation?.peer?.id));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +65,7 @@ class ConversationsList extends StatelessWidget {
                   padding: EdgeInsets.only(top: 15),
                 ),
                 RaisedButton(
-                  onPressed: _retryHandler(context),
+                  onPressed: () => _retryHandler(context),
                   child: Text('Повторить'),
                 )
               ],
@@ -95,7 +93,7 @@ class ConversationsList extends StatelessWidget {
             itemCount: items.length,
             itemBuilder: (BuildContext _, int index) {
               return InkWell(
-                onTap: _chatTapHandler(context, items[index]),
+                onTap: () => _chatTapHandler(context, items[index]),
                 child: CreationAwareListItem(
                   key: ValueKey(items[index]?.lastMessage?.id),
                   itemCreated: () =>

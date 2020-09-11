@@ -11,6 +11,6 @@ abstract class PlayerService {
   void setPlayerState(AudioPlayerState newState);
   AudioPlayerState getPlayerState();
 
-  Function start(String newUrl);
+  void start(String newUrl);
   Future<void> stop();
 }

@@ -7,21 +7,21 @@ import 'package:vk_messenger_flutter/screens/photos_screen.dart';
 import 'package:vk_messenger_flutter/screens/router.dart';
 
 class AttachmentPhoto extends StatelessWidget {
-  Function _tapHandler(BuildContext context) => () async {
-        final attachment = Provider.of<Attachment>(context, listen: false);
+  Future<void> _tapHandler(BuildContext context) async {
+    final attachment = Provider.of<Attachment>(context, listen: false);
 
-        final message = Provider.of<Message>(context, listen: false);
+    final message = Provider.of<Message>(context, listen: false);
 
-        final attachments = message?.attachments ?? [];
-        final attachmentIndex =
-            attachments.indexWhere((element) => element == attachment);
+    final attachments = message?.attachments ?? [];
+    final attachmentIndex =
+        attachments.indexWhere((element) => element == attachment);
 
-        Router.sailor.navigate(PhotosScreen.routeUrl, params: {
-          'fromId': message?.fromId,
-          "attachmentIndex": attachmentIndex,
-          'attachments': attachments,
-        });
-      };
+    Router.sailor.navigate(PhotosScreen.routeUrl, params: {
+      'fromId': message?.fromId,
+      "attachmentIndex": attachmentIndex,
+      'attachments': attachments,
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class AttachmentPhoto extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTap: _tapHandler(context),
+      onTap: () => _tapHandler(context),
       child: Image(
         image: NetworkImage(sizes[0].url),
       ),

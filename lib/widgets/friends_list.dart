@@ -17,12 +17,13 @@ class FriendsList extends StatelessWidget {
     }
   }
 
-  Function _retryHandler(BuildContext context) => () {
-        // ignore: close_sinks
-        final friendsBloc = BlocProvider.of<FriendsBloc>(context);
+  void _retryHandler(BuildContext context) {
+    // ignore: close_sinks
+    final friendsBloc = BlocProvider.of<FriendsBloc>(context);
 
-        friendsBloc.add(FriendsFetch());
-      };
+    friendsBloc.add(FriendsFetch());
+  }
+
   @override
   Widget build(BuildContext context) {
     // ignore: close_sinks
@@ -40,7 +41,7 @@ class FriendsList extends StatelessWidget {
                   padding: EdgeInsets.only(top: 15),
                 ),
                 RaisedButton(
-                  onPressed: _retryHandler(context),
+                  onPressed: () => _retryHandler(context),
                   child: Text('Повторить'),
                 )
               ],

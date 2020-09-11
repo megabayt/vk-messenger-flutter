@@ -25,12 +25,12 @@ class _MessagesListState extends State<MessagesList> {
     }
   }
 
-  Function _retryHandler(BuildContext context) => () {
-        // ignore: close_sinks
-        final conversationBloc = BlocProvider.of<ConversationBloc>(context);
+  void _retryHandler(BuildContext context) {
+    // ignore: close_sinks
+    final conversationBloc = BlocProvider.of<ConversationBloc>(context);
 
-        conversationBloc.add(ConversationFetch());
-      };
+    conversationBloc.add(ConversationFetch());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class _MessagesListState extends State<MessagesList> {
                   padding: EdgeInsets.only(top: 15),
                 ),
                 RaisedButton(
-                  onPressed: _retryHandler(context),
+                  onPressed: () => _retryHandler(context),
                   child: Text('Повторить'),
                 )
               ],

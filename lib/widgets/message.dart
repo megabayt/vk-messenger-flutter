@@ -19,17 +19,16 @@ class Message extends StatelessWidget {
     });
   }
 
-  Function _selectMessageHandler(BuildContext context) => () {
-        final message =
-            Provider.of<MessageModel.Message>(context, listen: false);
-        // ignore: close_sinks
-        final conversationBloc = BlocProvider.of<ConversationBloc>(context);
+  void _selectMessageHandler(BuildContext context) {
+    final message = Provider.of<MessageModel.Message>(context, listen: false);
+    // ignore: close_sinks
+    final conversationBloc = BlocProvider.of<ConversationBloc>(context);
 
-        if (message?.isSent == false) {
-          return;
-        }
-        conversationBloc.add(ConversationSelectMessage(message?.id));
-      };
+    if (message?.isSent == false) {
+      return;
+    }
+    conversationBloc.add(ConversationSelectMessage(message?.id));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,17 +119,17 @@ class Message extends StatelessWidget {
 
     return BlocBuilder<ConversationBloc, ConversationState>(
       builder: (_, state) {
-        final selectedMessagesIds =
-            state.selectedMessagesIds ?? [];
+        final selectedMessagesIds = state.selectedMessagesIds ?? [];
 
         final selected =
-            selectedMessagesIds.indexWhere((element) => element == item?.id) != -1;
+            selectedMessagesIds.indexWhere((element) => element == item?.id) !=
+                -1;
 
         final showCheckbox = selectedMessagesIds.length > 0;
 
         return InkWell(
-          onTap: showCheckbox ? _selectMessageHandler(context) : noop,
-          onLongPress: _selectMessageHandler(context),
+          onTap: showCheckbox ? () => _selectMessageHandler(context) : noop,
+          onLongPress: () => _selectMessageHandler(context),
           child: Row(
             mainAxisAlignment: axisAlign,
             children: <Widget>[

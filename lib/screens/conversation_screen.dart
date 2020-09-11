@@ -15,31 +15,31 @@ class ConversationScreen extends StatelessWidget {
 
   final _profilesService = locator<ProfilesService>();
 
-  Function _popupMenuHandler(BuildContext context) => (PopupMenuAction action) {
-        // ignore: close_sinks
-        final conversationBloc = BlocProvider.of<ConversationBloc>(context);
+  void _popupMenuHandler(BuildContext context, PopupMenuAction action) {
+    // ignore: close_sinks
+    final conversationBloc = BlocProvider.of<ConversationBloc>(context);
 
-        switch (action) {
-          case PopupMenuAction.FORWARD:
-            Router.sailor.navigate(ForwardMessagesSelect.routeUrl);
-            break;
-          case PopupMenuAction.REMOVE:
-            conversationBloc.add(ConversationDeleteMessage());
-            break;
-          case PopupMenuAction.REMOVE_FOR_EVERYONE:
-            conversationBloc.add(ConversationDeleteMessage(true));
-            break;
-          case PopupMenuAction.REPLY:
-            conversationBloc.add(ConversationReplyMessage());
-            break;
-          case PopupMenuAction.MARK_IMPORTANT:
-            conversationBloc.add(ConversationMarkImportantMessage());
-            break;
-          case PopupMenuAction.EDIT:
-            conversationBloc.add(ConversationEditMessage());
-            break;
-        }
-      };
+    switch (action) {
+      case PopupMenuAction.FORWARD:
+        Router.sailor.navigate(ForwardMessagesSelect.routeUrl);
+        break;
+      case PopupMenuAction.REMOVE:
+        conversationBloc.add(ConversationDeleteMessage());
+        break;
+      case PopupMenuAction.REMOVE_FOR_EVERYONE:
+        conversationBloc.add(ConversationDeleteMessage(true));
+        break;
+      case PopupMenuAction.REPLY:
+        conversationBloc.add(ConversationReplyMessage());
+        break;
+      case PopupMenuAction.MARK_IMPORTANT:
+        conversationBloc.add(ConversationMarkImportantMessage());
+        break;
+      case PopupMenuAction.EDIT:
+        conversationBloc.add(ConversationEditMessage());
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +54,7 @@ class ConversationScreen extends StatelessWidget {
               if (selectedMessagesIds.length > 0)
                 PopupMenuButton<PopupMenuAction>(
                   icon: Icon(Icons.more_vert),
-                  onSelected: _popupMenuHandler(context),
+                  onSelected: (action) => _popupMenuHandler(context, action),
                   itemBuilder: (BuildContext context) {
                     var singleMessageRows = [];
                     if (selectedMessagesIds.length == 1) {

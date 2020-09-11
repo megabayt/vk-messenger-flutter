@@ -6,16 +6,16 @@ import 'package:vk_messenger_flutter/models/attachment.dart';
 import 'package:vk_messenger_flutter/models/message.dart';
 
 class AttachmentStory extends StatelessWidget {
-  Function _tapHandler(BuildContext context) => () async {
-        final attachment = Provider.of<Attachment>(context, listen: false);
+  Future<void> _tapHandler(BuildContext context) async {
+    final attachment = Provider.of<Attachment>(context, listen: false);
 
-        final url =
-            'https://vk.com/story${attachment?.story?.ownerId}_${attachment?.story?.id}';
+    final url =
+        'https://vk.com/story${attachment?.story?.ownerId}_${attachment?.story?.id}';
 
-        if (url != '' && await canLaunch(url)) {
-          await launch(url);
-        }
-      };
+    if (url != '' && await canLaunch(url)) {
+      await launch(url);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,14 +41,14 @@ class AttachmentStory extends StatelessWidget {
 
     if (sizes.length != 0) {
       return GestureDetector(
-          onTap: _tapHandler(context),
+          onTap: () => _tapHandler(context),
           child: Image(image: NetworkImage(sizes[0].url)));
     }
 
     final previews = attachment?.story?.video?.image ?? [];
     if (previews.length != 0) {
       return GestureDetector(
-          onTap: _tapHandler(context),
+          onTap: () => _tapHandler(context),
           child: Image(image: NetworkImage(previews[0].url)));
     }
 

@@ -29,14 +29,14 @@ class PlayerServiceImpl implements PlayerService {
     return _playerState;
   }
 
-  Function start(String newUrl) => () async {
-        if (newUrl == _url && _playerState == AudioPlayerState.PAUSED) {
-          _player.resume();
-          return;
-        }
-        _url = newUrl;
-        _player.play(_url);
-      };
+  void start(String newUrl) async {
+    if (newUrl == _url && _playerState == AudioPlayerState.PAUSED) {
+      _player.resume();
+      return;
+    }
+    _url = newUrl;
+    _player.play(_url);
+  }
 
   Future<void> stop() async {
     _player.stop();
