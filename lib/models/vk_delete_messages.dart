@@ -1,14 +1,7 @@
-// To parse this JSON data, do
-//
-//     final vkFriends = vkFriendsFromJson(jsonString);
-
 import 'package:meta/meta.dart';
 import 'dart:convert';
 
 import 'package:vk_messenger_flutter/models/vk_error.dart';
-
-VkDeleteMessagesResponseBody vkFriendsFromJson(String str) =>
-    VkDeleteMessagesResponseBody.fromJson(json.decode(str));
 
 String vkFriendsToJson(VkDeleteMessagesResponseBody data) =>
     json.encode(data.toJson());

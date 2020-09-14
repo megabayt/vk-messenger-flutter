@@ -3,9 +3,6 @@ import 'dart:convert';
 
 import 'package:vk_messenger_flutter/models/vk_error.dart';
 
-VkSendMessageResponseBody vkFriendsFromJson(String str) =>
-    VkSendMessageResponseBody.fromJson(json.decode(str));
-
 String vkFriendsToJson(VkSendMessageResponseBody data) =>
     json.encode(data.toJson());
 
