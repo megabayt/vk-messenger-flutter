@@ -30,33 +30,28 @@ class VkServiceImpl implements VKService {
   }
 
   Future<void> login() async {
-    try {
-      if (!_instance.isInitialized) {
-        await _instance.initSdk(api.appId);
-      }
-      final isLoggedIn = await _instance.isLoggedIn;
-      if (isLoggedIn) {
-        _tokenObject = await _instance.accessToken;
-        return;
-      }
-      final loginResult = await _instance
-          .logIn(scope: [VKScope.friends, VKScope.messages, VKScope.offline]);
-      if (loginResult.isValue) {
-        final loginData = loginResult.asValue.value;
-        if (loginData.isCanceled) {
-          // Пользователь отменил авторизацию, пробуем снова
-          throw VKServiceError('User cancelled login request');
-        } else {
-          // Вход выполнен
-          _tokenObject = loginData.accessToken;
-        }
+    if (!_instance.isInitialized) {
+      await _instance.initSdk(api.appId);
+    }
+    final isLoggedIn = await _instance.isLoggedIn;
+    if (isLoggedIn) {
+      _tokenObject = await _instance.accessToken;
+      return;
+    }
+    final loginResult = await _instance
+        .logIn(scope: [VKScope.friends, VKScope.messages, VKScope.offline]);
+    if (loginResult.isValue) {
+      final loginData = loginResult.asValue.value;
+      if (loginData.isCanceled) {
+        // Пользователь отменил авторизацию, пробуем снова
+        throw VKServiceError('User cancelled login request');
       } else {
-        // Словили ошибку авторизации, пробуем снова
-        throw VKServiceError(loginResult.asError.error);
+        // Вход выполнен
+        _tokenObject = loginData.accessToken;
       }
-    } catch (error) {
-      // Словили исключение, пробуем снова
-      throw VKServiceError(error);
+    } else {
+      // Словили ошибку авторизации, пробуем снова
+      throw VKServiceError(loginResult.asError.error);
     }
   }
 
@@ -141,7 +136,8 @@ class VkServiceImpl implements VKService {
     return friends;
   }
 
-  Future<VkSendMessageResponseBody> sendMessage(Map<String, String> params) async {
+  Future<VkSendMessageResponseBody> sendMessage(
+      Map<String, String> params) async {
     final sendMessageUrl =
         '${api.BASE_URL}messages.send?access_token=$token&v=${api.VERSION}&extended=1' +
             '${serialize(params)}';
