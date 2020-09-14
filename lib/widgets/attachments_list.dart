@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skeleton_text/skeleton_text.dart';
 
 import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
+import 'package:vk_messenger_flutter/models/local_attachment.dart';
 import 'package:vk_messenger_flutter/utils/helpers.dart';
 
 class AttachmentsList extends StatelessWidget {
@@ -10,9 +12,23 @@ class AttachmentsList extends StatelessWidget {
         .add(AttachmentsRemoveFwdMessages());
   }
 
+  void _handleDeleteAttachment(
+      BuildContext context, LocalAttachment attachment) {
+    BlocProvider.of<AttachmentsBloc>(context)
+        .add(AttachmentsRemoveAttachment(attachment));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AttachmentsBloc, AttachmentsState>(
+    return BlocConsumer<AttachmentsBloc, AttachmentsState>(
+      listener: (_, state) {
+        if (state.error != '') {
+          final snackBar = SnackBar(
+            content: Text(state.error),
+          );
+          Scaffold.of(context).showSnackBar(snackBar);
+        }
+      },
       builder: (_, state) {
         final fwdMessages = state.fwdMessages ?? [];
         final attachments = state.attachments ?? [];
@@ -28,13 +44,23 @@ class AttachmentsList extends StatelessWidget {
                 ),
               ),
             ...attachments.map((element) {
-              return ListTile(
-                title: Text(getAttachmentReplacer(element)),
+              final title = element.isFetching
+                  ? 'Идет загрузка'
+                  : getLocalAttachmentReplacer(element);
+
+              final tile = ListTile(
+                title: Text(title),
                 trailing: IconButton(
-                  onPressed: () => {},
+                  onPressed: () => _handleDeleteAttachment(context, element),
                   icon: Icon(Icons.delete),
                 ),
               );
+
+              return element.isFetching
+                  ? SkeletonAnimation(
+                      child: tile,
+                    )
+                  : tile;
             }).toList(),
           ],
         );

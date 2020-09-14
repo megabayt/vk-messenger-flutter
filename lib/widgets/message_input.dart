@@ -54,8 +54,12 @@ class _MessageInputState extends State<MessageInput> {
             var attachCount = 0;
 
             final fwdMessages = attachmentsState?.fwdMessages ?? [];
-
             if (fwdMessages.length != 0) {
+              attachCount += 1;
+            }
+
+            final attachments = attachmentsState?.attachments ?? [];
+            if (attachments.length != 0) {
               attachCount += 1;
             }
 

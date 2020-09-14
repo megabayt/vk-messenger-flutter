@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
+import 'package:vk_messenger_flutter/constants/math.dart';
 import 'package:vk_messenger_flutter/models/message.dart';
 
 import 'package:vk_messenger_flutter/models/vk_conversation.dart';
@@ -78,7 +79,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       selectedMessagesIds: [],
     );
     if (!event.fwdMode) {
-      _attachmentsBloc.add(AttachmentsRemoveFwdMessages());
+      _attachmentsBloc.add(AttachmentsClearAttachments());
     }
     Router.sailor.navigate(ConversationScreen.routeUrl);
     this.add(ConversationFetch());
@@ -176,10 +177,13 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
   Stream<ConversationState> _mapConversationSendMessageToState(
       ConversationSendMessage event) async* {
     final fwdMessages = (_attachmentsBloc.state.fwdMessages ?? []).join(',');
-    if (event.message == '' && fwdMessages == '') {
+    final attachments = (_attachmentsBloc.state.attachments ?? [])
+        .where((element) => element != null && !element.isFetching)
+        .map((element) => element.path)
+        .join(',');
+    if (event.message == '' && fwdMessages == '' && attachments == '') {
       return;
     }
-    const int32max = 1 << 32;
     final randomId = Random.secure().nextInt(int32max);
     var message = Message(
       id: randomId,
@@ -206,6 +210,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
         'random_id': Random.secure().nextInt(int32max).toString(),
         'message': event.message,
         'forward_messages': fwdMessages,
+        'attachment': attachments,
       });
       if (result.error != null) {
         // TODO: throw custom error
@@ -243,7 +248,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     yield state.copyWith(
       selectedMessagesIds: [],
     );
-    _attachmentsBloc.add(AttachmentsRemoveFwdMessages());
+    _attachmentsBloc.add(AttachmentsClearAttachments());
     _conversationsBloc.add(
       ConversationsChangeLastMessage(
         message,

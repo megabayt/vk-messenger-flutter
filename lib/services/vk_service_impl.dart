@@ -9,6 +9,8 @@ import 'package:vk_messenger_flutter/models/vk_conversations.dart';
 import 'package:vk_messenger_flutter/models/vk_delete_messages.dart';
 import 'package:vk_messenger_flutter/models/vk_friends.dart';
 import 'package:vk_messenger_flutter/models/vk_messages.dart';
+import 'package:vk_messenger_flutter/models/vk_photo_messages_upload_server.dart';
+import 'package:vk_messenger_flutter/models/vk_save_messages_photo.dart';
 import 'package:vk_messenger_flutter/models/vk_send_message.dart';
 import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
@@ -38,8 +40,12 @@ class VkServiceImpl implements VKService {
       _tokenObject = await _instance.accessToken;
       return;
     }
-    final loginResult = await _instance
-        .logIn(scope: [VKScope.friends, VKScope.messages, VKScope.offline]);
+    final loginResult = await _instance.logIn(scope: [
+      VKScope.friends,
+      VKScope.messages,
+      VKScope.photos,
+      VKScope.offline
+    ]);
     if (loginResult.isValue) {
       final loginData = loginResult.asValue.value;
       if (loginData.isCanceled) {
@@ -83,10 +89,10 @@ class VkServiceImpl implements VKService {
 
   Future<VkConversationResponseBody> getHistory(
       Map<String, String> params) async {
-    final getConversationUrl =
+    final getHistoryUrl =
         '${api.BASE_URL}messages.getHistory?access_token=$token&v=${api.VERSION}&extended=1${serialize(params)}';
 
-    final response = await http.get(getConversationUrl);
+    final response = await http.get(getHistoryUrl);
 
     Map<String, dynamic> responseBody =
         response?.body != null ? json.decode(response?.body) : null;
@@ -168,5 +174,39 @@ class VkServiceImpl implements VKService {
       return null;
     }
     return VkDeleteMessagesResponseBody.fromJson(responseBody);
+  }
+
+  Future<VkPhotoMessagesUploadServerResponseBody> getPhotoMessagesUploadServer(
+      Map<String, String> params) async {
+    final getUploadServerUrl =
+        '${api.BASE_URL}photos.getMessagesUploadServer?access_token=$token&v=${api.VERSION}&extended=1' +
+            '${serialize(params)}';
+
+    final response = await http.get(getUploadServerUrl);
+
+    Map<String, dynamic> responseBody =
+        response?.body != null ? json.decode(response?.body) : null;
+
+    if (responseBody == null) {
+      return null;
+    }
+    return VkPhotoMessagesUploadServerResponseBody.fromJson(responseBody);
+  }
+
+  Future<VkSaveMessagesPhoto> saveMessagesPhoto(
+      Map<String, String> params) async {
+    final saveMessagesPhotoUrl =
+        '${api.BASE_URL}photos.saveMessagesPhoto?access_token=$token&v=${api.VERSION}&extended=1' +
+            '${serialize(params)}';
+
+    final response = await http.get(saveMessagesPhotoUrl);
+
+    Map<String, dynamic> responseBody =
+        response?.body != null ? json.decode(response?.body) : null;
+
+    if (responseBody == null) {
+      return null;
+    }
+    return VkSaveMessagesPhoto.fromJson(responseBody);
   }
 }

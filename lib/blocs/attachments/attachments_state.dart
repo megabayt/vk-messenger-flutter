@@ -4,7 +4,7 @@ part of 'attachments_bloc.dart';
 class AttachmentsState {
   final bool isFetching;
   final String error;
-  final List<Attachment> attachments;
+  final List<LocalAttachment> attachments;
   final List<int> fwdMessages;
 
   AttachmentsState({
@@ -18,7 +18,7 @@ class AttachmentsState {
     bool isFetching,
     String error,
     List<int> fwdMessages,
-    List<Attachment> attachments,
+    List<LocalAttachment> attachments,
   }) =>
       AttachmentsState(
         isFetching: isFetching ?? this.isFetching,
