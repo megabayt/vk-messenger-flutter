@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
+import 'package:vk_messenger_flutter/screens/attachments_screen.dart';
+import 'package:vk_messenger_flutter/screens/router.dart';
 
 class MessageInput extends StatefulWidget {
   @override
@@ -15,6 +17,10 @@ class _MessageInputState extends State<MessageInput> {
 
   void _pickEmojiHandler(Emoji emoji, Category _) {
     textEditingController.text += emoji.emoji;
+  }
+
+  void _tapAttachHandler() {
+    Router.sailor.navigate(AttachmentsScreen.routeUrl);
   }
 
   Future<void> _sendHandler(context) async {
@@ -49,7 +55,7 @@ class _MessageInputState extends State<MessageInput> {
 
         final attachBtn = IconButton(
           icon: Icon(Icons.attach_file),
-          onPressed: () {},
+          onPressed: _tapAttachHandler,
           color: primaryColor.withOpacity(.5),
         );
 

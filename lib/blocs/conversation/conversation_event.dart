@@ -40,6 +40,8 @@ class ConversationUnSelectMessage extends ConversationEvent {
 
 class ConversationForwardMessage extends ConversationEvent {}
 
+class ConversationRemoveFwdMessages extends ConversationEvent {}
+
 class ConversationDeleteMessage extends ConversationEvent {
   final bool removeForEveryone;
 

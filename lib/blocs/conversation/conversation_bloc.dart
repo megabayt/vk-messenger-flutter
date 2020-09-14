@@ -53,6 +53,9 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     if (event is ConversationForwardMessage) {
       yield* _mapConversationForwardMessageToState();
     }
+    if (event is ConversationRemoveFwdMessages) {
+      yield* _mapConversationRemoveFwdMessagesToState();
+    }
     if (event is ConversationDeleteMessage) {
       yield* _mapConversationDeleteMessageToState(event);
     }
@@ -297,6 +300,12 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     yield state.copyWith(
       selectedMessagesIds: [],
       fwdMessages: state.selectedMessagesIds,
+    );
+  }
+
+  Stream<ConversationState> _mapConversationRemoveFwdMessagesToState() async* {
+    yield state.copyWith(
+      fwdMessages: [],
     );
   }
 

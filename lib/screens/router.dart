@@ -2,6 +2,7 @@ import 'package:sailor/sailor.dart';
 
 import 'package:vk_messenger_flutter/models/attachment.dart';
 import 'package:vk_messenger_flutter/models/message.dart';
+import 'package:vk_messenger_flutter/screens/attachments_screen.dart';
 import 'package:vk_messenger_flutter/screens/conversation_screen.dart';
 import 'package:vk_messenger_flutter/screens/conversations_screen.dart';
 import 'package:vk_messenger_flutter/screens/forward_messages_select.dart';
@@ -52,6 +53,10 @@ class Router {
         SailorRoute(
           name: ForwardMessagesSelect.routeUrl,
           builder: (context, args, params) => ForwardMessagesSelect(),
+        ),
+        SailorRoute(
+          name: AttachmentsScreen.routeUrl,
+          builder: (context, args, params) => AttachmentsScreen(),
         )
       ],
     );
