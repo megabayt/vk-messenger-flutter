@@ -50,8 +50,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
       });
 
       if (result.error != null) {
-        // TODO: throw custom error
-        throw Exception();
+        throw Exception(result.error?.errorMsg);
       }
 
       yield state.copyWith(
@@ -96,8 +95,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
       });
 
       if (data.error != null) {
-        // TODO: throw custom error
-        throw Exception();
+        throw Exception(data.error?.errorMsg);
       }
 
       yield state.copyWith(

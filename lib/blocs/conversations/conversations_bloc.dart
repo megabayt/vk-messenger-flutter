@@ -51,8 +51,7 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
       });
 
       if (result.error != null) {
-        // TODO: throw custom error
-        throw Exception();
+        throw Exception(result.error?.errorMsg);
       }
 
       yield state.copyWith(
@@ -94,8 +93,7 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
       });
 
       if (data.error != null) {
-        // TODO: throw custom error
-        throw Exception();
+        throw Exception(data.error?.errorMsg);
       }
 
       yield state.copyWith(

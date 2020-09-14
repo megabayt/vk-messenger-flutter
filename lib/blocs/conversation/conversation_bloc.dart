@@ -101,8 +101,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
           {'count': PAGE_COUNT, 'offset': '0', 'peer_id': _peerId.toString()});
 
       if (result.error != null) {
-        // TODO: throw custom error
-        throw Exception();
+        throw Exception(result.error?.errorMsg);
       }
 
       var newData = Map<int, VkConversationResponse>.from(
@@ -152,8 +151,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       });
 
       if (data.error != null) {
-        // TODO: throw custom error
-        throw Exception();
+        throw Exception(data.error?.errorMsg);
       }
 
       final newData = Map<int, VkConversationResponse>.from(
@@ -213,8 +211,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
         'attachment': attachments,
       });
       if (result.error != null) {
-        // TODO: throw custom error
-        throw Exception();
+        throw Exception(result.error?.errorMsg);
       }
       messageId = result.response;
     } catch (e) {
@@ -229,8 +226,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       });
 
       if (messageQuery.error != null) {
-        // TODO: throw custom error
-        throw Exception();
+        throw Exception(messageQuery.error?.errorMsg);
       }
 
       final messages = messageQuery?.response?.items ?? [];
@@ -315,8 +311,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       });
 
       if (result.error != null) {
-        // TODO: throw custom error
-        throw Exception();
+        throw Exception(result.error?.errorMsg);
       }
 
       newData[_peerId].items.removeWhere((message) =>
