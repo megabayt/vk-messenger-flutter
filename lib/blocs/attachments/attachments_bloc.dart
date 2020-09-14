@@ -77,6 +77,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       );
 
       yield state.copyWith(
+        error: '',
         attachments: [
           ...state.attachments,
           attachment,
@@ -88,7 +89,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       });
 
       if (uploadServer?.error != null) {
-        throw Exception();
+        throw Exception('cannot get upload server');
       }
 
       final uploadResult = VkPhotoUploadResult.fromJson(
@@ -105,7 +106,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       });
 
       if (saveResult?.error != null) {
-        throw Exception();
+        throw Exception('cannot save uploaded photo');
       }
 
       final ownerId = saveResult.response.ownerId;
