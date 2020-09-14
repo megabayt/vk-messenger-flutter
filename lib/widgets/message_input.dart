@@ -60,7 +60,7 @@ class _MessageInputState extends State<MessageInput> {
 
             final attachments = attachmentsState?.attachments ?? [];
             if (attachments.length != 0) {
-              attachCount += 1;
+              attachCount += attachments.length;
             }
 
             final attachBtn = IconButton(
