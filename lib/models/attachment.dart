@@ -24,7 +24,8 @@ class Attachment {
         this.video,
         this.story,
         this.gift,
-        this.audio
+        this.audio,
+        this.localPath = '',
     });
 
     final AttachmentType type;
@@ -38,6 +39,7 @@ class Attachment {
     final Story story;
     final Gift gift;
     final Audio audio;
+    final String localPath;
 
     factory Attachment.fromRawJson(String str) => Attachment.fromJson(json.decode(str));
 

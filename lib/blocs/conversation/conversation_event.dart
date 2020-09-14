@@ -7,7 +7,7 @@ class ConversationSetPeerId extends ConversationEvent {
   final int peerId;
   final bool fwdMode;
 
-  ConversationSetPeerId(this.peerId, [this.fwdMode]);
+  ConversationSetPeerId(this.peerId, [this.fwdMode = false]);
 }
 
 class ConversationFetch extends ConversationEvent {}
@@ -37,10 +37,6 @@ class ConversationUnSelectMessage extends ConversationEvent {
 
   ConversationUnSelectMessage(this.messageId);
 }
-
-class ConversationForwardMessage extends ConversationEvent {}
-
-class ConversationRemoveFwdMessages extends ConversationEvent {}
 
 class ConversationDeleteMessage extends ConversationEvent {
   final bool removeForEveryone;

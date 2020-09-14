@@ -7,6 +7,8 @@ PODS:
   - flutter_login_vk (0.1.0):
     - Flutter
     - VK-ios-sdk (~> 1.5)
+  - image_picker (0.0.1):
+    - Flutter
   - path_provider (0.0.1):
     - Flutter
   - shared_preferences (0.0.1):
@@ -20,6 +22,7 @@ DEPENDENCIES:
   - emoji_picker (from `.symlinks/plugins/emoji_picker/ios`)
   - Flutter (from `Flutter`)
   - flutter_login_vk (from `.symlinks/plugins/flutter_login_vk/ios`)
+  - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
@@ -37,6 +40,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_login_vk:
     :path: ".symlinks/plugins/flutter_login_vk/ios"
+  image_picker:
+    :path: ".symlinks/plugins/image_picker/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
   shared_preferences:
@@ -49,6 +54,7 @@ SPEC CHECKSUMS:
   emoji_picker: 0e868059aa18f9473d234f3d0701fbd4d5fd310c
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_login_vk: d21edb4b6ace07e70f894f1ec6c3728b5ba82dcb
+  image_picker: 9c3312491f862b28d21ecd8fdf0ee14e601b3f09
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef

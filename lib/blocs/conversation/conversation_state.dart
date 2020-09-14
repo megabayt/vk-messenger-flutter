@@ -9,7 +9,6 @@ class ConversationState {
   final ConversationEvent lastEvent;
   final bool showEmojiKeyboard;
   final List<int> selectedMessagesIds;
-  final List<int> fwdMessages;
 
   int get currentCount {
     return data != null && data.containsKey(peerId)
@@ -40,7 +39,6 @@ class ConversationState {
     this.lastEvent,
     this.showEmojiKeyboard = false,
     this.selectedMessagesIds = const [],
-    this.fwdMessages = const [],
   });
 
   ConversationState copyWith({
@@ -51,7 +49,6 @@ class ConversationState {
     ConversationEvent lastEvent,
     bool showEmojiKeyboard,
     List<int> selectedMessagesIds,
-    List<int> fwdMessages,
   }) =>
       ConversationState(
         peerId: peerId ?? this.peerId,
@@ -61,6 +58,5 @@ class ConversationState {
         lastEvent: lastEvent ?? this.lastEvent,
         showEmojiKeyboard: showEmojiKeyboard ?? this.showEmojiKeyboard,
         selectedMessagesIds: selectedMessagesIds ?? this.selectedMessagesIds,
-        fwdMessages: fwdMessages ?? this.fwdMessages,
       );
 }

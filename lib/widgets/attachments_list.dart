@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
+import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
+import 'package:vk_messenger_flutter/utils/helpers.dart';
 
 class AttachmentsList extends StatelessWidget {
   void _handleDeleteFwdMessages(BuildContext context) {
-    BlocProvider.of<ConversationBloc>(context)
-        .add(ConversationRemoveFwdMessages());
+    BlocProvider.of<AttachmentsBloc>(context)
+        .add(AttachmentsRemoveFwdMessages());
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ConversationBloc, ConversationState>(
+    return BlocBuilder<AttachmentsBloc, AttachmentsState>(
       builder: (_, state) {
         final fwdMessages = state.fwdMessages ?? [];
+        final attachments = state.attachments ?? [];
 
         return ListView(
           children: <Widget>[
@@ -25,6 +27,15 @@ class AttachmentsList extends StatelessWidget {
                   icon: Icon(Icons.delete),
                 ),
               ),
+            ...attachments.map((element) {
+              return ListTile(
+                title: Text(getAttachmentReplacer(element)),
+                trailing: IconButton(
+                  onPressed: () => {},
+                  icon: Icon(Icons.delete),
+                ),
+              );
+            }).toList(),
           ],
         );
       },

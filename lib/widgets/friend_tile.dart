@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 
 import 'package:vk_messenger_flutter/models/profile.dart';
@@ -14,8 +15,11 @@ class FriendTile extends StatelessWidget {
 
     // ignore: close_sinks
     final conversationBloc = BlocProvider.of<ConversationBloc>(context);
+    // ignore: close_sinks
+    final attachmentsBloc = BlocProvider.of<AttachmentsBloc>(context);
 
-    conversationBloc.add(ConversationForwardMessage());
+    attachmentsBloc.add(AttachmentsForwardMessage(
+        conversationBloc.state.selectedMessagesIds ?? []));
     Router.sailor.popUntil((route) {
       if (route.settings.name == ConversationsScreen.routeUrl) {
         return true;

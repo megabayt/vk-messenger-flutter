@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
 import 'package:vk_messenger_flutter/models/message.dart';
 
@@ -19,9 +20,12 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
   static const PAGE_COUNT = '20';
   final VKService _vkService = locator<VKService>();
   final ConversationsBloc _conversationsBloc;
+  final AttachmentsBloc _attachmentsBloc;
 
-  ConversationBloc(ConversationsBloc conversationsBloc)
+  ConversationBloc(
+      ConversationsBloc conversationsBloc, AttachmentsBloc attachmentsBloc)
       : _conversationsBloc = conversationsBloc,
+        _attachmentsBloc = attachmentsBloc,
         super(ConversationState());
 
   get _peerId {
@@ -50,12 +54,6 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     if (event is ConversationSelectMessage) {
       yield* _mapConversationSelectMessageToState(event);
     }
-    if (event is ConversationForwardMessage) {
-      yield* _mapConversationForwardMessageToState();
-    }
-    if (event is ConversationRemoveFwdMessages) {
-      yield* _mapConversationRemoveFwdMessagesToState();
-    }
     if (event is ConversationDeleteMessage) {
       yield* _mapConversationDeleteMessageToState(event);
     }
@@ -77,9 +75,11 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       ConversationSetPeerId event) async* {
     yield state.copyWith(
       peerId: event.peerId,
-      fwdMessages: event.fwdMode == true ? state.fwdMessages : [],
       selectedMessagesIds: [],
     );
+    if (!event.fwdMode) {
+      _attachmentsBloc.add(AttachmentsRemoveFwdMessages());
+    }
     Router.sailor.navigate(ConversationScreen.routeUrl);
     this.add(ConversationFetch());
   }
@@ -175,11 +175,11 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
   Stream<ConversationState> _mapConversationSendMessageToState(
       ConversationSendMessage event) async* {
-    final fwdMessages = (state.fwdMessages ?? []).join(',');
+    final fwdMessages = (_attachmentsBloc.state.fwdMessages ?? []).join(',');
     if (event.message == '' && fwdMessages == '') {
       return;
     }
-    final int32max = 1 << 32;
+    const int32max = 1 << 32;
     final randomId = Random.secure().nextInt(int32max);
     var message = Message(
       id: randomId,
@@ -241,9 +241,9 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
     yield* _appendOrRemoveMessage(randomId, message);
     yield state.copyWith(
-      fwdMessages: [],
       selectedMessagesIds: [],
     );
+    _attachmentsBloc.add(AttachmentsRemoveFwdMessages());
     _conversationsBloc.add(
       ConversationsChangeLastMessage(
         message,
@@ -294,19 +294,6 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
         selectedMessagesIds: selectedMessagesIds,
       );
     }
-  }
-
-  Stream<ConversationState> _mapConversationForwardMessageToState() async* {
-    yield state.copyWith(
-      selectedMessagesIds: [],
-      fwdMessages: state.selectedMessagesIds,
-    );
-  }
-
-  Stream<ConversationState> _mapConversationRemoveFwdMessagesToState() async* {
-    yield state.copyWith(
-      fwdMessages: [],
-    );
   }
 
   Stream<ConversationState> _mapConversationDeleteMessageToState(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
@@ -34,9 +35,12 @@ class ConversationsList extends StatelessWidget {
   void _chatTapHandler(BuildContext context, VkConversationItem item) {
     // ignore: close_sinks
     final conversationBloc = BlocProvider.of<ConversationBloc>(context);
+    // ignore: close_sinks
+    final attachmentsBloc = BlocProvider.of<AttachmentsBloc>(context);
 
     if (fwdSelectMode) {
-      conversationBloc.add(ConversationForwardMessage());
+      attachmentsBloc.add(AttachmentsForwardMessage(
+          conversationBloc.state.selectedMessagesIds ?? []));
       Router.sailor.popUntil((route) {
         if (route.settings.name == ConversationsScreen.routeUrl) {
           return true;
@@ -45,7 +49,8 @@ class ConversationsList extends StatelessWidget {
       });
     }
 
-    conversationBloc.add(ConversationSetPeerId(item?.conversation?.peer?.id, fwdSelectMode));
+    conversationBloc.add(
+        ConversationSetPeerId(item?.conversation?.peer?.id, fwdSelectMode));
   }
 
   @override
