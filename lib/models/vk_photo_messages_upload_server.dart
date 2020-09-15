@@ -1,11 +1,7 @@
 import 'package:meta/meta.dart';
 import 'package:vk_messenger_flutter/models/upload_server.dart';
-import 'dart:convert';
 
 import 'package:vk_messenger_flutter/models/vk_error.dart';
-
-String vkFriendsToJson(VkPhotoMessagesUploadServerResponseBody data) =>
-    json.encode(data.toJson());
 
 class VkPhotoMessagesUploadServerResponseBody {
   VkPhotoMessagesUploadServerResponseBody({

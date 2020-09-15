@@ -1,10 +1,6 @@
 import 'package:meta/meta.dart';
-import 'dart:convert';
 
 import 'package:vk_messenger_flutter/models/vk_error.dart';
-
-String vkFriendsToJson(VkDeleteMessagesResponseBody data) =>
-    json.encode(data.toJson());
 
 class VkDeleteMessagesResponseBody {
   VkDeleteMessagesResponseBody({
