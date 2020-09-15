@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 import 'package:vk_messenger_flutter/models/local_attachment.dart';
 import 'package:vk_messenger_flutter/models/vk_photo_upload_result.dart';
+import 'package:vk_messenger_flutter/models/vk_video_upload_result.dart';
 import 'package:vk_messenger_flutter/services/interfaces/upload_service.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
@@ -37,8 +38,17 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
     if (event is AttachmentsAttachImage) {
       yield* _mapAttachmentsAttachImageToState(event);
     }
+    if (event is AttachmentsAttachVideo) {
+      yield* _mapAttachmentsAttachVideoToState(event);
+    }
     if (event is AttachmentsRemoveAttachment) {
-      yield* mapAttachmentsRemoveAttachmentToState(event);
+      yield* _mapAttachmentsRemoveAttachmentToState(event);
+    }
+    if (event is AttachmentsAttachAudio) {
+      yield* _mapAttachmentsAttachAudioToState();
+    }
+    if (event is AttachmentsAttachDocument) {
+      yield* _mapAttachmentsAttachDocumentToState();
     }
   }
 
@@ -132,7 +142,67 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
     }
   }
 
-  Stream<AttachmentsState> mapAttachmentsRemoveAttachmentToState(
+  Stream<AttachmentsState> _mapAttachmentsAttachVideoToState(
+      AttachmentsAttachVideo event) async* {
+    try {
+      final pickedFile = await _picker.getVideo(source: event.imageSource);
+
+      if (pickedFile == null) {
+        return;
+      }
+
+      final attachment = LocalAttachment(
+        path: pickedFile?.path,
+        isFetching: true,
+      );
+
+      yield state.copyWith(
+        error: '',
+        attachments: [
+          ...state.attachments,
+          attachment,
+        ],
+      );
+
+      final saveResult = await _vkService.saveVideo({
+        'is_private': '1',
+      });
+
+      if (saveResult?.error != null) {
+        throw Exception('cannot save video');
+      }
+
+      final uploadResult = VkVideoUploadResult.fromJson(
+        await _uploadService.upload(
+          File(pickedFile.path),
+          saveResult.response.uploadUrl,
+        ),
+      );
+
+      final ownerId = saveResult.response.ownerId;
+      final photoId = uploadResult.videoId;
+
+      final attachments = List<LocalAttachment>.from(state?.attachments ?? []);
+
+      yield state.copyWith(
+        attachments: attachments.map((element) {
+          if (element == attachment) {
+            return LocalAttachment(
+                isFetching: false, path: 'video${ownerId}_$photoId');
+          }
+          return element;
+        }).toList(),
+      );
+    } catch (error) {
+      var errorText = 'Произошла ошибка';
+      if (error is PlatformException && error?.code == 'photo_access_denied') {
+        errorText = 'Нет доступа к галерее изображений';
+      }
+      yield state.copyWith(error: errorText);
+    }
+  }
+
+  Stream<AttachmentsState> _mapAttachmentsRemoveAttachmentToState(
       AttachmentsRemoveAttachment event) async* {
     yield state.copyWith(
       attachments: state.attachments
@@ -140,4 +210,13 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
           .toList(),
     );
   }
+
+  Stream<AttachmentsState> _mapAttachmentsAttachAudioToState() async* {
+
+  }
+
+  Stream<AttachmentsState> _mapAttachmentsAttachDocumentToState() async* {
+
+  }
+
 }

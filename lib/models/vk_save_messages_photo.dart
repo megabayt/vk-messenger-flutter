@@ -1,11 +1,7 @@
-import 'dart:convert';
-
 import 'package:meta/meta.dart';
 import 'package:vk_messenger_flutter/models/photo.dart';
 
 import 'package:vk_messenger_flutter/models/vk_error.dart';
-
-String vkFriendsToJson(VkSaveMessagesPhoto data) => json.encode(data.toJson());
 
 class VkSaveMessagesPhoto {
   VkSaveMessagesPhoto({

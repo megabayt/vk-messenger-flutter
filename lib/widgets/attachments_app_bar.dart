@@ -35,6 +35,21 @@ class AttachmentsAppBar extends StatelessWidget implements PreferredSizeWidget {
         BlocProvider.of<AttachmentsBloc>(context)
             .add(AttachmentsAttachImage(peerId, ImageSource.camera));
         break;
+      case AttachmentsAppBarMenuAction.VIDEO_GALLERY:
+        BlocProvider.of<AttachmentsBloc>(context)
+            .add(AttachmentsAttachVideo(ImageSource.gallery));
+        break;
+      case AttachmentsAppBarMenuAction.VIDEO_CAMERA:
+        BlocProvider.of<AttachmentsBloc>(context)
+            .add(AttachmentsAttachVideo(ImageSource.camera));
+        break;
+      case AttachmentsAppBarMenuAction.AUDIO:
+        BlocProvider.of<AttachmentsBloc>(context).add(AttachmentsAttachAudio());
+        break;
+      case AttachmentsAppBarMenuAction.DOCUMENT:
+        BlocProvider.of<AttachmentsBloc>(context)
+            .add(AttachmentsAttachDocument());
+        break;
     }
   }
 
@@ -57,10 +72,6 @@ class AttachmentsAppBar extends StatelessWidget implements PreferredSizeWidget {
                 value: AttachmentsAppBarMenuAction.PHOTO_CAMERA,
               ),
               PopupMenuItem(
-                child: Text('Фото (из моих альбомов)'),
-                value: AttachmentsAppBarMenuAction.PHOTO_ALBUM,
-              ),
-              PopupMenuItem(
                 child: Text('Аудио'),
                 value: AttachmentsAppBarMenuAction.AUDIO,
               ),
@@ -71,10 +82,6 @@ class AttachmentsAppBar extends StatelessWidget implements PreferredSizeWidget {
               PopupMenuItem(
                 child: Text('Видео (с камеры)'),
                 value: AttachmentsAppBarMenuAction.VIDEO_CAMERA,
-              ),
-              PopupMenuItem(
-                child: Text('Видео (из моих альбомов)'),
-                value: AttachmentsAppBarMenuAction.VIDEO_ALBUM,
               ),
               PopupMenuItem(
                 child: Text('Документ'),
@@ -95,11 +102,9 @@ class AttachmentsAppBar extends StatelessWidget implements PreferredSizeWidget {
 enum AttachmentsAppBarMenuAction {
   PHOTO_GALLERY,
   PHOTO_CAMERA,
-  PHOTO_ALBUM,
   AUDIO,
   VIDEO_GALLERY,
   VIDEO_CAMERA,
-  VIDEO_ALBUM,
   DOCUMENT,
   GEO,
 }

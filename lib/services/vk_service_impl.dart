@@ -11,6 +11,7 @@ import 'package:vk_messenger_flutter/models/vk_friends.dart';
 import 'package:vk_messenger_flutter/models/vk_messages.dart';
 import 'package:vk_messenger_flutter/models/vk_photo_messages_upload_server.dart';
 import 'package:vk_messenger_flutter/models/vk_save_messages_photo.dart';
+import 'package:vk_messenger_flutter/models/vk_save_video.dart';
 import 'package:vk_messenger_flutter/models/vk_send_message.dart';
 import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
@@ -44,6 +45,7 @@ class VkServiceImpl implements VKService {
       VKScope.friends,
       VKScope.messages,
       VKScope.photos,
+      VKScope.video,
       VKScope.offline
     ]);
     if (loginResult.isValue) {
@@ -208,5 +210,21 @@ class VkServiceImpl implements VKService {
       return null;
     }
     return VkSaveMessagesPhoto.fromJson(responseBody);
+  }
+
+  Future<VkSaveVideoResponseBody> saveVideo(Map<String, String> params) async {
+    final saveVideoUrl =
+        '${api.BASE_URL}video.save?access_token=$token&v=${api.VERSION}&extended=1' +
+            '${serialize(params)}';
+
+    final response = await http.get(saveVideoUrl);
+
+    Map<String, dynamic> responseBody =
+        response?.body != null ? json.decode(response?.body) : null;
+
+    if (responseBody == null) {
+      return null;
+    }
+    return VkSaveVideoResponseBody.fromJson(responseBody);
   }
 }

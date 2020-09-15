@@ -20,11 +20,15 @@ class AttachmentsAttachImage extends AttachmentsEvent {
   AttachmentsAttachImage(this.peerId, this.imageSource);
 }
 
-class AttachmentsAttachImageFromCamera extends AttachmentsEvent {
-  final int peerId;
+class AttachmentsAttachVideo extends AttachmentsEvent {
+  final ImageSource imageSource;
 
-  AttachmentsAttachImageFromCamera(this.peerId);
+  AttachmentsAttachVideo(this.imageSource);
 }
+
+class AttachmentsAttachAudio extends AttachmentsEvent {}
+
+class AttachmentsAttachDocument extends AttachmentsEvent {}
 
 class AttachmentsRemoveAttachment extends AttachmentsEvent {
   final LocalAttachment attachment;
