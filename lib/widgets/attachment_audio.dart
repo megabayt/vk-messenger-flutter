@@ -34,6 +34,29 @@ class _AttachmentAudioState extends State<AttachmentAudio> {
     super.dispose();
   }
 
+  void _playTapHandler(BuildContext context) {
+    final attachment = Provider.of<Attachment>(context, listen: false);
+
+    final url = attachment?.audio?.url;
+
+    if (attachment?.audio?.contentRestricted == 1) {
+      final snackBar = SnackBar(
+        content: Text(
+          'Аудиозапись недоступна. Так решил музыкант или его представитель',
+        ),
+      );
+      Scaffold.of(context).showSnackBar(snackBar);
+      return;
+    }
+
+    if (_playerService.getUrl() != url ||
+        _playerService.getPlayerState() != AudioPlayerState.PLAYING) {
+      _playerService.start(url);
+    } else {
+      _playerService.stop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final message = Provider.of<Message>(context, listen: false);
@@ -51,7 +74,7 @@ class _AttachmentAudioState extends State<AttachmentAudio> {
         _playerService.getUrl() != url ||
                 _playerService.getPlayerState() != AudioPlayerState.PLAYING
             ? GestureDetector(
-                onTap: () => _playerService.start(url),
+                onTap: () => _playTapHandler(context),
                 child: Image(
                   image: ResizeImage(
                     AssetImage('assets/audio_play_small_2x.png'),
@@ -60,7 +83,7 @@ class _AttachmentAudioState extends State<AttachmentAudio> {
                 ),
               )
             : GestureDetector(
-                onTap: _playerService.stop,
+                onTap: () => _playTapHandler(context),
                 child: Image(
                   image: ResizeImage(
                     AssetImage('assets/audio_pause_small_2x.png'),

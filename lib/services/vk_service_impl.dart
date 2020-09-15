@@ -4,12 +4,14 @@ import 'package:flutter_login_vk/flutter_login_vk.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:vk_messenger_flutter/constants/api.dart' as api;
+import 'package:vk_messenger_flutter/models/vk_audio_upload_server.dart';
 import 'package:vk_messenger_flutter/models/vk_conversation.dart';
 import 'package:vk_messenger_flutter/models/vk_conversations.dart';
 import 'package:vk_messenger_flutter/models/vk_delete_messages.dart';
 import 'package:vk_messenger_flutter/models/vk_friends.dart';
 import 'package:vk_messenger_flutter/models/vk_messages.dart';
 import 'package:vk_messenger_flutter/models/vk_photo_messages_upload_server.dart';
+import 'package:vk_messenger_flutter/models/vk_save_audio.dart';
 import 'package:vk_messenger_flutter/models/vk_save_messages_photo.dart';
 import 'package:vk_messenger_flutter/models/vk_save_video.dart';
 import 'package:vk_messenger_flutter/models/vk_send_message.dart';
@@ -46,6 +48,8 @@ class VkServiceImpl implements VKService {
       VKScope.messages,
       VKScope.photos,
       VKScope.video,
+      VKScope.audio,
+      VKScope.docs,
       VKScope.offline
     ]);
     if (loginResult.isValue) {
@@ -226,5 +230,36 @@ class VkServiceImpl implements VKService {
       return null;
     }
     return VkSaveVideoResponseBody.fromJson(responseBody);
+  }
+
+  Future<VkAudioUploadServerResponseBody> getAudioUploadServer() async {
+    final getUploadServerUrl =
+        '${api.BASE_URL}audio.getUploadServer?access_token=$token&v=${api.VERSION}&extended=1';
+
+    final response = await http.get(getUploadServerUrl);
+
+    Map<String, dynamic> responseBody =
+        response?.body != null ? json.decode(response?.body) : null;
+
+    if (responseBody == null) {
+      return null;
+    }
+    return VkAudioUploadServerResponseBody.fromJson(responseBody);
+  }
+
+  Future<VkSaveAudio> saveAudio(Map<String, String> params) async {
+    final saveAudioUrl =
+        '${api.BASE_URL}audio.save?access_token=$token&v=${api.VERSION}&extended=1' +
+            '${serialize(params)}';
+
+    final response = await http.get(saveAudioUrl);
+
+    Map<String, dynamic> responseBody =
+        response?.body != null ? json.decode(response?.body) : null;
+
+    if (responseBody == null) {
+      return null;
+    }
+    return VkSaveAudio.fromJson(responseBody);
   }
 }

@@ -2,10 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
+
 import 'package:vk_messenger_flutter/models/local_attachment.dart';
+import 'package:vk_messenger_flutter/models/vk_audio_upload_result.dart';
 import 'package:vk_messenger_flutter/models/vk_photo_upload_result.dart';
 import 'package:vk_messenger_flutter/models/vk_video_upload_result.dart';
 import 'package:vk_messenger_flutter/services/interfaces/upload_service.dart';
@@ -195,9 +198,6 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       );
     } catch (error) {
       var errorText = 'Произошла ошибка';
-      if (error is PlatformException && error?.code == 'photo_access_denied') {
-        errorText = 'Нет доступа к галерее изображений';
-      }
       yield state.copyWith(error: errorText);
     }
   }
@@ -212,11 +212,75 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
   }
 
   Stream<AttachmentsState> _mapAttachmentsAttachAudioToState() async* {
+    try {
+      FilePickerResult pickerResult =
+          await FilePicker.platform.pickFiles(type: FileType.audio);
 
+      if (pickerResult == null) {
+        return;
+      }
+
+      String path = pickerResult.files.single.path;
+      String fileName = pickerResult.files.single.name;
+
+      final attachment = LocalAttachment(
+        path: path,
+        isFetching: true,
+      );
+
+      yield state.copyWith(
+        error: '',
+        attachments: [
+          ...state.attachments,
+          attachment,
+        ],
+      );
+
+      final uploadServer = await _vkService.getAudioUploadServer();
+
+      if (uploadServer?.error != null) {
+        throw Exception('cannot get upload server');
+      }
+
+      final uploadResult = VkAudioUploadResult.fromJson(
+        await _uploadService.upload(
+          File(path),
+          uploadServer.response.uploadUrl,
+        ),
+      );
+
+      final saveResult = await _vkService.saveAudio({
+        'server': uploadResult?.server.toString(),
+        'hash': uploadResult?.hash,
+        'audio': uploadResult?.audio,
+      });
+
+      if (saveResult?.error != null) {
+        throw Exception('cannot save uploaded photo');
+      }
+
+      final ownerId = saveResult.response.ownerId;
+      final photoId = saveResult.response.id;
+
+      final attachments = List<LocalAttachment>.from(state?.attachments ?? []);
+
+      yield state.copyWith(
+        attachments: attachments.map((element) {
+          if (element == attachment) {
+            return LocalAttachment(
+                isFetching: false, path: 'audio${ownerId}_$photoId');
+          }
+          return element;
+        }).toList(),
+      );
+    } catch (error) {
+      var errorText = 'Произошла ошибка';
+      if (error is PlatformException && error?.code == 'photo_access_denied') {
+        errorText = 'Нет доступа к галерее изображений';
+      }
+      yield state.copyWith(error: errorText);
+    }
   }
 
-  Stream<AttachmentsState> _mapAttachmentsAttachDocumentToState() async* {
-
-  }
-
+  Stream<AttachmentsState> _mapAttachmentsAttachDocumentToState() async* {}
 }

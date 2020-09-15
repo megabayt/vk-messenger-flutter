@@ -40,6 +40,7 @@ dependencies:
   sailor: ^0.7.1
   skeleton_text: ^1.0.0
   image_picker: ^0.6.7+7
+  file_picker: ^2.0.0
 
 dev_dependencies:
   flutter_test:
