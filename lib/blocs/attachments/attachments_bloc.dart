@@ -9,6 +9,7 @@ import 'package:meta/meta.dart';
 
 import 'package:vk_messenger_flutter/models/local_attachment.dart';
 import 'package:vk_messenger_flutter/models/vk_audio_upload_result.dart';
+import 'package:vk_messenger_flutter/models/vk_doc_upload_result.dart';
 import 'package:vk_messenger_flutter/models/vk_photo_upload_result.dart';
 import 'package:vk_messenger_flutter/models/vk_video_upload_result.dart';
 import 'package:vk_messenger_flutter/services/interfaces/upload_service.dart';
@@ -51,7 +52,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       yield* _mapAttachmentsAttachAudioToState();
     }
     if (event is AttachmentsAttachDocument) {
-      yield* _mapAttachmentsAttachDocumentToState();
+      yield* _mapAttachmentsAttachDocumentToState(event);
     }
   }
 
@@ -291,9 +292,6 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       );
     } catch (error) {
       var errorText = 'Произошла ошибка';
-      if (error is PlatformException && error?.code == 'photo_access_denied') {
-        errorText = 'Нет доступа к галерее изображений';
-      }
       yield state.copyWith(
         error: errorText,
         attachments: List<LocalAttachment>
@@ -305,5 +303,81 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
     }
   }
 
-  Stream<AttachmentsState> _mapAttachmentsAttachDocumentToState() async* {}
+  Stream<AttachmentsState> _mapAttachmentsAttachDocumentToState(AttachmentsAttachDocument event) async* {
+    LocalAttachment attachment;
+    try {
+      FilePickerResult pickerResult =
+          await FilePicker.platform.pickFiles(type: FileType.any);
+
+      if (pickerResult == null) {
+        return;
+      }
+
+      String path = pickerResult.files.single.path;
+      String fileName = pickerResult.files.single.name;
+
+      attachment = LocalAttachment(
+        path: path,
+        isFetching: true,
+      );
+
+      yield state.copyWith(
+        error: '',
+        attachments: [
+          ...state.attachments,
+          attachment,
+        ],
+      );
+
+      final uploadServer = await _vkService.getDocMessagesUploadServer({
+        'type': 'doc',
+        'peer_id': event.peerId.toString(),
+      });
+
+      if (uploadServer?.error != null) {
+        throw Exception('cannot get upload server');
+      }
+
+      final uploadResult = VkDocUploadResult.fromJson(
+        await _uploadService.upload(
+          File(path),
+          uploadServer.response.uploadUrl,
+        ),
+      );
+
+      final saveResult = await _vkService.saveDoc({
+        'file': uploadResult?.file,
+        'title': fileName
+      });
+
+      if (saveResult?.error != null) {
+        throw Exception('cannot save uploaded audio');
+      }
+
+      final ownerId = saveResult.response.doc.ownerId;
+      final docId = saveResult.response.doc.id;
+
+      final attachments = List<LocalAttachment>.from(state?.attachments ?? []);
+
+      yield state.copyWith(
+        attachments: attachments.map((element) {
+          if (element == attachment) {
+            return LocalAttachment(
+                isFetching: false, path: 'doc${ownerId}_$docId');
+          }
+          return element;
+        }).toList(),
+      );
+    } catch (error) {
+      var errorText = 'Произошла ошибка';
+      yield state.copyWith(
+        error: errorText,
+        attachments: List<LocalAttachment>
+          .from(state?.attachments ?? [])
+          .where((element) {
+            return element != attachment;
+          }).toList()
+      );
+    }
+  }
 }

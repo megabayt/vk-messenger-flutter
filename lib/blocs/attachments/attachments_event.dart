@@ -28,7 +28,11 @@ class AttachmentsAttachVideo extends AttachmentsEvent {
 
 class AttachmentsAttachAudio extends AttachmentsEvent {}
 
-class AttachmentsAttachDocument extends AttachmentsEvent {}
+class AttachmentsAttachDocument extends AttachmentsEvent {
+  final int peerId;
+
+  AttachmentsAttachDocument(this.peerId);
+}
 
 class AttachmentsRemoveAttachment extends AttachmentsEvent {
   final LocalAttachment attachment;

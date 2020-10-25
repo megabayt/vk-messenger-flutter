@@ -48,7 +48,7 @@ class AttachmentsAppBar extends StatelessWidget implements PreferredSizeWidget {
         break;
       case AttachmentsAppBarMenuAction.DOCUMENT:
         BlocProvider.of<AttachmentsBloc>(context)
-            .add(AttachmentsAttachDocument());
+            .add(AttachmentsAttachDocument(peerId));
         break;
     }
   }

@@ -8,10 +8,12 @@ import 'package:vk_messenger_flutter/models/vk_audio_upload_server.dart';
 import 'package:vk_messenger_flutter/models/vk_conversation.dart';
 import 'package:vk_messenger_flutter/models/vk_conversations.dart';
 import 'package:vk_messenger_flutter/models/vk_delete_messages.dart';
+import 'package:vk_messenger_flutter/models/vk_doc_messages_upload_server.dart';
 import 'package:vk_messenger_flutter/models/vk_friends.dart';
 import 'package:vk_messenger_flutter/models/vk_messages.dart';
 import 'package:vk_messenger_flutter/models/vk_photo_messages_upload_server.dart';
 import 'package:vk_messenger_flutter/models/vk_save_audio.dart';
+import 'package:vk_messenger_flutter/models/vk_save_doc.dart';
 import 'package:vk_messenger_flutter/models/vk_save_messages_photo.dart';
 import 'package:vk_messenger_flutter/models/vk_save_video.dart';
 import 'package:vk_messenger_flutter/models/vk_send_message.dart';
@@ -261,5 +263,38 @@ class VkServiceImpl implements VKService {
       return null;
     }
     return VkSaveAudio.fromJson(responseBody);
+  }
+
+  Future<VkDocMessagesUploadServerResponseBody> getDocMessagesUploadServer(
+      Map<String, String> params) async {
+    final getUploadServerUrl =
+        '${api.BASE_URL}docs.getMessagesUploadServer?access_token=$token&v=${api.VERSION}&extended=1' +
+            '${serialize(params)}';
+
+    final response = await http.get(getUploadServerUrl);
+
+    Map<String, dynamic> responseBody =
+        response?.body != null ? json.decode(response?.body) : null;
+
+    if (responseBody == null) {
+      return null;
+    }
+    return VkDocMessagesUploadServerResponseBody.fromJson(responseBody);
+  }
+
+  Future<VkSaveDoc> saveDoc(Map<String, String> params) async {
+    final saveDocsUrl =
+        '${api.BASE_URL}docs.save?access_token=$token&v=${api.VERSION}&extended=1' +
+            '${serialize(params)}';
+
+    final response = await http.get(saveDocsUrl);
+
+    Map<String, dynamic> responseBody =
+        response?.body != null ? json.decode(response?.body) : null;
+
+    if (responseBody == null) {
+      return null;
+    }
+    return VkSaveDoc.fromJson(responseBody);
   }
 }
