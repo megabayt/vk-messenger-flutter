@@ -7,14 +7,14 @@ import 'package:skeleton_text/skeleton_text.dart';
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 import 'package:vk_messenger_flutter/models/message.dart' as MessageModel;
 import 'package:vk_messenger_flutter/screens/forwarded_messages_screen.dart';
-import 'package:vk_messenger_flutter/screens/router.dart';
+import 'package:vk_messenger_flutter/screens/app_router.dart';
 import 'package:vk_messenger_flutter/utils/helpers.dart';
 import 'package:vk_messenger_flutter/widgets/attachment.dart';
 import 'package:vk_messenger_flutter/widgets/message_skeleton.dart';
 
 class Message extends StatelessWidget {
   void _fwdMsgTapHandler(List<MessageModel.Message> fwdMessages) {
-    Router.sailor.navigate(ForwardedMessagesScreen.routeUrl, params: {
+    AppRouter.sailor.navigate(ForwardedMessagesScreen.routeUrl, params: {
       "fwdMessages": fwdMessages,
     });
   }

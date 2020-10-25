@@ -6,7 +6,7 @@ import 'package:vk_messenger_flutter/screens/splash_screen.dart';
 
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
-import 'package:vk_messenger_flutter/screens/router.dart';
+import 'package:vk_messenger_flutter/screens/app_router.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -23,13 +23,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void onTransition(Transition<AuthEvent, AuthState> transition) {
     if (transition.nextState is AuthNotAuthenticated ||
         transition.nextState is AuthFailure) {
-      Router.sailor.popUntil((_) => false);
-      Router.sailor.navigate(SplashScreen.routeUrl);
+      AppRouter.sailor.popUntil((_) => false);
+      AppRouter.sailor.navigate(SplashScreen.routeUrl);
       this.add(UserLogIn());
     }
     if (transition.nextState is AuthAuthenticated) {
-      Router.sailor.popUntil((_) => false);
-      Router.sailor.navigate(ConversationsScreen.routeUrl);
+      AppRouter.sailor.popUntil((_) => false);
+      AppRouter.sailor.navigate(ConversationsScreen.routeUrl);
       _conversationsBloc.add(ConversationsFetch());
     }
     super.onTransition(transition);

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:vk_messenger_flutter/screens/forward_messages_select.dart';
-import 'package:vk_messenger_flutter/screens/router.dart';
+import 'package:vk_messenger_flutter/screens/app_router.dart';
 import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
@@ -31,7 +31,7 @@ class ConversationAppBar extends StatelessWidget
 
     switch (action) {
       case ConversationAppBarMenuAction.FORWARD:
-        Router.sailor.navigate(ForwardMessagesSelect.routeUrl);
+        AppRouter.sailor.navigate(ForwardMessagesSelect.routeUrl);
         break;
       case ConversationAppBarMenuAction.REMOVE:
         conversationBloc.add(ConversationDeleteMessage());

@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:vk_messenger_flutter/models/attachment.dart';
 import 'package:vk_messenger_flutter/models/message.dart';
 import 'package:vk_messenger_flutter/screens/photos_screen.dart';
-import 'package:vk_messenger_flutter/screens/router.dart';
+import 'package:vk_messenger_flutter/screens/app_router.dart';
 
 class AttachmentPhoto extends StatelessWidget {
   Future<void> _tapHandler(BuildContext context) async {
@@ -16,7 +16,7 @@ class AttachmentPhoto extends StatelessWidget {
     final attachmentIndex =
         attachments.indexWhere((element) => element == attachment);
 
-    Router.sailor.navigate(PhotosScreen.routeUrl, params: {
+    AppRouter.sailor.navigate(PhotosScreen.routeUrl, params: {
       'fromId': message?.fromId,
       "attachmentIndex": attachmentIndex,
       'attachments': attachments,

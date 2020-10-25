@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/friends/friends_bloc.dart';
-import 'package:vk_messenger_flutter/screens/router.dart';
+import 'package:vk_messenger_flutter/screens/app_router.dart';
 
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/blocs/auth/auth_bloc.dart';
@@ -11,7 +11,7 @@ import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart
 
 void main() {
   setupServiceLocator();
-  Router.createRoutes();
+  AppRouter.createRoutes();
   runApp(
     MultiBlocProvider(
       providers: [
@@ -62,9 +62,9 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      onGenerateRoute: Router.sailor.generator(),
-      navigatorKey: Router.sailor.navigatorKey,
-      navigatorObservers: [Router.sailor.navigationStackObserver],
+      onGenerateRoute: AppRouter.sailor.generator(),
+      navigatorKey: AppRouter.sailor.navigatorKey,
+      navigatorObservers: [AppRouter.sailor.navigationStackObserver],
     );
   }
 }

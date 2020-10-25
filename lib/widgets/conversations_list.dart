@@ -7,7 +7,7 @@ import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
 import 'package:vk_messenger_flutter/models/vk_conversations.dart';
 import 'package:vk_messenger_flutter/screens/conversations_screen.dart';
-import 'package:vk_messenger_flutter/screens/router.dart';
+import 'package:vk_messenger_flutter/screens/app_router.dart';
 import 'package:vk_messenger_flutter/widgets/conversation_tile.dart';
 import 'package:vk_messenger_flutter/widgets/creation_aware_list_item.dart';
 
@@ -41,7 +41,7 @@ class ConversationsList extends StatelessWidget {
     if (fwdSelectMode) {
       attachmentsBloc.add(AttachmentsForwardMessage(
           conversationBloc.state.selectedMessagesIds ?? []));
-      Router.sailor.popUntil((route) {
+      AppRouter.sailor.popUntil((route) {
         if (route.settings.name == ConversationsScreen.routeUrl) {
           return true;
         }

@@ -6,7 +6,7 @@ import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 import 'package:vk_messenger_flutter/screens/attachments_screen.dart';
-import 'package:vk_messenger_flutter/screens/router.dart';
+import 'package:vk_messenger_flutter/screens/app_router.dart';
 
 class MessageInput extends StatefulWidget {
   @override
@@ -21,7 +21,7 @@ class _MessageInputState extends State<MessageInput> {
   }
 
   void _tapAttachHandler() {
-    Router.sailor.navigate(AttachmentsScreen.routeUrl);
+    AppRouter.sailor.navigate(AttachmentsScreen.routeUrl);
   }
 
   Future<void> _sendHandler(context) async {

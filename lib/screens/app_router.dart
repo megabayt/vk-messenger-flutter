@@ -10,7 +10,7 @@ import 'package:vk_messenger_flutter/screens/forwarded_messages_screen.dart';
 import 'package:vk_messenger_flutter/screens/photos_screen.dart';
 import 'package:vk_messenger_flutter/screens/splash_screen.dart';
 
-class Router {
+class AppRouter {
   static final sailor = Sailor();
 
   static void createRoutes() {

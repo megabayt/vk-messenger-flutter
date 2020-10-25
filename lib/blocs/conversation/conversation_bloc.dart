@@ -10,7 +10,7 @@ import 'package:vk_messenger_flutter/models/message.dart';
 
 import 'package:vk_messenger_flutter/models/vk_conversation.dart';
 import 'package:vk_messenger_flutter/screens/conversation_screen.dart';
-import 'package:vk_messenger_flutter/screens/router.dart';
+import 'package:vk_messenger_flutter/screens/app_router.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 
@@ -81,7 +81,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     if (!event.fwdMode) {
       _attachmentsBloc.add(AttachmentsClearAttachments());
     }
-    Router.sailor.navigate(ConversationScreen.routeUrl);
+    AppRouter.sailor.navigate(ConversationScreen.routeUrl);
     this.add(ConversationFetch());
   }
 
