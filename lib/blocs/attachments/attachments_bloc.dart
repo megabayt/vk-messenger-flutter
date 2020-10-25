@@ -77,6 +77,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
 
   Stream<AttachmentsState> _mapAttachmentsAttachImageToState(
       AttachmentsAttachImage event) async* {
+    LocalAttachment attachment;
     try {
       final pickedFile = await _picker.getImage(source: event.imageSource);
 
@@ -84,7 +85,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
         return;
       }
 
-      final attachment = LocalAttachment(
+      attachment = LocalAttachment(
         path: pickedFile?.path,
         isFetching: true,
       );
@@ -141,12 +142,20 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       if (error is PlatformException && error?.code == 'photo_access_denied') {
         errorText = 'Нет доступа к галерее изображений';
       }
-      yield state.copyWith(error: errorText);
+      yield state.copyWith(
+        error: errorText,
+        attachments: List<LocalAttachment>
+          .from(state?.attachments ?? [])
+          .where((element) {
+            return element != attachment;
+          }).toList()
+      );
     }
   }
 
   Stream<AttachmentsState> _mapAttachmentsAttachVideoToState(
       AttachmentsAttachVideo event) async* {
+    LocalAttachment attachment;
     try {
       final pickedFile = await _picker.getVideo(source: event.imageSource);
 
@@ -154,7 +163,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
         return;
       }
 
-      final attachment = LocalAttachment(
+      attachment = LocalAttachment(
         path: pickedFile?.path,
         isFetching: true,
       );
@@ -198,7 +207,14 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       );
     } catch (error) {
       var errorText = 'Произошла ошибка';
-      yield state.copyWith(error: errorText);
+      yield state.copyWith(
+        error: errorText,
+        attachments: List<LocalAttachment>
+          .from(state?.attachments ?? [])
+          .where((element) {
+            return element != attachment;
+          }).toList()
+      );
     }
   }
 
@@ -212,6 +228,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
   }
 
   Stream<AttachmentsState> _mapAttachmentsAttachAudioToState() async* {
+    LocalAttachment attachment;
     try {
       FilePickerResult pickerResult =
           await FilePicker.platform.pickFiles(type: FileType.audio);
@@ -221,9 +238,8 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       }
 
       String path = pickerResult.files.single.path;
-      String fileName = pickerResult.files.single.name;
 
-      final attachment = LocalAttachment(
+      attachment = LocalAttachment(
         path: path,
         isFetching: true,
       );
@@ -256,7 +272,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       });
 
       if (saveResult?.error != null) {
-        throw Exception('cannot save uploaded photo');
+        throw Exception('cannot save uploaded audio');
       }
 
       final ownerId = saveResult.response.ownerId;
@@ -278,7 +294,14 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       if (error is PlatformException && error?.code == 'photo_access_denied') {
         errorText = 'Нет доступа к галерее изображений';
       }
-      yield state.copyWith(error: errorText);
+      yield state.copyWith(
+        error: errorText,
+        attachments: List<LocalAttachment>
+          .from(state?.attachments ?? [])
+          .where((element) {
+            return element != attachment;
+          }).toList()
+      );
     }
   }
 
