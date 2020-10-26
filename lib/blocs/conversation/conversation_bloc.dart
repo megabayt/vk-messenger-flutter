@@ -179,7 +179,10 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
         .where((element) => element != null && !element.isFetching)
         .map((element) => element.path)
         .join(',');
-    if (event.message == '' && fwdMessages == '' && attachments == '') {
+    final location = _attachmentsBloc.state.location;
+    final locationEmpty = location.latitude == 0 && location.longitude == 0;
+
+    if (event.message == '' && fwdMessages == '' && attachments == '' && locationEmpty) {
       return;
     }
     final randomId = Random.secure().nextInt(int32max);
@@ -209,6 +212,8 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
         'message': event.message,
         'forward_messages': fwdMessages,
         'attachment': attachments,
+        'lat': location.latitude.toString(),
+        'long': location.longitude.toString(),
       });
       if (result.error != null) {
         throw Exception(result.error?.errorMsg);

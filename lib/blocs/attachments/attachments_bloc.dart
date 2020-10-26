@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 
@@ -36,6 +37,9 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
     if (event is AttachmentsRemoveFwdMessages) {
       yield* _mapAttachmentsRemoveFwdMessagesToState();
     }
+    if (event is AttachmentsRemoveLocation) {
+      yield* _mapAttachmentsRemoveLocationToState();
+    }
     if (event is AttachmentsClearAttachments) {
       yield* _mapAttachmentsClearAttachmentsToState();
     }
@@ -54,6 +58,9 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
     if (event is AttachmentsAttachDocument) {
       yield* _mapAttachmentsAttachDocumentToState(event);
     }
+    if (event is AttachmentsAttachLocation) {
+      yield* _mapAttachmentsAttachLocationToState(event);
+    }
   }
 
   Stream<AttachmentsState> _mapAttachmentsForwardMessageToState(
@@ -69,10 +76,17 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
     );
   }
 
+  Stream<AttachmentsState> _mapAttachmentsRemoveLocationToState() async* {
+    yield state.copyWith(
+      location: LatLng(0, 0),
+    );
+  }
+
   Stream<AttachmentsState> _mapAttachmentsClearAttachmentsToState() async* {
     yield state.copyWith(
       fwdMessages: [],
       attachments: [],
+      location: LatLng(0, 0),
     );
   }
 
@@ -144,13 +158,11 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
         errorText = 'Нет доступа к галерее изображений';
       }
       yield state.copyWith(
-        error: errorText,
-        attachments: List<LocalAttachment>
-          .from(state?.attachments ?? [])
-          .where((element) {
+          error: errorText,
+          attachments: List<LocalAttachment>.from(state?.attachments ?? [])
+              .where((element) {
             return element != attachment;
-          }).toList()
-      );
+          }).toList());
     }
   }
 
@@ -209,13 +221,11 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
     } catch (error) {
       var errorText = 'Произошла ошибка';
       yield state.copyWith(
-        error: errorText,
-        attachments: List<LocalAttachment>
-          .from(state?.attachments ?? [])
-          .where((element) {
+          error: errorText,
+          attachments: List<LocalAttachment>.from(state?.attachments ?? [])
+              .where((element) {
             return element != attachment;
-          }).toList()
-      );
+          }).toList());
     }
   }
 
@@ -293,17 +303,16 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
     } catch (error) {
       var errorText = 'Произошла ошибка';
       yield state.copyWith(
-        error: errorText,
-        attachments: List<LocalAttachment>
-          .from(state?.attachments ?? [])
-          .where((element) {
+          error: errorText,
+          attachments: List<LocalAttachment>.from(state?.attachments ?? [])
+              .where((element) {
             return element != attachment;
-          }).toList()
-      );
+          }).toList());
     }
   }
 
-  Stream<AttachmentsState> _mapAttachmentsAttachDocumentToState(AttachmentsAttachDocument event) async* {
+  Stream<AttachmentsState> _mapAttachmentsAttachDocumentToState(
+      AttachmentsAttachDocument event) async* {
     LocalAttachment attachment;
     try {
       FilePickerResult pickerResult =
@@ -345,10 +354,8 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
         ),
       );
 
-      final saveResult = await _vkService.saveDoc({
-        'file': uploadResult?.file,
-        'title': fileName
-      });
+      final saveResult = await _vkService
+          .saveDoc({'file': uploadResult?.file, 'title': fileName});
 
       if (saveResult?.error != null) {
         throw Exception('cannot save uploaded audio');
@@ -371,13 +378,16 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
     } catch (error) {
       var errorText = 'Произошла ошибка';
       yield state.copyWith(
-        error: errorText,
-        attachments: List<LocalAttachment>
-          .from(state?.attachments ?? [])
-          .where((element) {
+          error: errorText,
+          attachments: List<LocalAttachment>.from(state?.attachments ?? [])
+              .where((element) {
             return element != attachment;
-          }).toList()
-      );
+          }).toList());
     }
+  }
+
+  Stream<AttachmentsState> _mapAttachmentsAttachLocationToState(
+      AttachmentsAttachLocation event) async* {
+    yield state.copyWith(location: event.location);
   }
 }

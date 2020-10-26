@@ -63,6 +63,11 @@ class _MessageInputState extends State<MessageInput> {
               attachCount += attachments.length;
             }
 
+            final location = attachmentsState?.location;
+            if (location.latitude != 0 && location.longitude != 0) {
+              attachCount += 1;
+            }
+
             final attachBtn = IconButton(
               icon: Icon(Icons.attach_file),
               onPressed: _tapAttachHandler,

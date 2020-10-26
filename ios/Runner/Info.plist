@@ -69,5 +69,7 @@
 	</array>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Необходим доступ к музыке (для отправки файлов)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Необходим доступ к местоположению (для отправки в сообщении)</string>
 </dict>
 </plist>

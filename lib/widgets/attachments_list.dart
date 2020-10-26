@@ -18,6 +18,10 @@ class AttachmentsList extends StatelessWidget {
         .add(AttachmentsRemoveAttachment(attachment));
   }
 
+  void _handleDeleteLocation(BuildContext context) {
+    BlocProvider.of<AttachmentsBloc>(context).add(AttachmentsRemoveLocation());
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AttachmentsBloc, AttachmentsState>(
@@ -32,6 +36,7 @@ class AttachmentsList extends StatelessWidget {
       builder: (_, state) {
         final fwdMessages = state.fwdMessages ?? [];
         final attachments = state.attachments ?? [];
+        final location = state.location;
 
         return ListView(
           children: <Widget>[
@@ -62,6 +67,14 @@ class AttachmentsList extends StatelessWidget {
                     )
                   : tile;
             }).toList(),
+            if (location.latitude != 0 && location.longitude != 0)
+              ListTile(
+                title: Text('Местоположение'),
+                trailing: IconButton(
+                  onPressed: () => _handleDeleteLocation(context),
+                  icon: Icon(Icons.delete),
+                ),
+              ),
           ],
         );
       },

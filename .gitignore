@@ -45,3 +45,5 @@ app.*.map.json
 #Custom gitignore
 
 lib/constants/api.dart
+android/app/src/main/AndroidManifest.xml
+ios/Runner/AppDelegate.swift

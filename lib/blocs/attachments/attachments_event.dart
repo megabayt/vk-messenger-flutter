@@ -11,6 +11,8 @@ class AttachmentsForwardMessage extends AttachmentsEvent {
 
 class AttachmentsRemoveFwdMessages extends AttachmentsEvent {}
 
+class AttachmentsRemoveLocation extends AttachmentsEvent {}
+
 class AttachmentsClearAttachments extends AttachmentsEvent {}
 
 class AttachmentsAttachImage extends AttachmentsEvent {
@@ -38,4 +40,10 @@ class AttachmentsRemoveAttachment extends AttachmentsEvent {
   final LocalAttachment attachment;
 
   AttachmentsRemoveAttachment(this.attachment);
+}
+
+class AttachmentsAttachLocation extends AttachmentsEvent {
+  final LatLng location;
+
+  AttachmentsAttachLocation(this.location);
 }

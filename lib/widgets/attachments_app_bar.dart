@@ -4,6 +4,8 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
+import 'package:vk_messenger_flutter/screens/app_router.dart';
+import 'package:vk_messenger_flutter/screens/geo_screen.dart';
 
 class AttachmentsAppBar extends StatelessWidget implements PreferredSizeWidget {
   AttachmentsAppBar({
@@ -49,6 +51,9 @@ class AttachmentsAppBar extends StatelessWidget implements PreferredSizeWidget {
       case AttachmentsAppBarMenuAction.DOCUMENT:
         BlocProvider.of<AttachmentsBloc>(context)
             .add(AttachmentsAttachDocument(peerId));
+        break;
+      case AttachmentsAppBarMenuAction.GEO:
+        AppRouter.sailor.navigate(GeoScreen.routeUrl);
         break;
     }
   }
