@@ -7,6 +7,7 @@ import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 import 'package:vk_messenger_flutter/screens/attachments_screen.dart';
 import 'package:vk_messenger_flutter/screens/app_router.dart';
+import 'package:vk_messenger_flutter/widgets/stickers_select.dart';
 
 class MessageInput extends StatefulWidget {
   @override
@@ -25,11 +26,8 @@ class _MessageInputState extends State<MessageInput> {
   }
 
   Future<void> _sendHandler(context) async {
-    final peerId = BlocProvider.of<ConversationBloc>(context).state.peerId;
-
     BlocProvider.of<ConversationBloc>(context).add(
       ConversationSendMessage(
-        peerId: peerId,
         message: textEditingController.text,
       ),
     );
@@ -135,12 +133,35 @@ class _MessageInputState extends State<MessageInput> {
                     ],
                   ),
                   if (showEmojiKeyboard)
-                    EmojiPicker(
-                      rows: 3,
-                      columns: 7,
-                      numRecommended: 10,
-                      onEmojiSelected: _pickEmojiHandler,
-                    ),
+                    DefaultTabController(
+                      length: 2,
+                      child: Column(
+                        children: [
+                          TabBar(
+                            labelColor: Theme.of(context).primaryColor,
+                            unselectedLabelColor: Theme.of(context).primaryColor,
+                            tabs: [
+                              Tab(text: 'Смайлы'),
+                              Tab(text: 'Стикеры'),
+                            ],
+                          ),
+                          Container(
+                            height: 270.5,
+                            child: TabBarView(
+                              children: [
+                                EmojiPicker(
+                                  rows: 4,
+                                  columns: 7,
+                                  numRecommended: 10,
+                                  onEmojiSelected: _pickEmojiHandler,
+                                ),
+                                StickersSelect(),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
                 ],
               ),
             );

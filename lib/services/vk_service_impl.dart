@@ -17,6 +17,7 @@ import 'package:vk_messenger_flutter/models/vk_save_doc.dart';
 import 'package:vk_messenger_flutter/models/vk_save_messages_photo.dart';
 import 'package:vk_messenger_flutter/models/vk_save_video.dart';
 import 'package:vk_messenger_flutter/models/vk_send_message.dart';
+import 'package:vk_messenger_flutter/models/vk_store_products.dart';
 import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
@@ -296,5 +297,21 @@ class VkServiceImpl implements VKService {
       return null;
     }
     return VkSaveDoc.fromJson(responseBody);
+  }
+
+  Future<VkStoreProducts> getStickers() async {
+    final getStickersUrl = '${api.BASE_URL}store.getProducts' +
+        '?filters=purchased&type=stickers' +
+        '&access_token=$token&v=${api.VERSION}&extended=1';
+
+    final response = await http.get(getStickersUrl);
+
+    Map<String, dynamic> responseBody =
+        response?.body != null ? json.decode(response?.body) : null;
+
+    if (responseBody == null) {
+      return null;
+    }
+    return VkStoreProducts.fromJson(responseBody);
   }
 }

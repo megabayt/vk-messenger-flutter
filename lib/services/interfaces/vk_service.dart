@@ -11,6 +11,7 @@ import 'package:vk_messenger_flutter/models/vk_save_doc.dart';
 import 'package:vk_messenger_flutter/models/vk_save_messages_photo.dart';
 import 'package:vk_messenger_flutter/models/vk_save_video.dart';
 import 'package:vk_messenger_flutter/models/vk_send_message.dart';
+import 'package:vk_messenger_flutter/models/vk_store_products.dart';
 
 abstract class VKService {
   String get token;
@@ -34,4 +35,5 @@ abstract class VKService {
   Future<VkSaveAudio> saveAudio(Map<String, String> params);
   Future<VkDocMessagesUploadServerResponseBody> getDocMessagesUploadServer(Map<String, String> params);
   Future<VkSaveDoc> saveDoc(Map<String, String> params);
+  Future<VkStoreProducts> getStickers();
 }

@@ -6,7 +6,9 @@ import 'package:meta/meta.dart';
 import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
 import 'package:vk_messenger_flutter/constants/math.dart';
+import 'package:vk_messenger_flutter/models/attachment.dart';
 import 'package:vk_messenger_flutter/models/message.dart';
+import 'package:vk_messenger_flutter/models/sticker.dart';
 
 import 'package:vk_messenger_flutter/models/vk_conversation.dart';
 import 'package:vk_messenger_flutter/screens/conversation_screen.dart';
@@ -48,6 +50,9 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     }
     if (event is ConversationSendMessage) {
       yield* _mapConversationSendMessageToState(event);
+    }
+    if (event is ConversationSendSticker) {
+      yield* _mapConversationSendStickerToState(event);
     }
     if (event is ConversationToggleEmojiKeyboard) {
       yield* _mapToggleEmojiKeyboardToState();
@@ -182,7 +187,10 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     final location = _attachmentsBloc.state.location;
     final locationEmpty = location.latitude == 0 && location.longitude == 0;
 
-    if (event.message == '' && fwdMessages == '' && attachments == '' && locationEmpty) {
+    if (event.message == '' &&
+        fwdMessages == '' &&
+        attachments == '' &&
+        locationEmpty) {
       return;
     }
     final randomId = Random.secure().nextInt(int32max);
@@ -190,7 +198,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       id: randomId,
       out: 1,
       text: event.message,
-      peerId: event.peerId,
+      peerId: state.peerId,
       fromId: _vkService.userId,
       date: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       isSent: false,
@@ -207,13 +215,88 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
     try {
       final result = await _vkService.sendMessage({
-        'peer_id': event.peerId.toString(),
+        'peer_id': state.peerId.toString(),
         'random_id': Random.secure().nextInt(int32max).toString(),
         'message': event.message,
         'forward_messages': fwdMessages,
         'attachment': attachments,
         'lat': location.latitude.toString(),
         'long': location.longitude.toString(),
+      });
+      if (result.error != null) {
+        throw Exception(result.error?.errorMsg);
+      }
+      messageId = result.response;
+    } catch (e) {
+      message = message.copyWith(
+        isError: true,
+      );
+    }
+
+    try {
+      final messageQuery = await _vkService.getMessages({
+        'message_ids': messageId.toString(),
+      });
+
+      if (messageQuery.error != null) {
+        throw Exception(messageQuery.error?.errorMsg);
+      }
+
+      final messages = messageQuery?.response?.items ?? [];
+
+      if (messages?.length != 0) {
+        message = messageQuery?.response?.items[0];
+      } else {
+        throw Exception('no messages!');
+      }
+    } catch (_) {
+      message = message.copyWith(id: messageId);
+    }
+
+    yield* _appendOrRemoveMessage(randomId, message);
+    yield state.copyWith(
+      selectedMessagesIds: [],
+    );
+    _attachmentsBloc.add(AttachmentsClearAttachments());
+    _conversationsBloc.add(
+      ConversationsChangeLastMessage(
+        message,
+      ),
+    );
+  }
+
+  Stream<ConversationState> _mapConversationSendStickerToState(
+      ConversationSendSticker event) async* {
+    final randomId = Random.secure().nextInt(int32max);
+    var message = Message(
+      id: randomId,
+      out: 1,
+      peerId: state.peerId,
+      fromId: _vkService.userId,
+      date: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      attachments: List<Attachment>()..add(
+        Attachment(
+          type: AttachmentType.STICKER,
+          sticker: event.sticker,
+        )
+      ),
+      isSent: false,
+    );
+
+    yield* _appendOrRemoveMessage(randomId, message);
+    _conversationsBloc.add(
+      ConversationsChangeLastMessage(
+        message,
+      ),
+    );
+
+    int messageId;
+
+    try {
+      final result = await _vkService.sendMessage({
+        'peer_id': state.peerId.toString(),
+        'random_id': Random.secure().nextInt(int32max).toString(),
+        'sticker_id': event.sticker.stickerId.toString(),
       });
       if (result.error != null) {
         throw Exception(result.error?.errorMsg);

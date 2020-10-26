@@ -17,12 +17,18 @@ class ConversationFetchMore extends ConversationEvent {}
 class ConversationToggleEmojiKeyboard extends ConversationEvent {}
 
 class ConversationSendMessage extends ConversationEvent {
-  final int peerId;
   final String message;
 
   ConversationSendMessage({
-    @required this.peerId,
     @required this.message,
+  });
+}
+
+class ConversationSendSticker extends ConversationEvent {
+  final Sticker sticker;
+
+  ConversationSendSticker({
+    @required this.sticker,
   });
 }
 
