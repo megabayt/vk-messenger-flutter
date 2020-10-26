@@ -7,7 +7,7 @@ import 'package:vk_messenger_flutter/screens/conversation_screen.dart';
 import 'package:vk_messenger_flutter/screens/conversations_screen.dart';
 import 'package:vk_messenger_flutter/screens/forward_messages_select.dart';
 import 'package:vk_messenger_flutter/screens/forwarded_messages_screen.dart';
-import 'package:vk_messenger_flutter/screens/geo_screen.dart';
+import 'package:vk_messenger_flutter/screens/select_geo_screen.dart';
 import 'package:vk_messenger_flutter/screens/photos_screen.dart';
 import 'package:vk_messenger_flutter/screens/splash_screen.dart';
 
@@ -60,8 +60,8 @@ class AppRouter {
           builder: (context, args, params) => AttachmentsScreen(),
         ),
         SailorRoute(
-          name: GeoScreen.routeUrl,
-          builder: (context, args, params) => GeoScreen(),
+          name: SelectGeoScreen.routeUrl,
+          builder: (context, args, params) => SelectGeoScreen(),
         )
       ],
     );

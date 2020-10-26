@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:vk_messenger_flutter/widgets/geo_map.dart';
+import 'package:vk_messenger_flutter/widgets/select_geo_map.dart';
 
-class GeoScreen extends StatelessWidget {
-  static const routeUrl = '/geo';
+class SelectGeoScreen extends StatelessWidget {
+  static const routeUrl = '/select_geo';
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +11,7 @@ class GeoScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Выбор местоположения'),
       ),
-      body: GeoMap(),
+      body: SelectGeoMap(),
     );
   }
 }

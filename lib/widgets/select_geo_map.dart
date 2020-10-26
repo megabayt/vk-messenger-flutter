@@ -10,17 +10,17 @@ import 'package:vk_messenger_flutter/screens/app_router.dart';
 
 // TODO: Add floating action button blinking when searching location
 
-class GeoMap extends StatefulWidget {
+class SelectGeoMap extends StatefulWidget {
   static final CameraPosition initialCamera = CameraPosition(
     target: LatLng(55.7558, 37.6173),
     zoom: 10,
   );
 
   @override
-  _GeoMapState createState() => _GeoMapState();
+  _SelectGeoMapState createState() => _SelectGeoMapState();
 }
 
-class _GeoMapState extends State<GeoMap> {
+class _SelectGeoMapState extends State<SelectGeoMap> {
   Completer<GoogleMapController> _controller = Completer();
 
   LatLng gpsLocation;
@@ -128,7 +128,7 @@ class _GeoMapState extends State<GeoMap> {
         children: <Widget>[
           Flexible(
             child: GoogleMap(
-              initialCameraPosition: GeoMap.initialCamera,
+              initialCameraPosition: SelectGeoMap.initialCamera,
               myLocationButtonEnabled: false,
               zoomControlsEnabled: false,
               onMapCreated: (GoogleMapController controller) {
