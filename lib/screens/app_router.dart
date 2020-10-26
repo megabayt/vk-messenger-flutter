@@ -1,6 +1,7 @@
 import 'package:sailor/sailor.dart';
 
 import 'package:vk_messenger_flutter/models/attachment.dart';
+import 'package:vk_messenger_flutter/models/geo.dart';
 import 'package:vk_messenger_flutter/models/message.dart';
 import 'package:vk_messenger_flutter/screens/attachments_screen.dart';
 import 'package:vk_messenger_flutter/screens/conversation_screen.dart';
@@ -9,6 +10,7 @@ import 'package:vk_messenger_flutter/screens/forward_messages_select.dart';
 import 'package:vk_messenger_flutter/screens/forwarded_messages_screen.dart';
 import 'package:vk_messenger_flutter/screens/select_geo_screen.dart';
 import 'package:vk_messenger_flutter/screens/photos_screen.dart';
+import 'package:vk_messenger_flutter/screens/show_geo_screen.dart';
 import 'package:vk_messenger_flutter/screens/splash_screen.dart';
 
 class AppRouter {
@@ -62,7 +64,15 @@ class AppRouter {
         SailorRoute(
           name: SelectGeoScreen.routeUrl,
           builder: (context, args, params) => SelectGeoScreen(),
-        )
+        ),
+        SailorRoute(
+            name: ShowGeoScreen.routeUrl,
+            builder: (context, args, params) => ShowGeoScreen(
+                  params.param('geo'),
+                ),
+            params: [
+              SailorParam<Geo>(name: 'geo'),
+            ]),
       ],
     );
   }

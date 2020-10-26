@@ -5,9 +5,11 @@ import 'package:provider/provider.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
+import 'package:vk_messenger_flutter/models/geo.dart';
 import 'package:vk_messenger_flutter/models/message.dart' as MessageModel;
 import 'package:vk_messenger_flutter/screens/forwarded_messages_screen.dart';
 import 'package:vk_messenger_flutter/screens/app_router.dart';
+import 'package:vk_messenger_flutter/screens/show_geo_screen.dart';
 import 'package:vk_messenger_flutter/utils/helpers.dart';
 import 'package:vk_messenger_flutter/widgets/attachment.dart';
 import 'package:vk_messenger_flutter/widgets/message_skeleton.dart';
@@ -16,6 +18,12 @@ class Message extends StatelessWidget {
   void _fwdMsgTapHandler(List<MessageModel.Message> fwdMessages) {
     AppRouter.sailor.navigate(ForwardedMessagesScreen.routeUrl, params: {
       "fwdMessages": fwdMessages,
+    });
+  }
+
+  void _geoTapHandler(Geo geo) {
+    AppRouter.sailor.navigate(ShowGeoScreen.routeUrl, params: {
+      "geo": geo,
     });
   }
 
@@ -47,6 +55,8 @@ class Message extends StatelessWidget {
     final attachments = item?.attachments ?? [];
 
     final fwdMessages = item?.fwdMessages ?? [];
+
+    final geo = item?.geo;
 
     var rows = <Widget>[];
 
@@ -80,6 +90,19 @@ class Message extends StatelessWidget {
           onTap: () => _fwdMsgTapHandler(fwdMessages),
           child: Text(
             'Пересланные сообщения',
+            textAlign: textAlign,
+            style: captionTheme,
+          ),
+        ),
+      );
+    }
+
+    if (geo != null) {
+      rows.add(
+        GestureDetector(
+          onTap: () => _geoTapHandler(geo),
+          child: Text(
+            'Местоположение: ${geo?.place?.title ?? ''}',
             textAlign: textAlign,
             style: captionTheme,
           ),

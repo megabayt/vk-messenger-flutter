@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:vk_messenger_flutter/models/attachment.dart';
+import 'package:vk_messenger_flutter/models/geo.dart';
 
 class Message {
   Message({
@@ -15,6 +16,7 @@ class Message {
     this.attachments,
     this.isSent = true,
     this.isError = false,
+    this.geo,
   });
 
   final int date;
@@ -26,6 +28,7 @@ class Message {
   final List<Message> fwdMessages;
   final bool important;
   final List<Attachment> attachments;
+  final Geo geo;
   final bool isSent;
   final bool isError;
 
@@ -43,6 +46,7 @@ class Message {
     final List<Message> fwdMessages,
     final bool important,
     final List<Attachment> attachments,
+    final Geo geo,
     final bool isSent,
     final bool isError,
   }) =>
@@ -56,6 +60,7 @@ class Message {
         fwdMessages: fwdMessages ?? this.fwdMessages,
         important: important ?? this.important,
         attachments: attachments ?? this.attachments,
+        geo: geo ?? this.geo,
         isSent: isSent ?? this.isSent,
         isError: isError ?? this.isError,
       );
@@ -76,6 +81,7 @@ class Message {
             ? null
             : List<Attachment>.from(
                 json["attachments"].map((x) => Attachment.fromJson(x))),
+        geo: json["geo"] == null ? null : Geo.fromJson(json["geo"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -92,5 +98,6 @@ class Message {
         "attachments": attachments == null
             ? null
             : List<dynamic>.from(attachments.map((x) => x.toJson())),
+        "geo": geo == null ? null : geo.toJson(),
       };
 }
