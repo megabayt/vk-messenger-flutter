@@ -29,3 +29,4 @@ samples, guidance on mobile development, and a full API reference.
 - [ ] Cache requests
 - [ ] Rework attachments (remove separate page) 
 - [ ] Max attachments
+- [ ] add access_key to attachments 
