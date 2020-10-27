@@ -27,4 +27,5 @@ samples, guidance on mobile development, and a full API reference.
   - [ ] Messages
   - [ ] Birthdays
 - [ ] Cache requests
-- [ ] Rework attachments
+- [ ] Rework attachments (remove separate page) 
+- [ ] Max attachments
