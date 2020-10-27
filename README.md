@@ -14,3 +14,17 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## TODO List
+
+- [ ] Show out messages read flag
+- [ ] Read messages when entering chat
+- [ ] Long polling
+  - [ ] Message read
+  - [ ] Set me online
+  - [ ] Set friends online
+- [ ] Push notifications
+  - [ ] Messages
+  - [ ] Birthdays
+- [ ] Cache requests
+- [ ] Rework attachments
