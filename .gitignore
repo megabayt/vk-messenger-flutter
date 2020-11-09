@@ -45,5 +45,5 @@ app.*.map.json
 #Custom gitignore
 
 lib/constants/api.dart
-android/app/src/main/AndroidManifest.xml
-ios/Runner/AppDelegate.swift
+android/app/src/main/res/values/google_maps_api.xml
+ios/Runner/google_maps_api.plist

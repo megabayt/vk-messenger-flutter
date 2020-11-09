@@ -15,6 +15,10 @@ For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
+## Before start
+Put android/google_maps_api.xml to app/src/main/res/ directory and insert api key for google maps
+Copy ios/Runner/google_maps_api.plist.example as google_maps_api.plist and insert api key for google maps
+
 ## TODO List
 
 - [ ] Show out messages read flag
@@ -27,6 +31,6 @@ samples, guidance on mobile development, and a full API reference.
   - [ ] Messages
   - [ ] Birthdays
 - [ ] Cache requests
-- [ ] Rework attachments (remove separate page) 
+- [ ] Rework attachments (remove separate page)
 - [ ] Max attachments
-- [ ] add access_key to attachments 
+- [ ] add access_key to attachments
