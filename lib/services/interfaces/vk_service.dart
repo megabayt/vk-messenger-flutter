@@ -1,9 +1,11 @@
+import 'package:vk_messenger_flutter/models/poll_result.dart';
 import 'package:vk_messenger_flutter/models/vk_audio_upload_server.dart';
 import 'package:vk_messenger_flutter/models/vk_conversations.dart';
 import 'package:vk_messenger_flutter/models/vk_conversation.dart';
 import 'package:vk_messenger_flutter/models/vk_delete_messages.dart';
 import 'package:vk_messenger_flutter/models/vk_doc_messages_upload_server.dart';
 import 'package:vk_messenger_flutter/models/vk_friends.dart';
+import 'package:vk_messenger_flutter/models/vk_long_poll_server.dart';
 import 'package:vk_messenger_flutter/models/vk_messages.dart';
 import 'package:vk_messenger_flutter/models/vk_photo_messages_upload_server.dart';
 import 'package:vk_messenger_flutter/models/vk_save_audio.dart';
@@ -39,4 +41,6 @@ abstract class VKService {
   Future<VkSaveDoc> saveDoc(Map<String, String> params);
   Future<VkStoreProducts> getStickers();
   Future<VkMarkAsRead> markAsRead(Map<String, String> params);
+  Future<VkLongPollServer> getLongPollServer(Map<String, String> params);
+  Future<PollResult> poll(String pollUrl);
 }

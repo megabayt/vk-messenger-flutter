@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/friends/friends_bloc.dart';
+import 'package:vk_messenger_flutter/blocs/long_polling/long_polling_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/stickers/stickers_bloc.dart';
 import 'package:vk_messenger_flutter/screens/app_router.dart';
 
@@ -37,8 +38,12 @@ void main() {
           create: (_) => StickersBloc()..add(StickersFetch()),
         ),
         BlocProvider(
+          create: (_) => LongPollingBloc(),
+        ),
+        BlocProvider(
           create: (context) => AuthBloc(
             BlocProvider.of<ConversationsBloc>(context),
+            BlocProvider.of<LongPollingBloc>(context),
           )..add(UserLogIn()),
           lazy: false,
         ),

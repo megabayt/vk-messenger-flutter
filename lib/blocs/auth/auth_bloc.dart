@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
+import 'package:vk_messenger_flutter/blocs/long_polling/long_polling_bloc.dart';
 import 'package:vk_messenger_flutter/screens/conversations_screen.dart';
 import 'package:vk_messenger_flutter/screens/splash_screen.dart';
 
@@ -14,9 +15,11 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final VKService _vkService = locator<VKService>();
   final ConversationsBloc _conversationsBloc;
+  final LongPollingBloc _longPollingBloc;
 
-  AuthBloc(ConversationsBloc conversationsBloc)
+  AuthBloc(ConversationsBloc conversationsBloc, LongPollingBloc longPollingBloc)
       : _conversationsBloc = conversationsBloc,
+        _longPollingBloc = longPollingBloc,
         super(AuthNotAuthenticated());
 
   @override
@@ -31,6 +34,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AppRouter.sailor.popUntil((_) => false);
       AppRouter.sailor.navigate(ConversationsScreen.routeUrl);
       _conversationsBloc.add(ConversationsFetch());
+      _longPollingBloc.add(LongPollingPoll());
     }
     super.onTransition(transition);
   }

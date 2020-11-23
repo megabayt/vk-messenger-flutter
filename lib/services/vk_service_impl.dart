@@ -4,12 +4,14 @@ import 'package:flutter_login_vk/flutter_login_vk.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:vk_messenger_flutter/constants/api.dart' as api;
+import 'package:vk_messenger_flutter/models/poll_result.dart';
 import 'package:vk_messenger_flutter/models/vk_audio_upload_server.dart';
 import 'package:vk_messenger_flutter/models/vk_conversation.dart';
 import 'package:vk_messenger_flutter/models/vk_conversations.dart';
 import 'package:vk_messenger_flutter/models/vk_delete_messages.dart';
 import 'package:vk_messenger_flutter/models/vk_doc_messages_upload_server.dart';
 import 'package:vk_messenger_flutter/models/vk_friends.dart';
+import 'package:vk_messenger_flutter/models/vk_long_poll_server.dart';
 import 'package:vk_messenger_flutter/models/vk_mark_as_read.dart';
 import 'package:vk_messenger_flutter/models/vk_messages.dart';
 import 'package:vk_messenger_flutter/models/vk_photo_messages_upload_server.dart';
@@ -330,5 +332,33 @@ class VkServiceImpl implements VKService {
       return null;
     }
     return VkMarkAsRead.fromJson(responseBody);
+  }
+
+  Future<VkLongPollServer> getLongPollServer(Map<String, String> params) async {
+    final getLongPollServer =
+        '${api.BASE_URL}messages.getLongPollServer?access_token=$token&v=${api.VERSION}&extended=1' +
+            '${serialize(params)}';
+
+    final response = await http.get(getLongPollServer);
+
+    Map<String, dynamic> responseBody =
+        response?.body != null ? json.decode(response?.body) : null;
+
+    if (responseBody == null) {
+      return null;
+    }
+    return VkLongPollServer.fromJson(responseBody);
+  }
+
+  Future<PollResult> poll(String pollUrl) async {
+    final response = await http.get(pollUrl);
+
+    Map<String, dynamic> responseBody =
+        response?.body != null ? json.decode(response?.body) : null;
+
+    if (responseBody == null) {
+      return null;
+    }
+    return PollResult.fromJson(responseBody);
   }
 }
