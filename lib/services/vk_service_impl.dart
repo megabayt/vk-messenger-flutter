@@ -10,6 +10,7 @@ import 'package:vk_messenger_flutter/models/vk_conversations.dart';
 import 'package:vk_messenger_flutter/models/vk_delete_messages.dart';
 import 'package:vk_messenger_flutter/models/vk_doc_messages_upload_server.dart';
 import 'package:vk_messenger_flutter/models/vk_friends.dart';
+import 'package:vk_messenger_flutter/models/vk_mark_as_read.dart';
 import 'package:vk_messenger_flutter/models/vk_messages.dart';
 import 'package:vk_messenger_flutter/models/vk_photo_messages_upload_server.dart';
 import 'package:vk_messenger_flutter/models/vk_save_audio.dart';
@@ -313,5 +314,21 @@ class VkServiceImpl implements VKService {
       return null;
     }
     return VkStoreProducts.fromJson(responseBody);
+  }
+
+  Future<VkMarkAsRead> markAsRead(Map<String, String> params) async {
+    final markAsReadUrl =
+        '${api.BASE_URL}messages.markAsRead?access_token=$token&v=${api.VERSION}&extended=1' +
+            '${serialize(params)}';
+
+    final response = await http.get(markAsReadUrl);
+
+    Map<String, dynamic> responseBody =
+        response?.body != null ? json.decode(response?.body) : null;
+
+    if (responseBody == null) {
+      return null;
+    }
+    return VkMarkAsRead.fromJson(responseBody);
   }
 }

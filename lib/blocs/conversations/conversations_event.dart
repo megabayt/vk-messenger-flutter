@@ -13,4 +13,10 @@ class ConversationsChangeLastMessage extends ConversationsEvent {
   ConversationsChangeLastMessage(this.message);
 }
 
+class ConversationsResetUnread extends ConversationsEvent {
+  final int peerId;
+
+  ConversationsResetUnread(this.peerId);
+}
+
 class ConversationsRetry extends ConversationsEvent {}

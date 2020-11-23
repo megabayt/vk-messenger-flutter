@@ -22,7 +22,7 @@ Copy ios/Runner/google_maps_api.plist.example as google_maps_api.plist and inser
 ## TODO List
 
 - [x] Show out messages read flag
-- [ ] Read messages when entering chat
+- [x] Read messages when entering chat
 - [ ] Long polling
   - [ ] Message read
   - [ ] Set me online

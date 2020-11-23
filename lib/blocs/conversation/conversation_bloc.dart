@@ -118,6 +118,14 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
         isFetching: false,
         data: newData,
       );
+
+      // Mark all conversation messages as read
+      await _vkService.markAsRead({
+        'peer_id': _peerId.toString(),
+        'mark_conversation_as_read': '1',
+      });
+
+      _conversationsBloc.add(ConversationsResetUnread(_peerId));
     } catch (e) {
       yield state.copyWith(
         isFetching: false,

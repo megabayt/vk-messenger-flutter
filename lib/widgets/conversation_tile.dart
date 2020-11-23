@@ -32,7 +32,7 @@ class ConversationTile extends StatelessWidget {
   }
 
   Widget getInRead(int unreadCount) {
-    if (unreadCount == null) {
+    if (unreadCount == 0) {
       return null;
     }
     return Badge(
@@ -55,7 +55,7 @@ class ConversationTile extends StatelessWidget {
 
     final name = item?.conversation?.chatSettings?.title ?? profile.name;
 
-    final unreadCount = item?.conversation?.unreadCount;
+    final unreadCount = item?.conversation?.unreadCount ?? 0;
 
     final lastMsgAttachments = item?.lastMessage?.attachments ?? [];
     final lastMsgFwdMessages = item?.lastMessage?.fwdMessages ?? [];
