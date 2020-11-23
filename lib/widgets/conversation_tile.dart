@@ -13,6 +13,40 @@ import 'package:vk_messenger_flutter/widgets/conversation_tile_skeleton.dart';
 class ConversationTile extends StatelessWidget {
   final _profilesService = locator<ProfilesService>();
 
+  Widget getOutRead(bool outRead) {
+    if (outRead) {
+      return null;
+    }
+    return Container(
+      height: 10,
+      width: 10,
+      decoration: BoxDecoration(
+        color: Color.fromRGBO(147, 173, 200, .9),
+        borderRadius: BorderRadius.all(
+          Radius.circular(5),
+        ),
+      ),
+      padding: EdgeInsets.all(7),
+      child: null,
+    );
+  }
+
+  Widget getInRead(int unreadCount) {
+    if (unreadCount == null) {
+      return null;
+    }
+    return Badge(
+      padding: EdgeInsets.all(7),
+      badgeContent: Text(
+        unreadCount.toString(),
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      child: null,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final item = Provider.of<VkConversationItem>(context, listen: false);
@@ -27,6 +61,9 @@ class ConversationTile extends StatelessWidget {
     final lastMsgFwdMessages = item?.lastMessage?.fwdMessages ?? [];
 
     var text = item?.lastMessage?.text;
+
+    final isOut = item?.lastMessage?.out == 1;
+    final outRead = item?.lastMessage?.id == item?.conversation?.outRead;
 
     if (text == '') {
       if (lastMsgAttachments.length != 0) {
@@ -49,18 +86,7 @@ class ConversationTile extends StatelessWidget {
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: unreadCount != null
-          ? Badge(
-              padding: EdgeInsets.all(7),
-              badgeContent: Text(
-                unreadCount.toString(),
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              child: null,
-            )
-          : null,
+      trailing: isOut ? getOutRead(outRead) : getInRead(unreadCount),
     );
   }
 }

@@ -38,6 +38,35 @@ class Message extends StatelessWidget {
     conversationBloc.add(ConversationSelectMessage(message?.id));
   }
 
+  bool _checkOutRead(BuildContext context, int id) {
+    bool read = true;
+
+    // ignore: close_sinks
+    final history =
+        BlocProvider.of<ConversationBloc>(context)?.state?.currentHistory;
+
+    final items = history?.items ?? [];
+    final conversations = history?.conversations ?? [];
+    final conversation = conversations.length > 0 ? conversations[0] : null;
+    final outRead = conversation?.outRead;
+
+    if (outRead == id) {
+      return true;
+    }
+
+    for (int i = 0; i < items.length; i++) {
+      if (items[i]?.id == id) {
+        read = false;
+        break;
+      }
+      if (items[i]?.id == outRead) {
+        break;
+      }
+    }
+
+    return read;
+  }
+
   @override
   Widget build(BuildContext context) {
     final item = Provider.of<MessageModel.Message>(context, listen: false);
@@ -126,6 +155,18 @@ class Message extends StatelessWidget {
               Text('Не отправлено'),
             ],
           ),
+        ),
+      );
+    }
+
+    if (item?.out == 1) {
+      rows.add(
+        Icon(
+          item.isSent ? Icons.done_all : Icons.done,
+          size: 12,
+          color: item.isSent && _checkOutRead(context, item?.id)
+              ? Colors.blue
+              : Colors.black54,
         ),
       );
     }

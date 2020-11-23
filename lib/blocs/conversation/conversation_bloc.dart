@@ -274,12 +274,13 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       peerId: state.peerId,
       fromId: _vkService.userId,
       date: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      attachments: List<Attachment>()..add(
-        Attachment(
-          type: AttachmentType.STICKER,
-          sticker: event.sticker,
-        )
-      ),
+      attachments: List<Attachment>()
+        ..add(
+          Attachment(
+            type: AttachmentType.STICKER,
+            sticker: event.sticker,
+          ),
+        ),
       isSent: false,
     );
 

@@ -16,10 +16,12 @@ class ConversationState {
         : null;
   }
 
+  VkConversationResponse get currentHistory {
+    return data != null && data.containsKey(peerId) ? data[peerId] : null;
+  }
+
   List<Message> get currentMessages {
-    return data != null && data.containsKey(peerId)
-        ? data[peerId]?.items
-        : null;
+    return currentHistory?.items;
   }
 
   List<Message> get selectedMessages {
