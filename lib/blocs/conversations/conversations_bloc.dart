@@ -33,6 +33,9 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
     if (event is ConversationsResetUnread) {
       yield* _mapConversationsResetUnreadToState(event);
     }
+    if (event is ConversationsPollEditMessage) {
+      yield* _mapConversationsPollEditMessageToState(event);
+    }
     if (event is ConversationsRetry && state.lastEvent != null) {
       this.add(state.lastEvent);
     }
@@ -131,9 +134,7 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
 
       newItems[index] = newItems[index].copyWith(
         conversation: conversation.copyWith(
-          unreadCount: event.message.out == 0
-              ? unreadCount + 1
-              : 0,
+          unreadCount: event.message.out == 0 ? unreadCount + 1 : 0,
         ),
         lastMessage: event.message,
       );
@@ -168,6 +169,31 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
       yield state.copyWith(
         items: newItems,
       );
+    }
+  }
+
+  Stream<ConversationsState> _mapConversationsPollEditMessageToState(
+    ConversationsPollEditMessage event,
+  ) async* {
+    var newItems = List<VkConversationItem>.from(
+        state.items ?? List<VkConversationItem>());
+
+    final index = newItems.indexWhere(
+        (element) => element.conversation.peer.id == event.message.peerId);
+
+    if (index != -1) {
+      final lastMessage = newItems[index].lastMessage;
+      final newMessage = event.message;
+
+      if (lastMessage?.id == newMessage?.id) {
+        newItems[index] = newItems[index].copyWith(
+          lastMessage: newMessage,
+        );
+
+        yield state.copyWith(
+          items: newItems,
+        );
+      }
     }
   }
 }

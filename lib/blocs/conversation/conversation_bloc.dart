@@ -75,6 +75,9 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     if (event is ConversationPollAddMessage) {
       yield* _mapConversationPollAddMessageToState(event);
     }
+    if (event is ConversationPollEditMessage) {
+      yield* _mapConversationPollEditMessageToState(event);
+    }
     if (event is ConversationRetry && state.lastEvent != null) {
       this.add(state.lastEvent);
     }
@@ -439,6 +442,38 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
     _conversationsBloc.add(
       ConversationsChangeLastMessage(
+        message,
+      ),
+    );
+  }
+
+  Stream<ConversationState> _mapConversationPollEditMessageToState(
+      ConversationPollEditMessage event) async* {
+    final message = await _fetchMessage(event.messageId);
+
+    if (message?.peerId == _peerId) {
+      var newData = Map<int, VkConversationResponse>.from(
+          state.data ?? Map<int, VkConversationResponse>());
+
+      if (message != null &&
+          newData != null &&
+          newData.containsKey(message.peerId)) {
+        final index = newData[message.peerId]
+            .items
+            .indexWhere((element) => element.id == event.messageId);
+
+        if (index != -1) {
+          newData[message.peerId].items.removeAt(index);
+        }
+
+        newData[message.peerId].items.insert(index, message);
+
+        yield state.copyWith(data: newData);
+      }
+    }
+
+    _conversationsBloc.add(
+      ConversationsPollEditMessage(
         message,
       ),
     );

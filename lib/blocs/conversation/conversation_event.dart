@@ -62,4 +62,10 @@ class ConversationPollAddMessage extends ConversationEvent {
   ConversationPollAddMessage(this.messageId);
 }
 
+class ConversationPollEditMessage extends ConversationEvent {
+  final int messageId;
+
+  ConversationPollEditMessage(this.messageId);
+}
+
 class ConversationRetry extends ConversationEvent {}

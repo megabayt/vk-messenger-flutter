@@ -65,6 +65,11 @@ class LongPollingBloc extends Bloc<LongPollingEvent, LongPollingState> {
               case PollResultCode.ADD_MSG:
                 _conversationBloc
                     .add(ConversationPollAddMessage(update.field1));
+                break;
+              case PollResultCode.EDIT_MSG:
+                _conversationBloc
+                    .add(ConversationPollEditMessage(update.field1));
+                break;
             }
           });
         }

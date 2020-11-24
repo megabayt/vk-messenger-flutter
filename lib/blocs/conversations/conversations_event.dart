@@ -19,4 +19,10 @@ class ConversationsResetUnread extends ConversationsEvent {
   ConversationsResetUnread(this.peerId);
 }
 
+class ConversationsPollEditMessage extends ConversationsEvent {
+  final Message message;
+
+  ConversationsPollEditMessage(this.message);
+}
+
 class ConversationsRetry extends ConversationsEvent {}
