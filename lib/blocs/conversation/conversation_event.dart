@@ -56,4 +56,10 @@ class ConversationMarkImportantMessage extends ConversationEvent {}
 
 class ConversationEditMessage extends ConversationEvent {}
 
+class ConversationPollAddMessage extends ConversationEvent {
+  final int messageId;
+
+  ConversationPollAddMessage(this.messageId);
+}
+
 class ConversationRetry extends ConversationEvent {}

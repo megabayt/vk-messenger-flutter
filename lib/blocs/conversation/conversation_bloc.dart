@@ -72,6 +72,9 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     if (event is ConversationEditMessage) {
       yield* _mapConversationEditMessageToState();
     }
+    if (event is ConversationPollAddMessage) {
+      yield* _mapConversationPollAddMessageToState(event);
+    }
     if (event is ConversationRetry && state.lastEvent != null) {
       this.add(state.lastEvent);
     }
@@ -317,25 +320,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       );
     }
 
-    try {
-      final messageQuery = await _vkService.getMessages({
-        'message_ids': messageId.toString(),
-      });
-
-      if (messageQuery.error != null) {
-        throw Exception(messageQuery.error?.errorMsg);
-      }
-
-      final messages = messageQuery?.response?.items ?? [];
-
-      if (messages?.length != 0) {
-        message = messageQuery?.response?.items[0];
-      } else {
-        throw Exception('no messages!');
-      }
-    } catch (_) {
-      message = message.copyWith(id: messageId);
-    }
+    message = await _fetchMessage(messageId);
 
     yield* _appendOrRemoveMessage(randomId, message);
     yield state.copyWith(
@@ -434,4 +419,52 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       _mapConversationMarkImportantMessageToState() async* {}
 
   Stream<ConversationState> _mapConversationEditMessageToState() async* {}
+
+  Stream<ConversationState> _mapConversationPollAddMessageToState(
+      ConversationPollAddMessage event) async* {
+    final message = await _fetchMessage(event?.messageId);
+
+    if (message?.peerId == _peerId) {
+      var newData = Map<int, VkConversationResponse>.from(
+          state.data ?? Map<int, VkConversationResponse>());
+
+      if (message != null &&
+          newData != null &&
+          newData.containsKey(message.peerId)) {
+        newData[message.peerId].items.insert(0, message);
+
+        yield state.copyWith(data: newData);
+      }
+    }
+
+    _conversationsBloc.add(
+      ConversationsChangeLastMessage(
+        message,
+      ),
+    );
+  }
+
+  Future<Message> _fetchMessage(int messageId) async {
+    Message message;
+    try {
+      final messageQuery = await _vkService.getMessages({
+        'message_ids': messageId.toString(),
+      });
+
+      if (messageQuery.error != null) {
+        throw Exception(messageQuery.error?.errorMsg);
+      }
+
+      final messages = messageQuery?.response?.items ?? [];
+
+      if (messages?.length != 0) {
+        message = messageQuery?.response?.items[0];
+      } else {
+        throw Exception('no messages!');
+      }
+    } catch (_) {
+      message = message.copyWith(id: messageId);
+    }
+    return message;
+  }
 }

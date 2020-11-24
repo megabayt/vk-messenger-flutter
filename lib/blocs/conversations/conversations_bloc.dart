@@ -125,7 +125,16 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
         (element) => element.conversation.peer.id == event.message.peerId);
 
     if (index != -1) {
+      final conversation = newItems[index].conversation;
+
+      final unreadCount = conversation?.unreadCount ?? 0;
+
       newItems[index] = newItems[index].copyWith(
+        conversation: conversation.copyWith(
+          unreadCount: event.message.out == 0
+              ? unreadCount + 1
+              : 0,
+        ),
         lastMessage: event.message,
       );
 
@@ -133,6 +142,9 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
         items: newItems,
         count: count,
       );
+    } else {
+      // TODO: Очень костыльное решение, нужно придумать что-то другое
+      this.add(ConversationsFetch());
     }
   }
 

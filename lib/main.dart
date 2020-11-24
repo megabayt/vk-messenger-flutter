@@ -38,7 +38,10 @@ void main() {
           create: (_) => StickersBloc()..add(StickersFetch()),
         ),
         BlocProvider(
-          create: (_) => LongPollingBloc(),
+          create: (context) => LongPollingBloc(
+            BlocProvider.of<ConversationsBloc>(context),
+            BlocProvider.of<ConversationBloc>(context),
+          ),
         ),
         BlocProvider(
           create: (context) => AuthBloc(
