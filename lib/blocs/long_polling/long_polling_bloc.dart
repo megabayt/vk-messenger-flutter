@@ -4,7 +4,6 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
-import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
 import 'package:vk_messenger_flutter/models/poll_result_update_item.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
@@ -15,7 +14,6 @@ part 'long_polling_state.dart';
 class LongPollingBloc extends Bloc<LongPollingEvent, LongPollingState> {
   static const LP_VERSION = '3';
   final VKService _vkService = locator<VKService>();
-  final ConversationsBloc _conversationsBloc;
   final ConversationBloc _conversationBloc;
 
   String server;
@@ -23,10 +21,8 @@ class LongPollingBloc extends Bloc<LongPollingEvent, LongPollingState> {
   int ts;
 
   LongPollingBloc(
-    ConversationsBloc conversationsBloc,
     ConversationBloc conversationBloc,
-  )   : _conversationsBloc = conversationsBloc,
-        _conversationBloc = conversationBloc,
+  )   : _conversationBloc = conversationBloc,
         super(LongPollingInitial());
 
   @override
@@ -54,7 +50,7 @@ class LongPollingBloc extends Bloc<LongPollingEvent, LongPollingState> {
       }
 
       final pollUrl =
-          'https://$server?act=a_check&key=$key&ts=${ts.toString()}&wait=25&mode=0&version=$LP_VERSION';
+          'https://$server?act=a_check&key=$key&ts=${ts.toString()}&wait=25&mode=8&version=$LP_VERSION';
 
       _vkService.poll(pollUrl).then((pollResult) {
         final updates = pollResult?.updates ?? [];
@@ -62,6 +58,10 @@ class LongPollingBloc extends Bloc<LongPollingEvent, LongPollingState> {
         if (updates.length != 0) {
           updates.forEach((update) {
             switch (update?.code) {
+              case PollResultCode.SET_MSG_FLAG:
+                _conversationBloc.add(ConversationPollProcessFlags(
+                    update.field1, update.field2, update.field3));
+                break;
               case PollResultCode.ADD_MSG:
                 _conversationBloc.add(
                     ConversationPollAddMessage(update.field3, update.field1));

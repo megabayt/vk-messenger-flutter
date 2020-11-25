@@ -39,7 +39,6 @@ void main() {
         ),
         BlocProvider(
           create: (context) => LongPollingBloc(
-            BlocProvider.of<ConversationsBloc>(context),
             BlocProvider.of<ConversationBloc>(context),
           ),
         ),

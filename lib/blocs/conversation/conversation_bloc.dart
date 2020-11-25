@@ -8,6 +8,7 @@ import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart
 import 'package:vk_messenger_flutter/constants/math.dart';
 import 'package:vk_messenger_flutter/models/attachment.dart';
 import 'package:vk_messenger_flutter/models/message.dart';
+import 'package:vk_messenger_flutter/models/message_flag.dart';
 import 'package:vk_messenger_flutter/models/sticker.dart';
 
 import 'package:vk_messenger_flutter/models/vk_conversation.dart';
@@ -77,6 +78,15 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     }
     if (event is ConversationPollEditMessage) {
       yield* _mapConversationPollEditMessageToState(event);
+    }
+    if (event is ConversationPollProcessFlags) {
+      yield* _mapConversationPollProcessFlagsToState(event);
+    }
+    if (event is ConversationPollDeleteMessage) {
+      yield* _mapConversationPollDeleteMessageToState(event);
+    }
+    if (event is ConversationPollDeleteMessages) {
+      yield* _mapConversationPollDeleteMessagesToState(event);
     }
     if (event is ConversationRetry && state.lastEvent != null) {
       this.add(state.lastEvent);
@@ -469,6 +479,46 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     );
   }
 
+  Stream<ConversationState> _mapConversationPollDeleteMessageToState(
+      ConversationPollDeleteMessage event) async* {
+    if (event?.peerId == _peerId) {
+      var newData = Map<int, VkConversationResponse>.from(
+          state.data ?? Map<int, VkConversationResponse>());
+      if (newData.containsKey(_peerId)) {
+        final index = newData[_peerId]
+            .items
+            .indexWhere((element) => element.id == event.messageId);
+
+        if (index != -1) {
+          newData[_peerId].items.removeAt(index);
+          newData[_peerId] = newData[_peerId].copyWith(
+            count: newData[_peerId].count - 1,
+          );
+        }
+
+        yield state.copyWith(data: newData);
+      }
+    }
+  }
+
+  Stream<ConversationState> _mapConversationPollDeleteMessagesToState(
+      ConversationPollDeleteMessages event) async* {
+    print(event.localId);
+  }
+
+  Stream<ConversationState> _mapConversationPollProcessFlagsToState(
+      ConversationPollProcessFlags event) async* {
+    final flags = MessageFlags.getFlags(event.mask);
+
+    flags.forEach((flag) {
+      switch (flag) {
+        case MessageFlag.DELETED:
+          this.add(
+              ConversationPollDeleteMessage(event.peerId, event.messageId));
+      }
+    });
+  }
+
   Future<Message> _fetchMessage(int messageId) async {
     Message message;
     try {
@@ -487,9 +537,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       } else {
         throw Exception('no messages!');
       }
-    } catch (_) {
-      message = message.copyWith(id: messageId);
-    }
+    } catch (_) {}
     return message;
   }
 }

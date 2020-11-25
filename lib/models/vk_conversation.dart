@@ -54,6 +54,22 @@ class VkConversationResponse {
 
   String toRawJson() => json.encode(toJson());
 
+  VkConversationResponse copyWith({
+    int count,
+    List<Message> items,
+    List<Conversation> conversations,
+    List<Profile> profiles,
+    List<Group> groups,
+  }) {
+    return VkConversationResponse(
+      count: count ?? this.count,
+      items: items ?? this.items,
+      conversations: conversations ?? this.conversations,
+      profiles: profiles ?? this.profiles,
+      groups: groups ?? this.groups,
+    );
+  }
+
   factory VkConversationResponse.fromJson(Map<String, dynamic> json) =>
       VkConversationResponse(
         count: json["count"] == null ? null : json["count"],

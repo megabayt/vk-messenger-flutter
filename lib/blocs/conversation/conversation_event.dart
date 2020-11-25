@@ -56,6 +56,14 @@ class ConversationMarkImportantMessage extends ConversationEvent {}
 
 class ConversationEditMessage extends ConversationEvent {}
 
+class ConversationPollProcessFlags extends ConversationEvent {
+  final int messageId;
+  final int mask;
+  final int peerId;
+
+  ConversationPollProcessFlags(this.messageId, this.mask, this.peerId);
+}
+
 class ConversationPollAddMessage extends ConversationEvent {
   final int peerId;
   final int messageId;
@@ -68,6 +76,20 @@ class ConversationPollEditMessage extends ConversationEvent {
   final int messageId;
 
   ConversationPollEditMessage(this.peerId, this.messageId);
+}
+
+class ConversationPollDeleteMessage extends ConversationEvent {
+  final int peerId;
+  final int messageId;
+
+  ConversationPollDeleteMessage(this.peerId, this.messageId);
+}
+
+class ConversationPollDeleteMessages extends ConversationEvent {
+  final int peerId;
+  final int localId;
+
+  ConversationPollDeleteMessages(this.peerId, this.localId);
 }
 
 class ConversationRetry extends ConversationEvent {}
