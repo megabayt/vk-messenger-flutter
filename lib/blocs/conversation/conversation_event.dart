@@ -57,15 +57,17 @@ class ConversationMarkImportantMessage extends ConversationEvent {}
 class ConversationEditMessage extends ConversationEvent {}
 
 class ConversationPollAddMessage extends ConversationEvent {
+  final int peerId;
   final int messageId;
 
-  ConversationPollAddMessage(this.messageId);
+  ConversationPollAddMessage(this.peerId, this.messageId);
 }
 
 class ConversationPollEditMessage extends ConversationEvent {
+  final int peerId;
   final int messageId;
 
-  ConversationPollEditMessage(this.messageId);
+  ConversationPollEditMessage(this.peerId, this.messageId);
 }
 
 class ConversationRetry extends ConversationEvent {}

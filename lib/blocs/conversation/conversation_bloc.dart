@@ -247,25 +247,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       );
     }
 
-    try {
-      final messageQuery = await _vkService.getMessages({
-        'message_ids': messageId.toString(),
-      });
-
-      if (messageQuery.error != null) {
-        throw Exception(messageQuery.error?.errorMsg);
-      }
-
-      final messages = messageQuery?.response?.items ?? [];
-
-      if (messages?.length != 0) {
-        message = messageQuery?.response?.items[0];
-      } else {
-        throw Exception('no messages!');
-      }
-    } catch (_) {
-      message = message.copyWith(id: messageId);
-    }
+    message = await _fetchMessage(messageId);
 
     yield* _appendOrRemoveMessage(randomId, message);
     yield state.copyWith(
@@ -425,16 +407,23 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
   Stream<ConversationState> _mapConversationPollAddMessageToState(
       ConversationPollAddMessage event) async* {
-    final message = await _fetchMessage(event?.messageId);
+    final messageId = event.messageId;
+    final peerId = event.peerId;
 
-    if (message?.peerId == _peerId) {
+    final message = await _fetchMessage(messageId);
+
+    if (peerId == _peerId) {
       var newData = Map<int, VkConversationResponse>.from(
           state.data ?? Map<int, VkConversationResponse>());
 
-      if (message != null &&
-          newData != null &&
-          newData.containsKey(message.peerId)) {
-        newData[message.peerId].items.insert(0, message);
+      if (message != null && newData.containsKey(peerId)) {
+        final index = newData[peerId]
+            .items
+            .indexWhere((element) => element.id == messageId);
+
+        if (index == -1) {
+          newData[peerId].items.insert(0, message);
+        }
 
         yield state.copyWith(data: newData);
       }
@@ -449,24 +438,25 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
   Stream<ConversationState> _mapConversationPollEditMessageToState(
       ConversationPollEditMessage event) async* {
-    final message = await _fetchMessage(event.messageId);
+    final messageId = event.messageId;
+    final peerId = event.peerId;
 
-    if (message?.peerId == _peerId) {
+    final message = await _fetchMessage(messageId);
+
+    if (peerId == _peerId) {
       var newData = Map<int, VkConversationResponse>.from(
           state.data ?? Map<int, VkConversationResponse>());
 
-      if (message != null &&
-          newData != null &&
-          newData.containsKey(message.peerId)) {
-        final index = newData[message.peerId]
+      if (message != null && newData.containsKey(peerId)) {
+        final index = newData[peerId]
             .items
-            .indexWhere((element) => element.id == event.messageId);
+            .indexWhere((element) => element.id == messageId);
 
         if (index != -1) {
-          newData[message.peerId].items.removeAt(index);
+          newData[peerId].items.removeAt(index);
         }
 
-        newData[message.peerId].items.insert(index, message);
+        newData[peerId].items.insert(index, message);
 
         yield state.copyWith(data: newData);
       }

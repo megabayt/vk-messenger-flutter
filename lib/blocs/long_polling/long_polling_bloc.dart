@@ -63,12 +63,12 @@ class LongPollingBloc extends Bloc<LongPollingEvent, LongPollingState> {
           updates.forEach((update) {
             switch (update?.code) {
               case PollResultCode.ADD_MSG:
-                _conversationBloc
-                    .add(ConversationPollAddMessage(update.field1));
+                _conversationBloc.add(
+                    ConversationPollAddMessage(update.field3, update.field1));
                 break;
               case PollResultCode.EDIT_MSG:
-                _conversationBloc
-                    .add(ConversationPollEditMessage(update.field1));
+                _conversationBloc.add(
+                    ConversationPollEditMessage(update.field3, update.field1));
                 break;
             }
           });
