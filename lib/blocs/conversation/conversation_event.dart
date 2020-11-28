@@ -85,6 +85,14 @@ class ConversationPollDeleteMessage extends ConversationEvent {
   ConversationPollDeleteMessage(this.peerId, this.messageId);
 }
 
+class ConversationPollReadMessage extends ConversationEvent {
+  final int peerId;
+  final int messageId;
+  final bool inRead;
+
+  ConversationPollReadMessage(this.peerId, this.messageId, this.inRead);
+}
+
 class ConversationPollDeleteMessages extends ConversationEvent {
   final int peerId;
   final int localId;

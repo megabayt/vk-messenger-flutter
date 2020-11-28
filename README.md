@@ -24,7 +24,7 @@ Copy ios/Runner/google_maps_api.plist.example as google_maps_api.plist and inser
 - [x] Show out messages read flag
 - [x] Read messages when entering chat
 - [ ] Long polling
-  - [ ] Message read
+  - [x] Message read
   - [ ] Set me online
   - [ ] Set friends online
 - [ ] Push notifications

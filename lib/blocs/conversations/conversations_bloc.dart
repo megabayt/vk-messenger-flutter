@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:vk_messenger_flutter/models/conversation.dart';
 
 import 'package:vk_messenger_flutter/models/message.dart';
 import 'package:vk_messenger_flutter/models/vk_conversations.dart';
@@ -35,6 +36,9 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
     }
     if (event is ConversationsPollEditMessage) {
       yield* _mapConversationsPollEditMessageToState(event);
+    }
+    if (event is ConversationsPollReadMessage) {
+      yield* _mapConversationsPollReadMessageToState(event);
     }
     if (event is ConversationsRetry && state.lastEvent != null) {
       this.add(state.lastEvent);
@@ -194,6 +198,38 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
           items: newItems,
         );
       }
+    }
+  }
+
+  Stream<ConversationsState> _mapConversationsPollReadMessageToState(
+      ConversationsPollReadMessage event) async* {
+    var newItems = List<VkConversationItem>.from(
+        state.items ?? List<VkConversationItem>());
+
+    final index = newItems
+        .indexWhere((element) => element.conversation.peer.id == event.peerId);
+
+    if (index != -1) {
+      final conversation = newItems[index].conversation;
+      final lastMessage = newItems[index].lastMessage;
+      Conversation newConversation;
+      if (event.inRead) {
+        newConversation = conversation.copyWith(
+          inRead: event.messageId,
+          unreadCount:
+              event.messageId == lastMessage.id ? 0 : conversation.unreadCount,
+        );
+      } else {
+        newConversation = conversation.copyWith(
+          outRead: event.messageId,
+        );
+      }
+
+      newItems[index] = newItems[index].copyWith(conversation: newConversation);
+
+      yield state.copyWith(
+        items: newItems,
+      );
     }
   }
 }

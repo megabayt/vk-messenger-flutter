@@ -25,4 +25,12 @@ class ConversationsPollEditMessage extends ConversationsEvent {
   ConversationsPollEditMessage(this.message);
 }
 
+class ConversationsPollReadMessage extends ConversationsEvent {
+  final int peerId;
+  final int messageId;
+  final bool inRead;
+
+  ConversationsPollReadMessage(this.peerId, this.messageId, this.inRead);
+}
+
 class ConversationsRetry extends ConversationsEvent {}

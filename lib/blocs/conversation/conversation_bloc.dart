@@ -65,9 +65,11 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       yield* _mapConversationDeleteMessageToState(event);
     }
     if (event is ConversationReplyMessage) {
+      // TODO: Process event
       yield* _mapConversationReplyMessageToState();
     }
     if (event is ConversationMarkImportantMessage) {
+      // TODO: Process event
       yield* _mapConversationMarkImportantMessageToState();
     }
     if (event is ConversationEditMessage) {
@@ -86,7 +88,11 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       yield* _mapConversationPollDeleteMessageToState(event);
     }
     if (event is ConversationPollDeleteMessages) {
+      // TODO: Process event
       yield* _mapConversationPollDeleteMessagesToState(event);
+    }
+    if (event is ConversationPollReadMessage) {
+      yield* _mapConversationPollReadMessageToState(event);
     }
     if (event is ConversationRetry && state.lastEvent != null) {
       this.add(state.lastEvent);
@@ -518,6 +524,34 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
               ConversationPollDeleteMessage(event.peerId, event.messageId));
       }
     });
+  }
+
+  Stream<ConversationState> _mapConversationPollReadMessageToState(
+      ConversationPollReadMessage event) async* {
+    if (event?.peerId == _peerId) {
+      var newData = Map<int, VkConversationResponse>.from(
+          state.data ?? Map<int, VkConversationResponse>());
+      if (newData.containsKey(_peerId)) {
+        final newConversations =
+            (newData[_peerId].conversations ?? []).map((conversation) {
+          if (event.inRead) {
+            return conversation.copyWith(inRead: event.messageId);
+          }
+          return conversation.copyWith(outRead: event.messageId);
+        }).toList();
+
+        newData[_peerId] = newData[_peerId].copyWith(
+          conversations: newConversations,
+        );
+
+        yield state.copyWith(data: newData);
+      }
+    }
+    _conversationsBloc.add(ConversationsPollReadMessage(
+      event.peerId,
+      event.messageId,
+      event.inRead,
+    ));
   }
 
   Future<Message> _fetchMessage(int messageId) async {

@@ -58,6 +58,16 @@ class LongPollingBloc extends Bloc<LongPollingEvent, LongPollingState> {
         if (updates.length != 0) {
           updates.forEach((update) {
             switch (update?.code) {
+              case PollResultCode.READ_IN_MSG:
+              case PollResultCode.READ_OUT_MSG:
+                _conversationBloc.add(
+                  ConversationPollReadMessage(
+                    update.field1,
+                    update.field2,
+                    update?.code == PollResultCode.READ_IN_MSG,
+                  ),
+                );
+                break;
               case PollResultCode.SET_MSG_FLAG:
                 _conversationBloc.add(ConversationPollProcessFlags(
                     update.field1, update.field2, update.field3));
