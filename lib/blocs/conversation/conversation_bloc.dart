@@ -512,6 +512,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
     flags.forEach((flag) {
       switch (flag) {
+        case MessageFlag.DELETE_FOR_ALL:
         case MessageFlag.DELETED:
           this.add(
               ConversationPollDeleteMessage(event.peerId, event.messageId));
