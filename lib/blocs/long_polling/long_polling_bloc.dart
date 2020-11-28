@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 import 'package:vk_messenger_flutter/models/poll_result_update_item.dart';
+import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 
@@ -14,6 +15,7 @@ part 'long_polling_state.dart';
 class LongPollingBloc extends Bloc<LongPollingEvent, LongPollingState> {
   static const LP_VERSION = '3';
   final VKService _vkService = locator<VKService>();
+  final ProfilesService _profilesService = locator<ProfilesService>();
   final ConversationBloc _conversationBloc;
 
   String server;
@@ -64,7 +66,7 @@ class LongPollingBloc extends Bloc<LongPollingEvent, LongPollingState> {
                   ConversationPollReadMessage(
                     update.field1,
                     update.field2,
-                    update?.code == PollResultCode.READ_IN_MSG,
+                    update.code == PollResultCode.READ_IN_MSG,
                   ),
                 );
                 break;
@@ -79,6 +81,11 @@ class LongPollingBloc extends Bloc<LongPollingEvent, LongPollingState> {
               case PollResultCode.EDIT_MSG:
                 _conversationBloc.add(
                     ConversationPollEditMessage(update.field3, update.field1));
+                break;
+              case PollResultCode.FRIEND_ONLINE:
+              case PollResultCode.FRIEND_OFFLINE:
+                _profilesService.setOnline(-(update.field1 as int),
+                    update.code == PollResultCode.FRIEND_ONLINE);
                 break;
             }
           });

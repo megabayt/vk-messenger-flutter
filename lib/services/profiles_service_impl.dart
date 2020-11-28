@@ -23,10 +23,7 @@ class ProfilesServiceImpl implements ProfilesService {
 
   ProfileCacheItem getProfile(int peerId) {
     if (peerId == null) {
-      return ProfileCacheItem(
-        null,
-        'Неизвестно',
-      );
+      return unknown;
     }
 
     if (_cache != null && _cache.containsKey(peerId)) {
@@ -38,27 +35,40 @@ class ProfilesServiceImpl implements ProfilesService {
 
     if (profile != null) {
       _cache[peerId] = ProfileCacheItem(
-        profile.photo50,
-        '${profile?.firstName} ${profile?.lastName}',
+        avatar: profile.photo50,
+        name: '${profile?.firstName} ${profile?.lastName}',
+        isOnline: profile.online == 1,
       );
       return _cache[peerId];
     }
-
 
     final group =
         _groups.firstWhere((group) => group.id == -peerId, orElse: () => null);
 
     if (group != null) {
       _cache[peerId] = ProfileCacheItem(
-        group.photo50,
-        group.name,
+        avatar: group.photo50,
+        name: group.name,
+        isOnline: false,
       );
       return _cache[peerId];
     }
 
-    return ProfileCacheItem(
-      null,
-      'Неизвестно',
-    );
+    return unknown;
+  }
+
+  void setOnline(int profileId, bool isOnline) {
+    final profile = _profiles.firstWhere((profile) => profile.id == profileId,
+        orElse: () => null);
+
+    if (profile != null) {
+      _cache[profileId] = _cache[profileId].copyWith(isOnline: isOnline);
+    }
   }
 }
+
+const ProfileCacheItem unknown = ProfileCacheItem(
+  avatar: null,
+  name: 'Неизвестно',
+  isOnline: false,
+);

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:vk_messenger_flutter/models/vk_conversations.dart' show VkConversationItem;
+import 'package:vk_messenger_flutter/models/vk_conversations.dart'
+    show VkConversationItem;
 import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 
@@ -17,15 +18,35 @@ class ConversationAvatar extends StatelessWidget {
     final activeIds = item?.conversation?.chatSettings?.activeIds ?? [];
 
     final activeProfiles = activeIds
-        .map<String>((activeId) => _profilesService.getProfile(activeId)?.avatar)
+        .map<String>(
+            (activeId) => _profilesService.getProfile(activeId)?.avatar)
         .toList();
 
-    var avatarUrls = activeProfiles.length != 0 ? activeProfiles : [profile.avatar];
+    var avatarUrls =
+        activeProfiles.length != 0 ? activeProfiles : [profile.avatar];
 
     avatarUrls = avatarUrls.where((item) => item != null).toList();
 
     if (avatarUrls.length == 1) {
-      return CircleAvatar(backgroundImage: NetworkImage(avatarUrls[0]));
+      return Stack(
+        alignment: Alignment.bottomRight,
+        children: [
+          CircleAvatar(
+            backgroundImage: NetworkImage(
+              avatarUrls[0],
+            ),
+          ),
+          if (profile.isOnline)
+            Container(
+              width: 10.0,
+              height: 10.0,
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(74, 179, 74, 1),
+                shape: BoxShape.circle,
+              ),
+            ),
+        ],
+      );
     }
     return Container(
       height: 40.0,
