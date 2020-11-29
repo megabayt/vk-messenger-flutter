@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.vk_messenger_flutter">
+    package="xyz.martyanov.vkmessenger">
     <!-- USER PERMISSIONS -->
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="vk_messenger_flutter"
+        android:label="ВК Мессенджер"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

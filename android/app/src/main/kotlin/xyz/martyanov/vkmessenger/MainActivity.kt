@@ -1,4 +1,4 @@
-package com.example.vk_messenger_flutter
+package xyz.martyanov.vkmessenger
 
 import io.flutter.embedding.android.FlutterActivity
 
