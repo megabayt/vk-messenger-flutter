@@ -1,43 +1,16 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
-import 'package:vk_messenger_flutter/blocs/long_polling/long_polling_bloc.dart';
-import 'package:vk_messenger_flutter/screens/conversations_screen.dart';
-import 'package:vk_messenger_flutter/screens/splash_screen.dart';
 
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
-import 'package:vk_messenger_flutter/screens/app_router.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final VKService _vkService = locator<VKService>();
-  final ConversationsBloc _conversationsBloc;
-  final LongPollingBloc _longPollingBloc;
 
-  AuthBloc(ConversationsBloc conversationsBloc, LongPollingBloc longPollingBloc)
-      : _conversationsBloc = conversationsBloc,
-        _longPollingBloc = longPollingBloc,
-        super(AuthNotAuthenticated());
-
-  @override
-  void onTransition(Transition<AuthEvent, AuthState> transition) {
-    if (transition.nextState is AuthNotAuthenticated ||
-        transition.nextState is AuthFailure) {
-      AppRouter.sailor.popUntil((_) => false);
-      AppRouter.sailor.navigate(SplashScreen.routeUrl);
-      this.add(UserLogIn());
-    }
-    if (transition.nextState is AuthAuthenticated) {
-      AppRouter.sailor.popUntil((_) => false);
-      AppRouter.sailor.navigate(ConversationsScreen.routeUrl);
-      _conversationsBloc.add(ConversationsFetch());
-      _longPollingBloc.add(LongPollingPoll());
-    }
-    super.onTransition(transition);
-  }
+  AuthBloc() : super(AuthNotAuthenticated());
 
   @override
   Stream<AuthState> mapEventToState(AuthEvent event) async* {

@@ -1,46 +1,43 @@
-import 'package:vk_messenger_flutter/models/poll_result.dart';
-import 'package:vk_messenger_flutter/models/vk_audio_upload_server.dart';
-import 'package:vk_messenger_flutter/models/vk_conversations.dart';
-import 'package:vk_messenger_flutter/models/vk_conversation.dart';
-import 'package:vk_messenger_flutter/models/vk_delete_messages.dart';
-import 'package:vk_messenger_flutter/models/vk_doc_messages_upload_server.dart';
-import 'package:vk_messenger_flutter/models/vk_friends.dart';
-import 'package:vk_messenger_flutter/models/vk_long_poll_server.dart';
-import 'package:vk_messenger_flutter/models/vk_messages.dart';
-import 'package:vk_messenger_flutter/models/vk_photo_messages_upload_server.dart';
-import 'package:vk_messenger_flutter/models/vk_save_audio.dart';
-import 'package:vk_messenger_flutter/models/vk_save_doc.dart';
-import 'package:vk_messenger_flutter/models/vk_save_messages_photo.dart';
-import 'package:vk_messenger_flutter/models/vk_save_video.dart';
-import 'package:vk_messenger_flutter/models/vk_send_message.dart';
-import 'package:vk_messenger_flutter/models/vk_store_products.dart';
-import 'package:vk_messenger_flutter/models/vk_mark_as_read.dart';
-
 abstract class VKService {
   String get token;
   int get userId;
 
   Future<void> login();
   Future<void> logout();
-  Future<VkConversationsResponseBody> getConversations(
+
+  Future<Map<String, dynamic>> getConversations(Map<String, String> params);
+
+  Future<Map<String, dynamic>> getHistory(Map<String, String> params);
+
+  Future<Map<String, dynamic>> getMessages(Map<String, String> params);
+
+  Future<Map<String, dynamic>> getFriends(Map<String, String> params);
+
+  Future<Map<String, dynamic>> sendMessage(Map<String, String> params);
+
+  Future<Map<String, dynamic>> deleteMessages(Map<String, String> params);
+
+  Future<Map<String, dynamic>> getPhotoMessagesUploadServer(
       Map<String, String> params);
-  Future<VkConversationResponseBody> getHistory(Map<String, String> params);
-  Future<VkMessagesResponseBody> getMessages(Map<String, String> params);
-  Future<VkDeleteMessagesResponseBody> deleteMessages(
+
+  Future<Map<String, dynamic>> saveMessagesPhoto(Map<String, String> params);
+
+  Future<Map<String, dynamic>> saveVideo(Map<String, String> params);
+
+  Future<Map<String, dynamic>> getAudioUploadServer();
+
+  Future<Map<String, dynamic>> saveAudio(Map<String, String> params);
+
+  Future<Map<String, dynamic>> getDocMessagesUploadServer(
       Map<String, String> params);
-  Future<VkFriendsResponseBody> getFriends(Map<String, String> params);
-  Future<VkSendMessageResponseBody> sendMessage(Map<String, String> params);
-  Future<VkPhotoMessagesUploadServerResponseBody> getPhotoMessagesUploadServer(
-      Map<String, String> params);
-  Future<VkSaveMessagesPhoto> saveMessagesPhoto(Map<String, String> params);
-  Future<VkSaveVideoResponseBody> saveVideo(Map<String, String> params);
-  Future<VkAudioUploadServerResponseBody> getAudioUploadServer();
-  Future<VkSaveAudio> saveAudio(Map<String, String> params);
-  Future<VkDocMessagesUploadServerResponseBody> getDocMessagesUploadServer(
-      Map<String, String> params);
-  Future<VkSaveDoc> saveDoc(Map<String, String> params);
-  Future<VkStoreProducts> getStickers();
-  Future<VkMarkAsRead> markAsRead(Map<String, String> params);
-  Future<VkLongPollServer> getLongPollServer(Map<String, String> params);
-  Future<PollResult> poll(String pollUrl);
+
+  Future<Map<String, dynamic>> saveDoc(Map<String, String> params);
+
+  Future<Map<String, dynamic>> getStickers();
+
+  Future<Map<String, dynamic>> markAsRead(Map<String, String> params);
+
+  Future<Map<String, dynamic>> getLongPollServer(Map<String, String> params);
+
+  Future<Map<String, dynamic>> poll(String pollUrl);
 }
