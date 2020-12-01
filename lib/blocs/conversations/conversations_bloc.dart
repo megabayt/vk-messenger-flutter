@@ -5,7 +5,6 @@ import 'package:meta/meta.dart';
 
 import 'package:vk_messenger_flutter/blocs/profiles/profiles_bloc.dart';
 import 'package:vk_messenger_flutter/models/conversation.dart';
-import 'package:vk_messenger_flutter/models/message.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/utils/helpers.dart';
@@ -37,32 +36,10 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
     }
   }
 
-  Conversation _conversationMapper(Map<String, dynamic> element) {
-    final type = mapPath(element, ['conversation', 'peer', 'type']);
-
-    final lastMessage =
-        Message(id: mapPath(element, ['conversation', 'lastMessage', 'id']));
-
-    final chatSettings = ChatSettings(
-      title: mapPath(element, ['conversation', 'chat_settings', 'title']),
-      activeIds:
-          mapPath(element, ['conversation', 'chat_settings', 'active_ids']),
-    );
-
-    return Conversation(
-      id: mapPath(element, ['conversation', 'peer', 'id']),
-      type: type == null ? null : peerTypeValues.map[type],
-      localId: mapPath(element, ['conversation', 'peer', 'local_id']),
-      messages: [lastMessage],
-      chatSettings: chatSettings,
-      unreadCount: mapPath(element, ['conversation', 'unread_count']),
-    );
-  }
-
   List<Conversation> _getConversations(Map<String, dynamic> data) {
     final items = mapPath(data, ['response', 'items']) ?? [];
 
-    return items.map(_conversationMapper).toList();
+    return items.map((element) => Conversation.fromJson(element)).toList();
   }
 
   Stream<ConversationsState> _mapConversationsFetchToState(

@@ -11,7 +11,7 @@ class ProfilesInitial extends ProfilesState {
       : profilesMap = (() {
           int index = 0;
           return profiles.fold(
-            Map<int, Conversation>(),
+            Map<int, int>(),
             (map, conversation) {
               map[conversation.id] = index++;
               return map;
@@ -30,6 +30,6 @@ class ProfilesInitial extends ProfilesState {
   }
 
   int getIndexById(int id) {
-    return profilesMap[id] ?? -1;
+    return profilesMap == null ? null : profilesMap[id] ?? -1;
   }
 }

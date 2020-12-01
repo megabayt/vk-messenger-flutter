@@ -18,7 +18,7 @@ class ConversationsState {
   }) : conversationsMap = (() {
           int index = 0;
           return conversations.fold(
-            Map<int, Conversation>(),
+            Map<int, int>(),
             (map, conversation) {
               map[conversation.id] = index++;
               return map;
@@ -37,7 +37,7 @@ class ConversationsState {
   }
 
   int getIndexById(int id) {
-    return conversationsMap[id] ?? -1;
+    return conversationsMap == null ? null : conversationsMap[id] ?? -1;
   }
 
   ConversationsState copyWith({
