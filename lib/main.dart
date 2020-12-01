@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vk_messenger_flutter/screens/app_router.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/blocs/auth/auth_bloc.dart';
+import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
+import 'package:vk_messenger_flutter/blocs/profiles/profiles_bloc.dart';
 
 void main() {
   setupServiceLocator();
@@ -15,6 +17,11 @@ void main() {
           create: (_) => AuthBloc()..add(UserLogIn()),
           lazy: false,
         ),
+        BlocProvider(create: (_) => ProfilesBloc()),
+        BlocProvider(
+            create: (context) => ConversationsBloc(
+                  BlocProvider.of<ProfilesBloc>(context),
+                )),
       ],
       child: MyApp(),
     ),
