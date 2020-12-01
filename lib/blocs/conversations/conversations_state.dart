@@ -3,7 +3,7 @@ part of 'conversations_bloc.dart';
 @immutable
 class ConversationsState {
   final List<Conversation> conversations;
-  final int totalCount;
+  final int count;
   final bool isFetching;
   final String error;
   final ConversationsEvent lastEvent;
@@ -11,7 +11,7 @@ class ConversationsState {
 
   ConversationsState({
     this.conversations = const [],
-    this.totalCount = 0,
+    this.count = 0,
     this.isFetching = false,
     this.error = '',
     this.lastEvent,
@@ -42,14 +42,14 @@ class ConversationsState {
 
   ConversationsState copyWith({
     List<Conversation> conversations,
-    int totalCount,
+    int count,
     bool isFetching,
     String error,
     ConversationsEvent lastEvent,
   }) =>
       ConversationsState(
         conversations: conversations ?? this.conversations,
-        totalCount: totalCount ?? this.totalCount,
+        count: count ?? this.count,
         isFetching: isFetching ?? this.isFetching,
         error: error ?? this.error,
         lastEvent: lastEvent ?? this.lastEvent,

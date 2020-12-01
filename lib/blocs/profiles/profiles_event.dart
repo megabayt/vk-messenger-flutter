@@ -4,9 +4,8 @@ part of 'profiles_bloc.dart';
 abstract class ProfilesEvent {}
 
 class ProfilesAppend extends ProfilesEvent {
-  final List<Map<String, dynamic>> profiles;
-  final List<Map<String, dynamic>> groups;
+  final List<dynamic> profiles;
+  final List<dynamic> groups;
 
   ProfilesAppend(this.profiles, this.groups);
 }
- 

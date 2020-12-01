@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sailor/sailor.dart';
-import 'package:vk_messenger_flutter/blocs/auth/auth_bloc.dart';
 
+import 'package:vk_messenger_flutter/blocs/auth/auth_bloc.dart';
+import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
+import 'package:vk_messenger_flutter/screens/conversations_screen.dart';
 import 'package:vk_messenger_flutter/screens/splash_screen.dart';
 
 class AppRouter {
@@ -15,11 +17,11 @@ class AppRouter {
           name: SplashScreen.routeUrl,
           builder: (context, args, params) => AppRouteGuard(SplashScreen()),
         ),
-        // SailorRoute(
-        //   name: ConversationsScreen.routeUrl,
-        //   builder: (context, args, params) =>
-        //       AppRouteGuard(ConversationsScreen()),
-        // ),
+        SailorRoute(
+          name: ConversationsScreen.routeUrl,
+          builder: (context, args, params) =>
+              AppRouteGuard(ConversationsScreen()),
+        ),
         // SailorRoute(
         //   name: ConversationScreen.routeUrl,
         //   builder: (context, args, params) =>
@@ -91,6 +93,10 @@ class AppRouteGuard extends StatelessWidget {
         }
         if (state is AuthAuthenticated) {
           AppRouter.sailor.popUntil((_) => false);
+          AppRouter.sailor.navigate(ConversationsScreen.routeUrl);
+          BlocProvider.of<ConversationsBloc>(listenerContext)
+              .add(ConversationsFetch());
+          // BlocProvider.of<LongPollingBloc>(listenerContext).add(LongPollingPoll());
         }
       },
       builder: (_, state) {

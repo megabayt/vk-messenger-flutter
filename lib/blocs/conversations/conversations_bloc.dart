@@ -39,7 +39,8 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
   List<Conversation> _getConversations(Map<String, dynamic> data) {
     final items = mapPath(data, ['response', 'items']) ?? [];
 
-    return items.map((element) => Conversation.fromJson(element)).toList();
+    return List<Conversation>.from(
+        items.map((element) => Conversation.fromJson(element)));
   }
 
   Stream<ConversationsState> _mapConversationsFetchToState(
@@ -59,7 +60,7 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
       });
 
       if (mapPath(result, ['error']) != null) {
-        throw Exception(mapPath(result, ['error', 'errorMsg']));
+        throw Exception(mapPath(result, ['error', 'error_msg']));
       }
 
       _profilesBloc.add(ProfilesAppend(
@@ -69,7 +70,7 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
 
       yield state.copyWith(
         conversations: _getConversations(result),
-        totalCount: mapPath(result, ['response', 'totalCount']) ?? 0,
+        count: mapPath(result, ['response', 'count']) ?? 0,
         isFetching: false,
       );
     } catch (e) {
@@ -86,9 +87,9 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
     final currentState = state;
 
     final conversations = currentState?.conversations ?? [];
-    final totalCount = currentState?.totalCount ?? 0;
+    final count = currentState?.count ?? 0;
 
-    if (currentState.isFetching || conversations.length >= totalCount) {
+    if (currentState.isFetching || conversations.length >= count) {
       return;
     }
 
@@ -109,7 +110,7 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
       });
 
       if (mapPath(data, ['error']) != null) {
-        throw Exception(mapPath(data, ['error', 'errorMsg']));
+        throw Exception(mapPath(data, ['error', 'error_msg']));
       }
 
       _profilesBloc.add(ProfilesAppend(
@@ -118,7 +119,7 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
       ));
 
       yield state.copyWith(
-        totalCount: mapPath(data, ['response', 'totalCount']) ?? 0,
+        count: mapPath(data, ['response', 'count']) ?? 0,
         conversations: conversations + _getConversations(data),
         isFetching: false,
       );

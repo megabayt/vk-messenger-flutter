@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
-import 'package:vk_messenger_flutter/models/conversation.dart';
 import 'package:vk_messenger_flutter/models/profile.dart';
 
 part 'profiles_event.dart';
@@ -27,9 +26,8 @@ class ProfilesBloc extends Bloc<ProfilesEvent, ProfilesState> {
     final newProfiles = event.profiles
         .map((element) => Profile.fromJson(element, false))
         .toList();
-    final newGroups = event.profiles
-        .map((element) => Profile.fromJson(element, true))
-        .toList();
+    final newGroups =
+        event.groups.map((element) => Profile.fromJson(element, true)).toList();
 
     yield ProfilesInitial(profiles + newProfiles + newGroups);
   }
