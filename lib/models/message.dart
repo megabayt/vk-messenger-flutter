@@ -1,5 +1,5 @@
 import 'package:vk_messenger_flutter/models/attachment.dart';
-import 'package:vk_messenger_flutter/utils/helpers.dart';
+import 'package:map_path/map_path.dart';
 
 class Message {
   Message({

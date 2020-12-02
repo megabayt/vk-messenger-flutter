@@ -7,7 +7,7 @@ import 'package:vk_messenger_flutter/blocs/profiles/profiles_bloc.dart';
 import 'package:vk_messenger_flutter/models/conversation.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
-import 'package:vk_messenger_flutter/utils/helpers.dart';
+import 'package:map_path/map_path.dart';
 
 part 'conversations_event.dart';
 part 'conversations_state.dart';

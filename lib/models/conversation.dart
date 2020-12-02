@@ -1,6 +1,6 @@
 import 'package:vk_messenger_flutter/models/message.dart';
 import 'package:vk_messenger_flutter/utils/enum_values.dart';
-import 'package:vk_messenger_flutter/utils/helpers.dart';
+import 'package:map_path/map_path.dart';
 
 class Conversation {
   Conversation({
