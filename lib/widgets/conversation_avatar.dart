@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 import 'package:vk_messenger_flutter/blocs/profiles/profiles_bloc.dart';
-import 'package:vk_messenger_flutter/models/conversation.dart';
+import 'package:vk_messenger_flutter/local_models/conversation.dart';
 
 class ConversationAvatar extends StatelessWidget {
   @override

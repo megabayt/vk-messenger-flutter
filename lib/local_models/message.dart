@@ -1,5 +1,5 @@
-import 'package:vk_messenger_flutter/models/attachment.dart';
-import 'package:map_path/map_path.dart';
+import 'package:vk_messenger_flutter/local_models/attachment.dart';
+import 'package:vk_messenger_flutter/vk_models/message.dart';
 
 class Message {
   Message({
@@ -32,30 +32,30 @@ class Message {
   final bool isSent;
   final bool isError;
 
-  factory Message.fromJson(Map<String, dynamic> json) => Message(
-        id: json['id'] == null ? null : json['id'],
-        fromId: json['from_id'] == null ? null : json['from_id'],
-        date: json['date'] == null ? null : json['date'],
-        text: json['text'] == null ? null : json['text'],
-        fwdMessages: json["fwd_messages"] == null
+  factory Message.fromVkMessage(VkMessage vkMessage) => Message(
+        id: vkMessage?.id == null ? null : vkMessage?.id,
+        fromId: vkMessage?.fromId == null ? null : vkMessage?.fromId,
+        date: vkMessage?.date == null ? null : vkMessage?.date,
+        text: vkMessage?.text == null ? null : vkMessage?.text,
+        fwdMessages: vkMessage?.fwdMessages == null
             ? null
             : List<Message>.from(
-                json["fwd_messages"].map((x) => Message.fromJson(x))),
-        attachments: json["attachments"] == null
+                vkMessage.fwdMessages.map((x) => Message.fromVkMessage(x))),
+        attachments: vkMessage?.attachments == null
             ? null
-            : List<Attachment>.from(
-                json["attachments"].map((x) => Attachment.fromJson(x))),
-        latitude: mapPath(json, ['geo', 'coordinates', 'latitude']) == null
+            : List<Attachment>.from(vkMessage.attachments
+                .map((x) => Attachment.fromVkAttachment(x))),
+        latitude: vkMessage?.geo?.coordinates?.latitude == null
             ? null
-            : mapPath(json, ['geo', 'coordinates', 'latitude']),
-        longitude: mapPath(json, ['geo', 'coordinates', 'longitude']) == null
+            : vkMessage?.geo?.coordinates?.latitude,
+        longitude: vkMessage?.geo?.coordinates?.longitude == null
             ? null
-            : mapPath(json, ['geo', 'coordinates', 'longitude']),
-        place: mapPath(json, ['geo', 'place', 'title']) == null
+            : vkMessage?.geo?.coordinates?.longitude,
+        place: vkMessage?.geo?.place?.title == null
             ? null
-            : mapPath(json, ['geo', 'place', 'title']),
-        isOut: json['out'] == 1,
-        isImportant: json['important'] == 1,
+            : vkMessage?.geo?.place?.title,
+        isOut: vkMessage?.out == 1,
+        isImportant: vkMessage?.important == true,
       );
 
   Message copyWith({

@@ -4,16 +4,19 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
 import 'package:vk_messenger_flutter/blocs/profiles/profiles_bloc.dart';
-import 'package:vk_messenger_flutter/models/conversation.dart';
+import 'package:vk_messenger_flutter/local_models/conversation.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:map_path/map_path.dart';
+import 'package:vk_messenger_flutter/vk_models/conversations_response.dart';
+import 'package:vk_messenger_flutter/vk_models/get_conversations_params.dart';
+import 'package:vk_messenger_flutter/vk_models/vk_response.dart';
 
 part 'conversations_event.dart';
 part 'conversations_state.dart';
 
 class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
-  static const PAGE_COUNT = '20';
+  static const PAGE_COUNT = 20;
   final VKService _vkService = locator<VKService>();
   final ProfilesBloc _profilesBloc;
 
@@ -36,11 +39,12 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
     }
   }
 
-  List<Conversation> _getConversations(Map<String, dynamic> data) {
-    final items = mapPath(data, ['response', 'items']) ?? [];
+  List<Conversation> _getConversations(
+      VkResponse<VkConversationsResponse> data) {
+    final items = data?.response?.items ?? [];
 
     return List<Conversation>.from(
-        items.map((element) => Conversation.fromJson(element)));
+        items.map((element) => Conversation.fromVkConversation(element)));
   }
 
   Stream<ConversationsState> _mapConversationsFetchToState(
@@ -54,23 +58,23 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
         isFetching: true,
         error: '',
       );
-      final result = await _vkService.getConversations({
-        'count': PAGE_COUNT,
-        'offset': '0',
-      });
+      final result = await _vkService.getConversations(GetConversationsParams(
+        count: PAGE_COUNT,
+        offset: 0,
+      ));
 
-      if (mapPath(result, ['error']) != null) {
-        throw Exception(mapPath(result, ['error', 'error_msg']));
+      if (result?.error != null) {
+        throw Exception(result?.error?.errorMsg);
       }
 
       _profilesBloc.add(ProfilesAppend(
-        mapPath(result, ['response', 'profiles']) ?? [],
-        mapPath(result, ['response', 'groups']) ?? [],
+        result?.response?.profiles ?? [],
+        result?.response?.groups ?? [],
       ));
 
       yield state.copyWith(
         conversations: _getConversations(result),
-        count: mapPath(result, ['response', 'count']) ?? 0,
+        count: result?.response?.count ?? 0,
         isFetching: false,
       );
     } catch (e) {
@@ -104,22 +108,22 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
     );
 
     try {
-      final data = await _vkService.getConversations({
-        'count': PAGE_COUNT,
-        'offset': conversations.length.toString(),
-      });
+      final data = await _vkService.getConversations(GetConversationsParams(
+        count: PAGE_COUNT,
+        offset: conversations.length,
+      ));
 
-      if (mapPath(data, ['error']) != null) {
-        throw Exception(mapPath(data, ['error', 'error_msg']));
+      if (data?.error != null) {
+        throw Exception(data?.error?.errorMsg);
       }
 
       _profilesBloc.add(ProfilesAppend(
-        mapPath(data, ['response', 'profiles']) ?? [],
-        mapPath(data, ['response', 'groups']) ?? [],
+        data?.response?.profiles ?? [],
+        data?.response?.groups ?? [],
       ));
 
       yield state.copyWith(
-        count: mapPath(data, ['response', 'count']) ?? 0,
+        count: data?.response?.count ?? 0,
         conversations: conversations + _getConversations(data),
         isFetching: false,
       );

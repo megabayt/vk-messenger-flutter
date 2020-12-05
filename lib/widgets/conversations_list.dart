@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 // import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 // import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
-import 'package:vk_messenger_flutter/models/conversation.dart';
+import 'package:vk_messenger_flutter/local_models/conversation.dart';
 // import 'package:vk_messenger_flutter/screens/conversations_screen.dart';
 // import 'package:vk_messenger_flutter/screens/app_router.dart';
 import 'package:vk_messenger_flutter/widgets/creation_aware_list_item.dart';
