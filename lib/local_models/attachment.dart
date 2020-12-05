@@ -4,15 +4,19 @@ import 'package:vk_messenger_flutter/vk_models/attachment_type.dart';
 class Attachment {
   Attachment({
     this.type,
+    this.path,
     this.url,
     this.title,
     this.preview,
+    this.isFetching = false,
   });
 
+  final String path;
   final VkAttachmentType type;
   final String url;
   final String title;
   final String preview;
+  final bool isFetching;
 
   factory Attachment.fromVkAttachment(VkAttachment vkAttachment) {
     final type = vkAttachment.type;
@@ -114,14 +118,18 @@ class Attachment {
 
   Attachment copyWith({
     VkAttachmentType type,
+    String path,
     String url,
     String title,
     String preview,
+    bool isFetching,
   }) =>
       Attachment(
+        path: path ?? this.path,
         type: type ?? this.type,
         url: url ?? this.url,
         title: title ?? this.title,
         preview: preview ?? this.preview,
+        isFetching: isFetching ?? this.isFetching,
       );
 }

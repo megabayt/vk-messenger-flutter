@@ -8,6 +8,7 @@ class Conversation {
     this.type,
     this.localId,
     this.unreadCount,
+    this.messagesCount = 0,
     this.messages,
     this.activeIds,
     this.title,
@@ -19,6 +20,7 @@ class Conversation {
   final VkPeerType type;
   final int localId;
   final int unreadCount;
+  final int messagesCount;
   final List<Message> messages;
   final List<int> activeIds;
   final String title;
@@ -49,6 +51,7 @@ class Conversation {
     int id,
     VkPeerType type,
     int localId,
+    int messagesCount,
     int unreadCount,
     List<Message> messages,
     List<int> activeIds,
@@ -60,6 +63,7 @@ class Conversation {
       id: id ?? this.id,
       type: type ?? this.type,
       localId: localId ?? this.localId,
+      messagesCount: messagesCount ?? this.messagesCount,
       unreadCount: unreadCount ?? this.unreadCount,
       messages: messages ?? this.messages,
       activeIds: activeIds ?? this.activeIds,

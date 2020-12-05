@@ -26,6 +26,10 @@ class ConversationsState {
           );
         })();
 
+  int getIndexById(int id) {
+    return conversationsMap == null ? null : conversationsMap[id] ?? -1;
+  }
+
   Conversation getById(int id) {
     final index = getIndexById(id);
 
@@ -36,8 +40,12 @@ class ConversationsState {
     return conversations[index];
   }
 
-  int getIndexById(int id) {
-    return conversationsMap == null ? null : conversationsMap[id] ?? -1;
+  int getMessagesCountById(int id) {
+    return getById(id)?.messagesCount ?? 0;
+  }
+
+  List<Message> getMessagesById(int id) {
+    return getById(id)?.messages ?? [];
   }
 
   ConversationsState copyWith({

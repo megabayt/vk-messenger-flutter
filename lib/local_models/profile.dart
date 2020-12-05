@@ -16,7 +16,7 @@ class Profile {
     this.isOnline,
   });
 
-  factory Profile.fromVkProfile(VkProfile vkProfile, bool isGroup) => Profile(
+  factory Profile.fromVkProfile(VkProfile vkProfile, [bool isGroup = false]) => Profile(
         id: !isGroup ? vkProfile?.id : -vkProfile?.id,
         avatar: vkProfile?.photo50,
         name: !isGroup
