@@ -68,7 +68,7 @@ class ConversationTile extends StatelessWidget {
 
     if (text == '') {
       if (lastMsgAttachments.length != 0) {
-        text = lastMsgAttachments[0]?.title ?? '';
+        text = lastMsgAttachments[0].title ?? '';
       }
       if (lastMsgFwdMessages.length != 0) {
         text = 'Пересланные сообщения';

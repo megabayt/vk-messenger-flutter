@@ -11,6 +11,8 @@ class Sticker {
 
   factory Sticker.fromVkSticker(VkSticker vkSticker) => Sticker(
         id: vkSticker?.stickerId,
-        url: vkSticker?.images[1]?.url,
+        url: (vkSticker?.images ?? []).length <= 1
+            ? null
+            : vkSticker?.images[1]?.url,
       );
 }

@@ -8,6 +8,7 @@ class Attachment {
     this.url,
     this.title,
     this.preview,
+    this.unavaliable,
     this.isFetching = false,
   });
 
@@ -16,6 +17,7 @@ class Attachment {
   final String url;
   final String title;
   final String preview;
+  final bool unavaliable;
   final bool isFetching;
 
   factory Attachment.fromVkAttachment(VkAttachment vkAttachment) {
@@ -24,6 +26,7 @@ class Attachment {
     String url;
     String title;
     String preview;
+    bool unavaliable = false;
 
     switch (type) {
       case VkAttachmentType.DOC:
@@ -32,10 +35,14 @@ class Attachment {
         final ownerId = (vkAttachment?.doc?.ownerId ?? '').toString();
         final id = (vkAttachment?.doc?.id ?? '').toString();
 
+        final sizes = vkAttachment?.doc?.preview?.photo?.sizes ?? [];
+        preview = sizes.length == 0 ? null : sizes[0]?.url;
+
         url = 'https://vk.com/doc${ownerId}_$id';
         break;
       case VkAttachmentType.GIFT:
         title = 'Подарок';
+        preview = vkAttachment?.gift?.thumb96;
         break;
       case VkAttachmentType.LINK:
         title = 'Ссылка: ${vkAttachment?.link?.title ?? ''}';
@@ -46,9 +53,9 @@ class Attachment {
         title = 'Фото';
 
         final sizes = vkAttachment?.photo?.sizes ?? [];
-        preview = sizes[0]?.url;
+        preview = sizes.length == 0 ? null : sizes[0]?.url;
 
-        url = sizes[sizes.length - 1]?.url;
+        url = sizes.length == 0 ? null : sizes[sizes.length - 1]?.url;
         break;
       case VkAttachmentType.POLL:
         title = 'Голосование';
@@ -57,7 +64,7 @@ class Attachment {
         title = 'Стикер';
 
         final sizes = vkAttachment?.sticker?.images ?? [];
-        preview = sizes[1]?.url;
+        preview = sizes.length <= 1 ? null : sizes[1]?.url;
         break;
       case VkAttachmentType.STORY:
         title = 'История';
@@ -69,7 +76,9 @@ class Attachment {
         final sizes = vkAttachment?.story?.photo?.sizes ??
             vkAttachment?.story?.video?.image ??
             [];
-        preview = sizes[0]?.url;
+        preview = sizes.length == 0 ? null : sizes[0]?.url;
+
+        unavaliable = vkAttachment?.story?.isExpired == true;
         break;
       case VkAttachmentType.VIDEO:
         title = 'Видео: ${vkAttachment?.video?.title ?? ''}';
@@ -79,7 +88,7 @@ class Attachment {
         url = 'https://vk.com/video${ownerId}_$id';
 
         final sizes = vkAttachment?.video?.image ?? [];
-        preview = sizes[0]?.url;
+        preview = sizes.length == 0 ? null : sizes[0]?.url;
         break;
       case VkAttachmentType.AUDIO:
         final artist = vkAttachment?.audio?.artist ?? '';
@@ -87,6 +96,8 @@ class Attachment {
         title = 'Аудио: $artist - $name';
 
         url = vkAttachment?.audio?.url;
+
+        unavaliable = vkAttachment?.audio?.contentRestricted == 1;
         break;
       case VkAttachmentType.WALL:
         title = 'Запись со стены: ${vkAttachment?.wall?.text ?? ''}';
@@ -113,6 +124,7 @@ class Attachment {
       title: title,
       url: url,
       preview: preview,
+      unavaliable: unavaliable,
     );
   }
 
@@ -122,6 +134,7 @@ class Attachment {
     String url,
     String title,
     String preview,
+    bool unavaliable,
     bool isFetching,
   }) =>
       Attachment(
@@ -130,6 +143,7 @@ class Attachment {
         url: url ?? this.url,
         title: title ?? this.title,
         preview: preview ?? this.preview,
+        unavaliable: unavaliable ?? this.unavaliable,
         isFetching: isFetching ?? this.isFetching,
       );
 }

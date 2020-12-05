@@ -4,7 +4,16 @@ import 'package:sailor/sailor.dart';
 
 import 'package:vk_messenger_flutter/blocs/auth/auth_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
+import 'package:vk_messenger_flutter/local_models/attachment.dart';
+import 'package:vk_messenger_flutter/local_models/message.dart';
+import 'package:vk_messenger_flutter/screens/attachments_screen.dart';
+import 'package:vk_messenger_flutter/screens/conversation_screen.dart';
 import 'package:vk_messenger_flutter/screens/conversations_screen.dart';
+import 'package:vk_messenger_flutter/screens/forward_messages_select.dart';
+import 'package:vk_messenger_flutter/screens/forwarded_messages_screen.dart';
+import 'package:vk_messenger_flutter/screens/photos_screen.dart';
+import 'package:vk_messenger_flutter/screens/select_geo_screen.dart';
+import 'package:vk_messenger_flutter/screens/show_geo_screen.dart';
 import 'package:vk_messenger_flutter/screens/splash_screen.dart';
 
 class AppRouter {
@@ -22,56 +31,60 @@ class AppRouter {
           builder: (context, args, params) =>
               AppRouteGuard(ConversationsScreen()),
         ),
-        // SailorRoute(
-        //   name: ConversationScreen.routeUrl,
-        //   builder: (context, args, params) =>
-        //       AppRouteGuard(ConversationScreen()),
-        // ),
-        // SailorRoute(
-        //   name: PhotosScreen.routeUrl,
-        //   builder: (context, args, params) => AppRouteGuard(PhotosScreen(
-        //     params.param('fromId'),
-        //     params.param('attachmentIndex'),
-        //     params.param('attachments'),
-        //   )),
-        //   params: [
-        //     SailorParam<int>(name: 'fromId'),
-        //     SailorParam<int>(name: 'attachmentIndex'),
-        //     SailorParam<List<Attachment>>(name: 'attachments'),
-        //   ],
-        // ),
-        // SailorRoute(
-        //   name: ForwardedMessagesScreen.routeUrl,
-        //   builder: (context, args, params) =>
-        //       AppRouteGuard(ForwardedMessagesScreen(
-        //     params.param('fwdMessages'),
-        //   )),
-        //   params: [
-        //     SailorParam<List<Message>>(name: 'fwdMessages'),
-        //   ],
-        // ),
-        // SailorRoute(
-        //   name: ForwardMessagesSelect.routeUrl,
-        //   builder: (context, args, params) =>
-        //       AppRouteGuard(ForwardMessagesSelect()),
-        // ),
-        // SailorRoute(
-        //   name: AttachmentsScreen.routeUrl,
-        //   builder: (context, args, params) =>
-        //       AppRouteGuard(AttachmentsScreen()),
-        // ),
-        // SailorRoute(
-        //   name: SelectGeoScreen.routeUrl,
-        //   builder: (context, args, params) => AppRouteGuard(SelectGeoScreen()),
-        // ),
-        // SailorRoute(
-        //     name: ShowGeoScreen.routeUrl,
-        //     builder: (context, args, params) => AppRouteGuard(ShowGeoScreen(
-        //           params.param('geo'),
-        //         )),
-        //     params: [
-        //       SailorParam<Geo>(name: 'geo'),
-        //     ]),
+        SailorRoute(
+          name: ConversationScreen.routeUrl,
+          builder: (context, args, params) =>
+              AppRouteGuard(ConversationScreen()),
+        ),
+        SailorRoute(
+          name: PhotosScreen.routeUrl,
+          builder: (context, args, params) => AppRouteGuard(PhotosScreen(
+            params.param('fromId'),
+            params.param('attachmentIndex'),
+            params.param('attachments'),
+          )),
+          params: [
+            SailorParam<int>(name: 'fromId'),
+            SailorParam<int>(name: 'attachmentIndex'),
+            SailorParam<List<Attachment>>(name: 'attachments'),
+          ],
+        ),
+        SailorRoute(
+          name: ForwardedMessagesScreen.routeUrl,
+          builder: (context, args, params) =>
+              AppRouteGuard(ForwardedMessagesScreen(
+            params.param('fwdMessages'),
+          )),
+          params: [
+            SailorParam<List<Message>>(name: 'fwdMessages'),
+          ],
+        ),
+        SailorRoute(
+          name: ForwardMessagesSelect.routeUrl,
+          builder: (context, args, params) =>
+              AppRouteGuard(ForwardMessagesSelect()),
+        ),
+        SailorRoute(
+          name: AttachmentsScreen.routeUrl,
+          builder: (context, args, params) =>
+              AppRouteGuard(AttachmentsScreen()),
+        ),
+        SailorRoute(
+          name: SelectGeoScreen.routeUrl,
+          builder: (context, args, params) => AppRouteGuard(SelectGeoScreen()),
+        ),
+        SailorRoute(
+            name: ShowGeoScreen.routeUrl,
+            builder: (context, args, params) => AppRouteGuard(ShowGeoScreen(
+                  params.param('longitude'),
+                  params.param('latitude'),
+                  params.param('place'),
+                )),
+            params: [
+              SailorParam<double>(name: 'longitude'),
+              SailorParam<double>(name: 'latitude'),
+              SailorParam<String>(name: 'place'),
+            ]),
       ],
     );
   }

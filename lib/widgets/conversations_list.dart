@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
-// import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
-// import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
+import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
+import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
 import 'package:vk_messenger_flutter/local_models/conversation.dart';
-// import 'package:vk_messenger_flutter/screens/conversations_screen.dart';
-// import 'package:vk_messenger_flutter/screens/app_router.dart';
+import 'package:vk_messenger_flutter/screens/conversation_screen.dart';
+import 'package:vk_messenger_flutter/screens/conversations_screen.dart';
+import 'package:vk_messenger_flutter/screens/app_router.dart';
 import 'package:vk_messenger_flutter/widgets/creation_aware_list_item.dart';
 import 'package:vk_messenger_flutter/widgets/conversation_tile.dart';
-// import 'package:vk_messenger_flutter/widgets/creation_aware_list_item.dart';
 
 class ConversationsList extends StatelessWidget {
   final bool fwdSelectMode;
@@ -35,19 +35,30 @@ class ConversationsList extends StatelessWidget {
   }
 
   void _chatTapHandler(BuildContext context, Conversation item) {
-    // if (fwdSelectMode) {
-    //   BlocProvider.of<AttachmentsBloc>(context).add(AttachmentsForwardMessage(
-    //       conversationBloc.state.selectedMessagesIds ?? []));
-    //   AppRouter.sailor.popUntil((route) {
-    //     if (route.settings.name == ConversationsScreen.routeUrl) {
-    //       return true;
-    //     }
-    //     return false;
-    //   });
-    // }
+    // ignore: close_sinks
+    final conversationBloc = BlocProvider.of<ConversationBloc>(context);
+    if (fwdSelectMode) {
+      BlocProvider.of<AttachmentsBloc>(context).add(
+        AttachmentsForwardMessage(
+          conversationBloc.state.selectedMessagesIds ?? [],
+        ),
+      );
+      AppRouter.sailor.popUntil((route) {
+        if (route.settings.name == ConversationsScreen.routeUrl) {
+          return true;
+        }
+        return false;
+      });
+    }
 
-    // BlocProvider.of<ConversationBloc>(context).add(
-    //     ConversationSetPeerId(item?.conversation?.peer?.id, fwdSelectMode));
+    AppRouter.sailor.navigate(ConversationScreen.routeUrl);
+
+    conversationBloc.add(
+      ConversationSetPeerId(
+        item?.id,
+        fwdSelectMode,
+      ),
+    );
   }
 
   @override
