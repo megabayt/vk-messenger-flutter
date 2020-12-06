@@ -212,7 +212,7 @@ class VkServiceImpl implements VKService {
     );
   }
 
-  Future<VkResponse<VkPhoto>> saveMessagesPhoto(
+  Future<VkResponse<List<VkPhoto>>> saveMessagesPhoto(
       SaveMessagesPhotoParams params) async {
     final result =
         await _invokeMethod('photos.saveMessagesPhoto', params.toMap());
@@ -221,10 +221,13 @@ class VkServiceImpl implements VKService {
       return null;
     }
 
-    return VkResponse<VkPhoto>(
-      response: result['response'] == null
-          ? null
-          : VkPhoto.fromMap(result['response']),
+    return VkResponse<List<VkPhoto>>(
+      response:
+          result["response"] != null && result["response"] is List<dynamic>
+              ? List<VkPhoto>.from(result["response"]
+                  .map((element) => VkPhoto.fromMap(element))
+                  .toList())
+              : null,
       error: result['error'] == null ? null : VkError.fromMap(result['error']),
     );
   }

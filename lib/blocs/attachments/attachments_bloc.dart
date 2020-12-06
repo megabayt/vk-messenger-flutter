@@ -146,12 +146,14 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
         ),
       );
 
-      if (saveResult?.error != null) {
+      if (saveResult?.error != null ||
+          saveResult?.response == null ||
+          saveResult.response?.length == 0) {
         throw Exception('cannot save uploaded photo');
       }
 
-      final ownerId = saveResult.response.ownerId;
-      final photoId = saveResult.response.id;
+      final ownerId = saveResult.response[0].ownerId;
+      final photoId = saveResult.response[0].id;
 
       final attachments = List<Attachment>.from(state?.attachments ?? []);
 

@@ -51,7 +51,7 @@ abstract class VKService {
   Future<VkResponse<VkUploadServer>> getPhotoMessagesUploadServer(
       GetPhotoUploadServerParams params);
 
-  Future<VkResponse<VkPhoto>> saveMessagesPhoto(SaveMessagesPhotoParams params);
+  Future<VkResponse<List<VkPhoto>>> saveMessagesPhoto(SaveMessagesPhotoParams params);
 
   Future<VkResponse<VkSaveVideo>> saveVideo(SaveVideoParams params);
 
