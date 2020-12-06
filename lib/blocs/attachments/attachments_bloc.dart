@@ -10,7 +10,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 
 import 'package:vk_messenger_flutter/local_models/attachment.dart';
-import 'package:vk_messenger_flutter/vk_models/attachment_type.dart';
 import 'package:vk_messenger_flutter/vk_models/audio_upload_result.dart';
 import 'package:vk_messenger_flutter/vk_models/doc_upload_result.dart';
 import 'package:vk_messenger_flutter/vk_models/get_doc_messages_upload_server_params.dart';
@@ -24,6 +23,10 @@ import 'package:vk_messenger_flutter/vk_models/vk_video_upload_result.dart';
 import 'package:vk_messenger_flutter/services/interfaces/upload_service.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
+import 'package:vk_messenger_flutter/local_models/attachment_doc.dart';
+import 'package:vk_messenger_flutter/local_models/attachment_audio.dart';
+import 'package:vk_messenger_flutter/local_models/attachment_photo.dart';
+import 'package:vk_messenger_flutter/local_models/attachment_video.dart';
 
 part 'attachments_bloc.g.dart';
 part 'attachments_event.dart';
@@ -101,7 +104,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
 
   Stream<AttachmentsState> _mapAttachmentsAttachImageToState(
       AttachmentsAttachImage event) async* {
-    Attachment attachment;
+    AttachmentPhoto attachment;
     try {
       final pickedFile = await _picker.getImage(source: event.imageSource);
 
@@ -109,9 +112,8 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
         return;
       }
 
-      attachment = Attachment(
+      attachment = AttachmentPhoto(
         url: pickedFile?.path,
-        type: VkAttachmentType.PHOTO,
         isFetching: true,
       );
 
@@ -186,7 +188,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
 
   Stream<AttachmentsState> _mapAttachmentsAttachVideoToState(
       AttachmentsAttachVideo event) async* {
-    Attachment attachment;
+    AttachmentVideo attachment;
     try {
       final pickedFile = await _picker.getVideo(source: event.imageSource);
 
@@ -194,9 +196,8 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
         return;
       }
 
-      attachment = Attachment(
+      attachment = AttachmentVideo(
         url: pickedFile?.path,
-        type: VkAttachmentType.VIDEO,
         isFetching: true,
       );
 
@@ -260,7 +261,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
   }
 
   Stream<AttachmentsState> _mapAttachmentsAttachAudioToState() async* {
-    Attachment attachment;
+    AttachmentAudio attachment;
     try {
       FilePickerResult pickerResult =
           await FilePicker.platform.pickFiles(type: FileType.audio);
@@ -271,9 +272,8 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
 
       String path = pickerResult.files.single.path;
 
-      attachment = Attachment(
+      attachment = AttachmentAudio(
         path: path,
-        type: VkAttachmentType.AUDIO,
         isFetching: true,
       );
 
@@ -335,7 +335,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
 
   Stream<AttachmentsState> _mapAttachmentsAttachDocumentToState(
       AttachmentsAttachDocument event) async* {
-    Attachment attachment;
+    AttachmentDoc attachment;
     try {
       FilePickerResult pickerResult =
           await FilePicker.platform.pickFiles(type: FileType.any);
@@ -347,7 +347,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       String path = pickerResult.files.single.path;
       String fileName = pickerResult.files.single.name;
 
-      attachment = Attachment(
+      attachment = AttachmentDoc(
         path: path,
         isFetching: true,
       );

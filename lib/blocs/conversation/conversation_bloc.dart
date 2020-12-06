@@ -9,12 +9,12 @@ import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
 import 'package:vk_messenger_flutter/constants/math.dart';
 import 'package:vk_messenger_flutter/local_models/attachment.dart';
+import 'package:vk_messenger_flutter/local_models/attachment_sticker.dart';
 import 'package:vk_messenger_flutter/local_models/conversation.dart';
 import 'package:vk_messenger_flutter/local_models/message.dart';
 import 'package:vk_messenger_flutter/local_models/sticker.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
-import 'package:vk_messenger_flutter/vk_models/attachment_type.dart';
 import 'package:vk_messenger_flutter/vk_models/delete_messages_params.dart';
 import 'package:vk_messenger_flutter/vk_models/get_history_params.dart';
 import 'package:vk_messenger_flutter/vk_models/get_messages_params.dart';
@@ -283,7 +283,8 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
     final attachments = (_attachmentsBloc.state.attachments ?? [])
         .where((element) => element != null && !element.isFetching)
-        .map((element) => element.path);
+        .map((element) => element.path)
+        .toList();
 
     final location = _attachmentsBloc.state.location;
     final locationEmpty = location.latitude == 0 && location.longitude == 0;
@@ -348,9 +349,8 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       date: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       attachments: List<Attachment>()
         ..add(
-          Attachment(
+          AttachmentSticker(
             title: 'Стикер',
-            type: VkAttachmentType.STICKER,
             url: event.sticker.url,
           ),
         ),

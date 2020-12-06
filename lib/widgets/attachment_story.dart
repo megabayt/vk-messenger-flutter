@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:vk_messenger_flutter/local_models/attachment.dart';
+import 'package:vk_messenger_flutter/local_models/attachment_story.dart' as AttachmentStoryModel;
 import 'package:vk_messenger_flutter/local_models/message.dart';
 
 class AttachmentStory extends StatelessWidget {
@@ -24,7 +25,7 @@ class AttachmentStory extends StatelessWidget {
 
     final attachment = Provider.of<Attachment>(context, listen: false);
 
-    final isExpired = attachment?.unavaliable;
+    final isExpired = (attachment as AttachmentStoryModel.AttachmentStory)?.isExpired;
 
     final captionTheme = Theme.of(context).textTheme.caption;
 

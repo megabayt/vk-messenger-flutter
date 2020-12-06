@@ -5,7 +5,7 @@ import 'package:photo_view/photo_view_gallery.dart';
 import 'package:vk_messenger_flutter/blocs/profiles/profiles_bloc.dart';
 
 import 'package:vk_messenger_flutter/local_models/attachment.dart';
-import 'package:vk_messenger_flutter/vk_models/attachment_type.dart';
+import 'package:vk_messenger_flutter/local_models/attachment_photo.dart';
 
 class PhotosScreen extends StatelessWidget {
   static const routeUrl = '/photos';
@@ -19,7 +19,7 @@ class PhotosScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imageAttachments = attachments
-        .where((element) => element.type == VkAttachmentType.PHOTO)
+        .where((element) => element is AttachmentPhoto)
         .toList();
     final initialPage = imageAttachments
         .indexWhere((element) => element == attachments[attachmentIndex]);

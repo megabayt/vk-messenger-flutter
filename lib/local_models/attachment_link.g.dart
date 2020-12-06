@@ -1,28 +1,24 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'attachment.dart';
+part of 'attachment_link.dart';
 
 // **************************************************************************
 // CopyWithGenerator
 // **************************************************************************
 
-extension AttachmentCopyWith on Attachment {
-  Attachment copyWith({
+extension AttachmentLinkCopyWith on AttachmentLink {
+  AttachmentLink copyWith({
     bool isFetching,
     String path,
     String preview,
     String title,
-    VkAttachmentType type,
-    bool unavaliable,
     String url,
   }) {
-    return Attachment(
+    return AttachmentLink(
       isFetching: isFetching ?? this.isFetching,
       path: path ?? this.path,
       preview: preview ?? this.preview,
       title: title ?? this.title,
-      type: type ?? this.type,
-      unavaliable: unavaliable ?? this.unavaliable,
       url: url ?? this.url,
     );
   }

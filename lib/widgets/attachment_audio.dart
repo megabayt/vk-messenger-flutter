@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:vk_messenger_flutter/local_models/attachment.dart';
+import 'package:vk_messenger_flutter/local_models/attachment_audio.dart' as AttachmentAudioModel;
 import 'package:vk_messenger_flutter/local_models/message.dart';
 import 'package:vk_messenger_flutter/services/interfaces/player_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
@@ -39,7 +40,7 @@ class _AttachmentAudioState extends State<AttachmentAudio> {
 
     final url = attachment?.url;
 
-    if (attachment.unavaliable) {
+    if ((attachment as AttachmentAudioModel.AttachmentAudio).isContentRestricted) {
       final snackBar = SnackBar(
         content: Text(
           'Аудиозапись недоступна. Так решил музыкант или его представитель',
