@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:vk_messenger_flutter/blocs/firebase/firebase_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/stickers/stickers_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
@@ -19,8 +20,11 @@ void main() {
     MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => AuthBloc()..add(UserLogIn()),
+          create: (_) => FirebaseBloc()..add(FirebaseInit()),
           lazy: false,
+        ),
+        BlocProvider(
+          create: (_) => AuthBloc(),
         ),
         BlocProvider(create: (_) => ProfilesBloc()),
         BlocProvider(

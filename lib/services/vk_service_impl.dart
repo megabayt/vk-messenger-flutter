@@ -24,6 +24,7 @@ import 'package:vk_messenger_flutter/vk_models/mark_as_read.dart';
 import 'package:vk_messenger_flutter/vk_models/messages_response.dart';
 import 'package:vk_messenger_flutter/vk_models/photo.dart';
 import 'package:vk_messenger_flutter/vk_models/poll_result.dart';
+import 'package:vk_messenger_flutter/vk_models/register_device_params.dart';
 import 'package:vk_messenger_flutter/vk_models/save_audio_params.dart';
 import 'package:vk_messenger_flutter/vk_models/save_doc.dart';
 import 'package:vk_messenger_flutter/vk_models/save_doc_params.dart';
@@ -32,6 +33,7 @@ import 'package:vk_messenger_flutter/vk_models/save_video.dart';
 import 'package:vk_messenger_flutter/vk_models/save_video_params.dart';
 import 'package:vk_messenger_flutter/vk_models/send_message_params.dart';
 import 'package:vk_messenger_flutter/vk_models/store_products_response.dart';
+import 'package:vk_messenger_flutter/vk_models/unregister_device_params.dart';
 import 'package:vk_messenger_flutter/vk_models/upload_server.dart';
 import 'package:vk_messenger_flutter/vk_models/vk_error.dart';
 import 'package:vk_messenger_flutter/vk_models/vk_response.dart';
@@ -64,7 +66,7 @@ class VkServiceImpl implements VKService {
       VKScope.video,
       VKScope.audio,
       VKScope.docs,
-      VKScope.offline
+      VKScope.offline,
     ]);
     if (loginResult.isValue) {
       final loginData = loginResult.asValue.value;
@@ -365,5 +367,34 @@ class VkServiceImpl implements VKService {
     Map<String, dynamic> result = json.decode(response?.body);
 
     return VkPollResult.fromMap(result);
+  }
+
+  Future<VkResponse<int>> registerDevice(RegisterDeviceParams params) async {
+    final result =
+        await _invokeMethod('account.registerDevice', params.toMap());
+
+    if (result == null) {
+      return null;
+    }
+
+    return VkResponse<int>(
+      response: result['response'] == null ? null : result['response'],
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
+  }
+
+  Future<VkResponse<int>> unregisterDevice(
+      UnregisterDeviceParams params) async {
+    final result =
+        await _invokeMethod('account.unregisterDevice', params.toMap());
+
+    if (result == null) {
+      return null;
+    }
+
+    return VkResponse<int>(
+      response: result['response'] == null ? null : result['response'],
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
   }
 }
