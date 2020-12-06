@@ -12,6 +12,7 @@ import 'package:vk_messenger_flutter/local_models/attachment.dart';
 import 'package:vk_messenger_flutter/local_models/attachment_sticker.dart';
 import 'package:vk_messenger_flutter/local_models/conversation.dart';
 import 'package:vk_messenger_flutter/local_models/message.dart';
+import 'package:vk_messenger_flutter/local_models/message_flag.dart';
 import 'package:vk_messenger_flutter/local_models/sticker.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
@@ -127,25 +128,25 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     if (event is ConversationEditMessage) {
       yield* _mapConversationEditMessageToState();
     }
-    // if (event is ConversationPollAddMessage) {
-    //   yield* _mapConversationPollAddMessageToState(event);
-    // }
-    // if (event is ConversationPollEditMessage) {
-    //   yield* _mapConversationPollEditMessageToState(event);
-    // }
-    // if (event is ConversationPollProcessFlags) {
-    //   yield* _mapConversationPollProcessFlagsToState(event);
-    // }
-    // if (event is ConversationPollDeleteMessage) {
-    //   yield* _mapConversationPollDeleteMessageToState(event);
-    // }
-    // if (event is ConversationPollDeleteMessages) {
-    //   // TODO: Process event
-    //   yield* _mapConversationPollDeleteMessagesToState(event);
-    // }
-    // if (event is ConversationPollReadMessage) {
-    //   yield* _mapConversationPollReadMessageToState(event);
-    // }
+    if (event is ConversationPollAddMessage) {
+      yield* _mapConversationPollAddMessageToState(event);
+    }
+    if (event is ConversationPollEditMessage) {
+      yield* _mapConversationPollEditMessageToState(event);
+    }
+    if (event is ConversationPollProcessFlags) {
+      yield* _mapConversationPollProcessFlagsToState(event);
+    }
+    if (event is ConversationPollDeleteMessage) {
+      yield* _mapConversationPollDeleteMessageToState(event);
+    }
+    if (event is ConversationPollDeleteMessages) {
+      // TODO: Process event
+      yield* _mapConversationPollDeleteMessagesToState(event);
+    }
+    if (event is ConversationPollReadMessage) {
+      yield* _mapConversationPollReadMessageToState(event);
+    }
     if (event is ConversationRetry && state.lastEvent != null) {
       this.add(state.lastEvent);
     }
@@ -456,136 +457,116 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
   Stream<ConversationState> _mapConversationEditMessageToState() async* {}
 
-  // Stream<ConversationState> _mapConversationPollAddMessageToState(
-  //     ConversationPollAddMessage event) async* {
-  //   final messageId = event.messageId;
-  //   final peerId = event.peerId;
+  Stream<ConversationState> _mapConversationPollAddMessageToState(
+      ConversationPollAddMessage event) async* {
+    final messageId = event.messageId;
+    final peerId = event.peerId;
 
-  //   final message = await _fetchMessage(messageId);
+    final message = await _fetchMessage(messageId);
 
-  //   if (peerId == _peerId) {
-  //     var newData = Map<int, VkConversationResponse>.from(
-  //         state.data ?? Map<int, VkConversationResponse>());
+    final conversationsState = _conversationsBloc?.state;
+    final newMessages =
+        List<Message>.from(conversationsState?.getMessagesById(peerId) ?? []);
 
-  //     if (message != null && newData.containsKey(peerId)) {
-  //       final index = newData[peerId]
-  //           .items
-  //           .indexWhere((element) => element.id == messageId);
+    if (message != null) {
+      newMessages.insert(0, message);
 
-  //       if (index == -1) {
-  //         newData[peerId].items.insert(0, message);
-  //       }
+      _conversationsBloc.add(
+        ConversationsUpdateConversation(
+          Conversation(
+            id: peerId,
+            messages: newMessages,
+          ),
+        ),
+      );
+    }
+  }
 
-  //       yield state.copyWith(data: newData);
-  //     }
-  //   }
+  Stream<ConversationState> _mapConversationPollEditMessageToState(
+      ConversationPollEditMessage event) async* {
+    final messageId = event.messageId;
+    final peerId = event.peerId;
 
-  //   _conversationsBloc.add(
-  //     ConversationsChangeLastMessage(
-  //       message,
-  //     ),
-  //   );
-  // }
+    final message = await _fetchMessage(messageId);
 
-  // Stream<ConversationState> _mapConversationPollEditMessageToState(
-  //     ConversationPollEditMessage event) async* {
-  //   final messageId = event.messageId;
-  //   final peerId = event.peerId;
+    final conversationsState = _conversationsBloc?.state;
+    final newMessages =
+        List<Message>.from(conversationsState?.getMessagesById(peerId) ?? []);
 
-  //   final message = await _fetchMessage(messageId);
+    final index = newMessages.indexWhere((element) => element.id == messageId);
 
-  //   if (peerId == _peerId) {
-  //     var newData = Map<int, VkConversationResponse>.from(
-  //         state.data ?? Map<int, VkConversationResponse>());
+    if (message != null && index != -1) {
+      newMessages.removeAt(index);
+      newMessages.insert(index, message);
 
-  //     if (message != null && newData.containsKey(peerId)) {
-  //       final index = newData[peerId]
-  //           .items
-  //           .indexWhere((element) => element.id == messageId);
+      _conversationsBloc.add(
+        ConversationsUpdateConversation(
+          Conversation(
+            id: peerId,
+            messages: newMessages,
+          ),
+        ),
+      );
+    }
+  }
 
-  //       if (index != -1) {
-  //         newData[peerId].items.removeAt(index);
-  //       }
+  Stream<ConversationState> _mapConversationPollDeleteMessageToState(
+      ConversationPollDeleteMessage event) async* {
+    final messageId = event.messageId;
+    final peerId = event.peerId;
 
-  //       newData[peerId].items.insert(index, message);
+    final conversationsState = _conversationsBloc?.state;
+    final newMessages =
+        List<Message>.from(conversationsState?.getMessagesById(peerId) ?? []);
 
-  //       yield state.copyWith(data: newData);
-  //     }
-  //   }
+    final index = newMessages.indexWhere((element) => element.id == messageId);
 
-  //   _conversationsBloc.add(
-  //     ConversationsPollEditMessage(
-  //       message,
-  //     ),
-  //   );
-  // }
+    if (index != -1) {
+      newMessages.removeAt(index);
 
-  // Stream<ConversationState> _mapConversationPollDeleteMessageToState(
-  //     ConversationPollDeleteMessage event) async* {
-  //   if (event?.peerId == _peerId) {
-  //     var newData = Map<int, VkConversationResponse>.from(
-  //         state.data ?? Map<int, VkConversationResponse>());
-  //     if (newData.containsKey(_peerId)) {
-  //       final index = newData[_peerId]
-  //           .items
-  //           .indexWhere((element) => element.id == event.messageId);
+      _conversationsBloc.add(
+        ConversationsUpdateConversation(
+          Conversation(
+            id: peerId,
+            messages: newMessages,
+          ),
+        ),
+      );
+    }
+  }
 
-  //       if (index != -1) {
-  //         newData[_peerId].items.removeAt(index);
-  //         newData[_peerId] = newData[_peerId].copyWith(
-  //           count: newData[_peerId].count - 1,
-  //         );
-  //       }
+  Stream<ConversationState> _mapConversationPollDeleteMessagesToState(
+      ConversationPollDeleteMessages event) async* {
+    print(event.localId);
+  }
 
-  //       yield state.copyWith(data: newData);
-  //     }
-  //   }
-  // }
+  Stream<ConversationState> _mapConversationPollProcessFlagsToState(
+      ConversationPollProcessFlags event) async* {
+    final flags = MessageFlags.getFlags(event.mask);
 
-  // Stream<ConversationState> _mapConversationPollDeleteMessagesToState(
-  //     ConversationPollDeleteMessages event) async* {
-  //   print(event.localId);
-  // }
+    flags.forEach((flag) {
+      switch (flag) {
+        case MessageFlag.DELETE_FOR_ALL:
+        case MessageFlag.DELETED:
+          this.add(
+              ConversationPollDeleteMessage(event.peerId, event.messageId));
+      }
+    });
+  }
 
-  // Stream<ConversationState> _mapConversationPollProcessFlagsToState(
-  //     ConversationPollProcessFlags event) async* {
-  //   final flags = MessageFlags.getFlags(event.mask);
+  Stream<ConversationState> _mapConversationPollReadMessageToState(
+      ConversationPollReadMessage event) async* {
+    final messageId = event.messageId;
+    final peerId = event.peerId;
 
-  //   flags.forEach((flag) {
-  //     switch (flag) {
-  //       case MessageFlag.DELETE_FOR_ALL:
-  //       case MessageFlag.DELETED:
-  //         this.add(
-  //             ConversationPollDeleteMessage(event.peerId, event.messageId));
-  //     }
-  //   });
-  // }
+    final conversationsState = _conversationsBloc?.state;
 
-  // Stream<ConversationState> _mapConversationPollReadMessageToState(
-  //     ConversationPollReadMessage event) async* {
-  //   if (event?.peerId == _peerId) {
-  //     var newData = Map<int, VkConversationResponse>.from(
-  //         state.data ?? Map<int, VkConversationResponse>());
-  //     if (newData.containsKey(_peerId)) {
-  //       final newConversations =
-  //           (newData[_peerId].conversations ?? []).map((conversation) {
-  //         if (event.inRead) {
-  //           return conversation.copyWith(inRead: event.messageId);
-  //         }
-  //         return conversation.copyWith(outRead: event.messageId);
-  //       }).toList();
+    final conversation = conversationsState?.getById(peerId);
 
-  //       newData[_peerId] = newData[_peerId].copyWith(
-  //         conversations: newConversations,
-  //       );
+    final newConversation = event.inRead
+        ? conversation.copyWith(inRead: messageId)
+        : conversation.copyWith(outRead: messageId);
 
-  //       yield state.copyWith(data: newData);
-  //     }
-  //   }
-  //   _conversationsBloc.add(ConversationsPollReadMessage(
-  //     event.peerId,
-  //     event.messageId,
-  //     event.inRead,
-  //   ));
-  // }
+    _conversationsBloc.add(ConversationsUpdateConversation(newConversation));
+  }
 }

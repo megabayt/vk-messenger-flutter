@@ -9,3 +9,10 @@ class ProfilesAppend extends ProfilesEvent {
 
   ProfilesAppend(this.profiles, this.groups);
 }
+
+class ProfilesSetOnline extends ProfilesEvent {
+  final int profileId;
+  final bool isOnline;
+
+  ProfilesSetOnline(this.profileId, this.isOnline);
+}

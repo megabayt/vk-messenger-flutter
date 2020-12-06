@@ -19,6 +19,9 @@ class ProfilesBloc extends Bloc<ProfilesEvent, ProfilesState> {
     if (event is ProfilesAppend) {
       yield* _mapProfilesAppendToState(event);
     }
+    if (event is ProfilesSetOnline) {
+      yield* _mapProfilesSetOnlineToState(event);
+    }
   }
 
   Stream<ProfilesState> _mapProfilesAppendToState(ProfilesAppend event) async* {
@@ -27,9 +30,24 @@ class ProfilesBloc extends Bloc<ProfilesEvent, ProfilesState> {
     final newProfiles = event.profiles
         .map((element) => Profile.fromVkProfile(element, false))
         .toList();
-    final newGroups =
-        event.groups.map((element) => Profile.fromVkProfile(element, true)).toList();
+    final newGroups = event.groups
+        .map((element) => Profile.fromVkProfile(element, true))
+        .toList();
 
     yield ProfilesInitial(profiles + newProfiles + newGroups);
+  }
+
+  Stream<ProfilesState> _mapProfilesSetOnlineToState(
+      ProfilesSetOnline event) async* {
+    final profiles = (state as ProfilesInitial).profiles ?? [];
+
+    final newProfiles = profiles.map((element) {
+      if (element.id == event.profileId) {
+        return element.copyWith(isOnline: event.isOnline);
+      }
+      return element;
+    }).toList();
+
+    yield ProfilesInitial(newProfiles);
   }
 }

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:vk_messenger_flutter/blocs/stickers/stickers_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/friends/friends_bloc.dart';
-import 'package:vk_messenger_flutter/blocs/stickers/stickers_bloc.dart';
-
+import 'package:vk_messenger_flutter/blocs/long_polling/long_polling_bloc.dart';
 import 'package:vk_messenger_flutter/screens/app_router.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/blocs/auth/auth_bloc.dart';
@@ -37,6 +38,12 @@ void main() {
         ),
         BlocProvider(
           create: (_) => StickersBloc()..add(StickersFetch()),
+        ),
+        BlocProvider(
+          create: (context) => LongPollingBloc(
+            BlocProvider.of<ConversationBloc>(context),
+            BlocProvider.of<ProfilesBloc>(context),
+          ),
         ),
       ],
       child: MyApp(),

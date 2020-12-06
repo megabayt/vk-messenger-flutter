@@ -4,6 +4,7 @@ import 'package:sailor/sailor.dart';
 
 import 'package:vk_messenger_flutter/blocs/auth/auth_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
+import 'package:vk_messenger_flutter/blocs/long_polling/long_polling_bloc.dart';
 import 'package:vk_messenger_flutter/local_models/attachment.dart';
 import 'package:vk_messenger_flutter/local_models/message.dart';
 import 'package:vk_messenger_flutter/screens/attachments_screen.dart';
@@ -109,7 +110,8 @@ class AppRouteGuard extends StatelessWidget {
           AppRouter.sailor.navigate(ConversationsScreen.routeUrl);
           BlocProvider.of<ConversationsBloc>(listenerContext)
               .add(ConversationsFetch());
-          // BlocProvider.of<LongPollingBloc>(listenerContext).add(LongPollingPoll());
+          BlocProvider.of<LongPollingBloc>(listenerContext)
+              .add(LongPollingPoll());
         }
       },
       builder: (_, state) {
