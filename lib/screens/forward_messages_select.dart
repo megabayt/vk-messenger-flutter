@@ -21,25 +21,11 @@ class ForwardMessagesSelect extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            FirstScreen(),
-            SecondScreen(),
+            FriendsList(),
+            ConversationsList(fwdSelectMode: true),
           ],
         ),
       ),
     );
-  }
-}
-
-class FirstScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return FriendsList();
-  }
-}
-
-class SecondScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ConversationsList(fwdSelectMode: true);
   }
 }

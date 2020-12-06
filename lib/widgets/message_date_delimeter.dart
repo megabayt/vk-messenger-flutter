@@ -2,7 +2,7 @@ import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:vk_messenger_flutter/models/message.dart';
+import 'package:vk_messenger_flutter/local_models/message.dart';
 
 class MessageDateDelimeter extends StatelessWidget {
   final Message nextItem;

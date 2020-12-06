@@ -4,33 +4,41 @@ import 'package:flutter_login_vk/flutter_login_vk.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:vk_messenger_flutter/constants/api.dart' as api;
-import 'package:vk_messenger_flutter/models/poll_result.dart';
-import 'package:vk_messenger_flutter/models/vk_audio_upload_server.dart';
-import 'package:vk_messenger_flutter/models/vk_conversation.dart';
-import 'package:vk_messenger_flutter/models/vk_conversations.dart';
-import 'package:vk_messenger_flutter/models/vk_delete_messages.dart';
-import 'package:vk_messenger_flutter/models/vk_doc_messages_upload_server.dart';
-import 'package:vk_messenger_flutter/models/vk_friends.dart';
-import 'package:vk_messenger_flutter/models/vk_long_poll_server.dart';
-import 'package:vk_messenger_flutter/models/vk_mark_as_read.dart';
-import 'package:vk_messenger_flutter/models/vk_messages.dart';
-import 'package:vk_messenger_flutter/models/vk_photo_messages_upload_server.dart';
-import 'package:vk_messenger_flutter/models/vk_save_audio.dart';
-import 'package:vk_messenger_flutter/models/vk_save_doc.dart';
-import 'package:vk_messenger_flutter/models/vk_save_messages_photo.dart';
-import 'package:vk_messenger_flutter/models/vk_save_video.dart';
-import 'package:vk_messenger_flutter/models/vk_send_message.dart';
-import 'package:vk_messenger_flutter/models/vk_store_products.dart';
-import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
-import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/utils/errors.dart';
 import 'package:vk_messenger_flutter/utils/helpers.dart';
+import 'package:vk_messenger_flutter/vk_models/audio.dart';
+import 'package:vk_messenger_flutter/vk_models/conversation_response.dart';
+import 'package:vk_messenger_flutter/vk_models/conversations_response.dart';
+import 'package:vk_messenger_flutter/vk_models/delete_messages_params.dart';
+import 'package:vk_messenger_flutter/vk_models/friends_response.dart';
+import 'package:vk_messenger_flutter/vk_models/get_conversations_params.dart';
+import 'package:vk_messenger_flutter/vk_models/get_doc_messages_upload_server_params.dart';
+import 'package:vk_messenger_flutter/vk_models/get_friends_params.dart';
+import 'package:vk_messenger_flutter/vk_models/get_history_params.dart';
+import 'package:vk_messenger_flutter/vk_models/get_long_poll_server_params.dart';
+import 'package:vk_messenger_flutter/vk_models/get_messages_params.dart';
+import 'package:vk_messenger_flutter/vk_models/get_photo_upload_server_params.dart';
+import 'package:vk_messenger_flutter/vk_models/long_poll_server.dart';
+import 'package:vk_messenger_flutter/vk_models/mark_as_read.dart';
+import 'package:vk_messenger_flutter/vk_models/messages_response.dart';
+import 'package:vk_messenger_flutter/vk_models/photo.dart';
+import 'package:vk_messenger_flutter/vk_models/poll_result.dart';
+import 'package:vk_messenger_flutter/vk_models/save_audio_params.dart';
+import 'package:vk_messenger_flutter/vk_models/save_doc.dart';
+import 'package:vk_messenger_flutter/vk_models/save_doc_params.dart';
+import 'package:vk_messenger_flutter/vk_models/save_messages_photo_params.dart';
+import 'package:vk_messenger_flutter/vk_models/save_video.dart';
+import 'package:vk_messenger_flutter/vk_models/save_video_params.dart';
+import 'package:vk_messenger_flutter/vk_models/send_message_params.dart';
+import 'package:vk_messenger_flutter/vk_models/store_products_response.dart';
+import 'package:vk_messenger_flutter/vk_models/upload_server.dart';
+import 'package:vk_messenger_flutter/vk_models/vk_error.dart';
+import 'package:vk_messenger_flutter/vk_models/vk_response.dart';
 
 class VkServiceImpl implements VKService {
   final _instance = VKLogin(); // Your application ID
   VKAccessToken _tokenObject;
-  ProfilesService _profilesService = locator<ProfilesService>();
 
   get token {
     return _tokenObject?.token;
@@ -77,288 +85,285 @@ class VkServiceImpl implements VKService {
     return _instance.logOut();
   }
 
-  Future<VkConversationsResponseBody> getConversations(
-      Map<String, String> params) async {
-    final getConversationsUrl =
-        '${api.BASE_URL}messages.getConversations?access_token=$token&v=${api.VERSION}&extended=1${serialize(params)}';
+  Future<Map<String, dynamic>> _invokeMethod(String method,
+      [Map<String, String> params]) async {
+    var url = '${api.BASE_URL}$method?access_token=$token&v=${api.VERSION}';
 
-    final response = await http.get(getConversationsUrl);
+    if (params != null) {
+      url += serialize(params);
+    }
+
+    final response = await http.get(url);
 
     Map<String, dynamic> responseBody =
         response?.body != null ? json.decode(response?.body) : null;
 
-    if (responseBody == null) {
+    return responseBody;
+  }
+
+  Future<VkResponse<VkConversationsResponse>> getConversations(
+      GetConversationsParams params) async {
+    final result =
+        await _invokeMethod('messages.getConversations', params.toMap());
+
+    if (result == null) {
       return null;
     }
 
-    final conversations = VkConversationsResponseBody.fromJson(responseBody);
-
-    _profilesService.appendProfiles(conversations?.response?.profiles);
-    _profilesService.appendGroups(conversations?.response?.groups);
-
-    return conversations;
+    return VkResponse<VkConversationsResponse>(
+      response: result['response'] == null
+          ? null
+          : VkConversationsResponse.fromMap(result['response']),
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
   }
 
-  Future<VkConversationResponseBody> getHistory(
-      Map<String, String> params) async {
-    final getHistoryUrl =
-        '${api.BASE_URL}messages.getHistory?access_token=$token&v=${api.VERSION}&extended=1${serialize(params)}';
+  Future<VkResponse<VkConversationResponse>> getHistory(
+      GetHistoryParams params) async {
+    final result = await _invokeMethod('messages.getHistory', params.toMap());
 
-    final response = await http.get(getHistoryUrl);
-
-    Map<String, dynamic> responseBody =
-        response?.body != null ? json.decode(response?.body) : null;
-
-    if (responseBody == null) {
+    if (result == null) {
       return null;
     }
-    final conversation = VkConversationResponseBody.fromJson(responseBody);
 
-    _profilesService.appendProfiles(conversation?.response?.profiles);
-    _profilesService.appendGroups(conversation?.response?.groups);
-
-    return conversation;
+    return VkResponse<VkConversationResponse>(
+      response: result['response'] == null
+          ? null
+          : VkConversationResponse.fromMap(result['response']),
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
   }
 
-  Future<VkMessagesResponseBody> getMessages(Map<String, String> params) async {
-    final getMessagesUrl =
-        '${api.BASE_URL}messages.getById?access_token=$token&v=${api.VERSION}&extended=1${serialize(params)}';
+  Future<VkResponse<VkMessagesResponse>> getMessages(
+      GetMessagesParams params) async {
+    final result = await _invokeMethod('messages.getById', params.toMap());
 
-    final response = await http.get(getMessagesUrl);
-
-    Map<String, dynamic> responseBody =
-        response?.body != null ? json.decode(response?.body) : null;
-
-    if (responseBody == null) {
+    if (result == null) {
       return null;
     }
-    final messages = VkMessagesResponseBody.fromJson(responseBody);
 
-    return messages;
+    return VkResponse<VkMessagesResponse>(
+      response: result['response'] == null
+          ? null
+          : VkMessagesResponse.fromMap(result['response']),
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
   }
 
-  Future<VkFriendsResponseBody> getFriends(Map<String, String> params) async {
-    final getFriendsUrl =
-        '${api.BASE_URL}friends.get?access_token=$token&v=${api.VERSION}&extended=1${serialize(params)}';
+  Future<VkResponse<VkFriendsResponse>> getFriends(
+      GetFriendsParams params) async {
+    final result = await _invokeMethod('friends.get', params.toMap());
 
-    final response = await http.get(getFriendsUrl);
-
-    Map<String, dynamic> responseBody =
-        response?.body != null ? json.decode(response?.body) : null;
-
-    if (responseBody == null) {
+    if (result == null) {
       return null;
     }
-    final friends = VkFriendsResponseBody.fromJson(responseBody);
 
-    return friends;
+    return VkResponse<VkFriendsResponse>(
+      response: result['response'] == null
+          ? null
+          : VkFriendsResponse.fromMap(result['response']),
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
   }
 
-  Future<VkSendMessageResponseBody> sendMessage(
-      Map<String, String> params) async {
-    final sendMessageUrl =
-        '${api.BASE_URL}messages.send?access_token=$token&v=${api.VERSION}&extended=1' +
-            '${serialize(params)}';
+  Future<VkResponse<int>> sendMessage(SendMessageParams params) async {
+    final result = await _invokeMethod('messages.send', params.toMap());
 
-    final response = await http.get(sendMessageUrl);
-
-    Map<String, dynamic> responseBody =
-        response?.body != null ? json.decode(response?.body) : null;
-
-    if (responseBody == null) {
+    if (result == null) {
       return null;
     }
-    return VkSendMessageResponseBody.fromJson(responseBody);
+
+    return VkResponse<int>(
+      response: result['response'] == null ? null : result['response'],
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
   }
 
-  Future<VkDeleteMessagesResponseBody> deleteMessages(
-      Map<String, String> params) async {
-    final deleteMessagesUrl =
-        '${api.BASE_URL}messages.delete?access_token=$token&v=${api.VERSION}&extended=1' +
-            '${serialize(params)}';
+  Future<VkResponse<Map<String, int>>> deleteMessages(
+      DeleteMessagesParams params) async {
+    final result = await _invokeMethod('messages.delete', params.toMap());
 
-    final response = await http.get(deleteMessagesUrl);
-
-    Map<String, dynamic> responseBody =
-        response?.body != null ? json.decode(response?.body) : null;
-
-    if (responseBody == null) {
+    if (result == null) {
       return null;
     }
-    return VkDeleteMessagesResponseBody.fromJson(responseBody);
+
+    return VkResponse<Map<String, int>>(
+      response: result['response'] == null
+          ? null
+          : Map<String, int>.from(result['response']),
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
   }
 
-  Future<VkPhotoMessagesUploadServerResponseBody> getPhotoMessagesUploadServer(
-      Map<String, String> params) async {
-    final getUploadServerUrl =
-        '${api.BASE_URL}photos.getMessagesUploadServer?access_token=$token&v=${api.VERSION}&extended=1' +
-            '${serialize(params)}';
+  Future<VkResponse<VkUploadServer>> getPhotoMessagesUploadServer(
+      GetPhotoUploadServerParams params) async {
+    final result =
+        await _invokeMethod('photos.getMessagesUploadServer', params.toMap());
 
-    final response = await http.get(getUploadServerUrl);
-
-    Map<String, dynamic> responseBody =
-        response?.body != null ? json.decode(response?.body) : null;
-
-    if (responseBody == null) {
+    if (result == null) {
       return null;
     }
-    return VkPhotoMessagesUploadServerResponseBody.fromJson(responseBody);
+
+    return VkResponse<VkUploadServer>(
+      response: result['response'] == null
+          ? null
+          : VkUploadServer.fromMap(result['response']),
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
   }
 
-  Future<VkSaveMessagesPhoto> saveMessagesPhoto(
-      Map<String, String> params) async {
-    final saveMessagesPhotoUrl =
-        '${api.BASE_URL}photos.saveMessagesPhoto?access_token=$token&v=${api.VERSION}&extended=1' +
-            '${serialize(params)}';
+  Future<VkResponse<List<VkPhoto>>> saveMessagesPhoto(
+      SaveMessagesPhotoParams params) async {
+    final result =
+        await _invokeMethod('photos.saveMessagesPhoto', params.toMap());
 
-    final response = await http.get(saveMessagesPhotoUrl);
-
-    Map<String, dynamic> responseBody =
-        response?.body != null ? json.decode(response?.body) : null;
-
-    if (responseBody == null) {
+    if (result == null) {
       return null;
     }
-    return VkSaveMessagesPhoto.fromJson(responseBody);
+
+    return VkResponse<List<VkPhoto>>(
+      response:
+          result["response"] != null && result["response"] is List<dynamic>
+              ? List<VkPhoto>.from(result["response"]
+                  .map((element) => VkPhoto.fromMap(element))
+                  .toList())
+              : null,
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
   }
 
-  Future<VkSaveVideoResponseBody> saveVideo(Map<String, String> params) async {
-    final saveVideoUrl =
-        '${api.BASE_URL}video.save?access_token=$token&v=${api.VERSION}&extended=1' +
-            '${serialize(params)}';
+  Future<VkResponse<VkSaveVideo>> saveVideo(SaveVideoParams params) async {
+    final result = await _invokeMethod('video.save', params.toMap());
 
-    final response = await http.get(saveVideoUrl);
-
-    Map<String, dynamic> responseBody =
-        response?.body != null ? json.decode(response?.body) : null;
-
-    if (responseBody == null) {
+    if (result == null) {
       return null;
     }
-    return VkSaveVideoResponseBody.fromJson(responseBody);
+
+    return VkResponse<VkSaveVideo>(
+      response: result['response'] == null
+          ? null
+          : VkSaveVideo.fromMap(result['response']),
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
   }
 
-  Future<VkAudioUploadServerResponseBody> getAudioUploadServer() async {
-    final getUploadServerUrl =
-        '${api.BASE_URL}audio.getUploadServer?access_token=$token&v=${api.VERSION}&extended=1';
+  Future<VkResponse<VkUploadServer>> getAudioUploadServer() async {
+    final result = await _invokeMethod('audio.getUploadServer');
 
-    final response = await http.get(getUploadServerUrl);
-
-    Map<String, dynamic> responseBody =
-        response?.body != null ? json.decode(response?.body) : null;
-
-    if (responseBody == null) {
+    if (result == null) {
       return null;
     }
-    return VkAudioUploadServerResponseBody.fromJson(responseBody);
+
+    return VkResponse<VkUploadServer>(
+      response: result['response'] == null
+          ? null
+          : VkUploadServer.fromMap(result['response']),
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
   }
 
-  Future<VkSaveAudio> saveAudio(Map<String, String> params) async {
-    final saveAudioUrl =
-        '${api.BASE_URL}audio.save?access_token=$token&v=${api.VERSION}&extended=1' +
-            '${serialize(params)}';
+  Future<VkResponse<VkAudio>> saveAudio(SaveAudioParams params) async {
+    final result = await _invokeMethod('audio.save', params.toMap());
 
-    final response = await http.get(saveAudioUrl);
-
-    Map<String, dynamic> responseBody =
-        response?.body != null ? json.decode(response?.body) : null;
-
-    if (responseBody == null) {
+    if (result == null) {
       return null;
     }
-    return VkSaveAudio.fromJson(responseBody);
+
+    return VkResponse<VkAudio>(
+      response: result['response'] == null
+          ? null
+          : VkAudio.fromMap(result['response']),
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
   }
 
-  Future<VkDocMessagesUploadServerResponseBody> getDocMessagesUploadServer(
-      Map<String, String> params) async {
-    final getUploadServerUrl =
-        '${api.BASE_URL}docs.getMessagesUploadServer?access_token=$token&v=${api.VERSION}&extended=1' +
-            '${serialize(params)}';
+  Future<VkResponse<VkUploadServer>> getDocMessagesUploadServer(
+      GetDocMessagesUploadServerParams params) async {
+    final result =
+        await _invokeMethod('docs.getMessagesUploadServer', params.toMap());
 
-    final response = await http.get(getUploadServerUrl);
-
-    Map<String, dynamic> responseBody =
-        response?.body != null ? json.decode(response?.body) : null;
-
-    if (responseBody == null) {
+    if (result == null) {
       return null;
     }
-    return VkDocMessagesUploadServerResponseBody.fromJson(responseBody);
+
+    return VkResponse<VkUploadServer>(
+      response: result['response'] == null
+          ? null
+          : VkUploadServer.fromMap(result['response']),
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
   }
 
-  Future<VkSaveDoc> saveDoc(Map<String, String> params) async {
-    final saveDocsUrl =
-        '${api.BASE_URL}docs.save?access_token=$token&v=${api.VERSION}&extended=1' +
-            '${serialize(params)}';
+  Future<VkResponse<VkSaveDoc>> saveDoc(SaveDocParams params) async {
+    final result = await _invokeMethod('docs.save', params.toMap());
 
-    final response = await http.get(saveDocsUrl);
-
-    Map<String, dynamic> responseBody =
-        response?.body != null ? json.decode(response?.body) : null;
-
-    if (responseBody == null) {
+    if (result == null) {
       return null;
     }
-    return VkSaveDoc.fromJson(responseBody);
+
+    return VkResponse<VkSaveDoc>(
+      response: result['response'] == null
+          ? null
+          : VkSaveDoc.fromMap(result['response']),
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
   }
 
-  Future<VkStoreProducts> getStickers() async {
-    final getStickersUrl = '${api.BASE_URL}store.getProducts' +
-        '?filters=purchased&type=stickers' +
-        '&access_token=$token&v=${api.VERSION}&extended=1';
+  Future<VkResponse<VkStoreProductsResponse>> getStickers() async {
+    final result = await _invokeMethod(
+        'store.getProducts', {'filters': 'purchased', 'type': 'stickers'});
 
-    final response = await http.get(getStickersUrl);
-
-    Map<String, dynamic> responseBody =
-        response?.body != null ? json.decode(response?.body) : null;
-
-    if (responseBody == null) {
+    if (result == null) {
       return null;
     }
-    return VkStoreProducts.fromJson(responseBody);
+
+    return VkResponse<VkStoreProductsResponse>(
+      response: result['response'] == null
+          ? null
+          : VkStoreProductsResponse.fromMap(result['response']),
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
   }
 
-  Future<VkMarkAsRead> markAsRead(Map<String, String> params) async {
-    final markAsReadUrl =
-        '${api.BASE_URL}messages.markAsRead?access_token=$token&v=${api.VERSION}&extended=1' +
-            '${serialize(params)}';
+  Future<VkResponse<int>> markAsRead(MarkAsReadParams params) async {
+    final result = await _invokeMethod('messages.markAsRead', params.toMap());
 
-    final response = await http.get(markAsReadUrl);
-
-    Map<String, dynamic> responseBody =
-        response?.body != null ? json.decode(response?.body) : null;
-
-    if (responseBody == null) {
+    if (result == null) {
       return null;
     }
-    return VkMarkAsRead.fromJson(responseBody);
+
+    return VkResponse<int>(
+      response: result['response'] == null ? null : result['response'],
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
   }
 
-  Future<VkLongPollServer> getLongPollServer(Map<String, String> params) async {
-    final getLongPollServer =
-        '${api.BASE_URL}messages.getLongPollServer?access_token=$token&v=${api.VERSION}&extended=1' +
-            '${serialize(params)}';
+  Future<VkResponse<VkLongPollServer>> getLongPollServer(
+      GetLongPollServerParams params) async {
+    final result =
+        await _invokeMethod('messages.getLongPollServer', params.toMap());
 
-    final response = await http.get(getLongPollServer);
-
-    Map<String, dynamic> responseBody =
-        response?.body != null ? json.decode(response?.body) : null;
-
-    if (responseBody == null) {
+    if (result == null) {
       return null;
     }
-    return VkLongPollServer.fromJson(responseBody);
+
+    return VkResponse<VkLongPollServer>(
+      response: result['response'] == null
+          ? null
+          : VkLongPollServer.fromMap(result['response']),
+      error: result['error'] == null ? null : VkError.fromMap(result['error']),
+    );
   }
 
-  Future<PollResult> poll(String pollUrl) async {
+  Future<VkPollResult> poll(String pollUrl) async {
     final response = await http.get(pollUrl);
 
-    Map<String, dynamic> responseBody =
-        response?.body != null ? json.decode(response?.body) : null;
-
-    if (responseBody == null) {
+    if (response?.body == null) {
       return null;
     }
-    return PollResult.fromJson(responseBody);
+
+    Map<String, dynamic> result = json.decode(response?.body);
+
+    return VkPollResult.fromMap(result);
   }
 }

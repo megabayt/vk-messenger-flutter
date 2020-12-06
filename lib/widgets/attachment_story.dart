@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:vk_messenger_flutter/models/attachment.dart';
-import 'package:vk_messenger_flutter/models/message.dart';
+import 'package:vk_messenger_flutter/local_models/attachment.dart';
+import 'package:vk_messenger_flutter/local_models/attachment_story.dart' as AttachmentStoryModel;
+import 'package:vk_messenger_flutter/local_models/message.dart';
 
 class AttachmentStory extends StatelessWidget {
   Future<void> _tapHandler(BuildContext context) async {
     final attachment = Provider.of<Attachment>(context, listen: false);
 
-    final url =
-        'https://vk.com/story${attachment?.story?.ownerId}_${attachment?.story?.id}';
+    final url = attachment?.url;
 
     if (url != '' && await canLaunch(url)) {
       await launch(url);
@@ -21,11 +21,11 @@ class AttachmentStory extends StatelessWidget {
   Widget build(BuildContext context) {
     final message = Provider.of<Message>(context, listen: false);
 
-    final me = message?.out == 1;
+    final me = message?.isOut == true;
 
     final attachment = Provider.of<Attachment>(context, listen: false);
 
-    final isExpired = attachment?.story?.isExpired ?? false;
+    final isExpired = (attachment as AttachmentStoryModel.AttachmentStory)?.isExpired;
 
     final captionTheme = Theme.of(context).textTheme.caption;
 
@@ -37,19 +37,12 @@ class AttachmentStory extends StatelessWidget {
       );
     }
 
-    final sizes = attachment.story?.photo?.sizes ?? [];
+    final preview = attachment?.preview;
 
-    if (sizes.length != 0) {
+    if (preview != null) {
       return GestureDetector(
           onTap: () => _tapHandler(context),
-          child: Image(image: NetworkImage(sizes[0].url)));
-    }
-
-    final previews = attachment?.story?.video?.image ?? [];
-    if (previews.length != 0) {
-      return GestureDetector(
-          onTap: () => _tapHandler(context),
-          child: Image(image: NetworkImage(previews[0].url)));
+          child: Image(image: NetworkImage(preview)));
     }
 
     return Container();

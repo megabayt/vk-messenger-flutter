@@ -14,15 +14,12 @@ class ConversationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Vk Messenger Flutter'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () => _handleLogoutPressed(context),
-          )
-        ]
-      ),
+      appBar: AppBar(title: Text('Vk Messenger Flutter'), actions: [
+        IconButton(
+          icon: Icon(Icons.exit_to_app),
+          onPressed: () => _handleLogoutPressed(context),
+        )
+      ]),
       body: ConversationsList(),
     );
   }

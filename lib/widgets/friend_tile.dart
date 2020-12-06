@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 
-import 'package:vk_messenger_flutter/models/profile.dart';
+import 'package:vk_messenger_flutter/local_models/profile.dart';
 import 'package:vk_messenger_flutter/screens/conversations_screen.dart';
 import 'package:vk_messenger_flutter/screens/app_router.dart';
 import 'package:vk_messenger_flutter/widgets/conversation_tile_skeleton.dart';
@@ -34,20 +34,16 @@ class FriendTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final profile = Provider.of<Profile>(context, listen: false);
 
-    final name = '${profile?.firstName} ${profile?.lastName}';
-
-    final avatar = profile?.photo50;
-
     if (profile == null) {
       return ConversationTileSkeleton();
     }
 
     return ListTile(
       onTap: () => _friendTapHandler(context),
-      leading: avatar != null
-          ? CircleAvatar(backgroundImage: NetworkImage(avatar))
+      leading: profile?.avatar != null
+          ? CircleAvatar(backgroundImage: NetworkImage(profile?.avatar))
           : null,
-      title: Text(name),
+      title: Text(profile?.name ?? ''),
     );
   }
 }

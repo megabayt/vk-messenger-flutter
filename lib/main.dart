@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:vk_messenger_flutter/blocs/stickers/stickers_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/friends/friends_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/long_polling/long_polling_bloc.dart';
-import 'package:vk_messenger_flutter/blocs/stickers/stickers_bloc.dart';
 import 'package:vk_messenger_flutter/screens/app_router.dart';
-
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/blocs/auth/auth_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
+import 'package:vk_messenger_flutter/blocs/profiles/profiles_bloc.dart';
 
 void main() {
   setupServiceLocator();
@@ -18,19 +19,20 @@ void main() {
     MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => ConversationsBloc(),
+          create: (_) => AuthBloc()..add(UserLogIn()),
           lazy: false,
         ),
+        BlocProvider(create: (_) => ProfilesBloc()),
         BlocProvider(
-          create: (_) => AttachmentsBloc(),
-          lazy: false,
-        ),
+            create: (context) => ConversationsBloc(
+                  BlocProvider.of<ProfilesBloc>(context),
+                )),
+        BlocProvider(create: (_) => AttachmentsBloc()),
         BlocProvider(
-          create: (context) => ConversationBloc(
-            BlocProvider.of<ConversationsBloc>(context),
-            BlocProvider.of<AttachmentsBloc>(context),
-          ),
-        ),
+            create: (context) => ConversationBloc(
+                  BlocProvider.of<ConversationsBloc>(context),
+                  BlocProvider.of<AttachmentsBloc>(context),
+                )),
         BlocProvider(
           create: (_) => FriendsBloc()..add(FriendsFetch()),
         ),
@@ -40,14 +42,8 @@ void main() {
         BlocProvider(
           create: (context) => LongPollingBloc(
             BlocProvider.of<ConversationBloc>(context),
+            BlocProvider.of<ProfilesBloc>(context),
           ),
-        ),
-        BlocProvider(
-          create: (context) => AuthBloc(
-            BlocProvider.of<ConversationsBloc>(context),
-            BlocProvider.of<LongPollingBloc>(context),
-          )..add(UserLogIn()),
-          lazy: false,
         ),
       ],
       child: MyApp(),

@@ -37,7 +37,7 @@ class AttachmentsAttachDocument extends AttachmentsEvent {
 }
 
 class AttachmentsRemoveAttachment extends AttachmentsEvent {
-  final LocalAttachment attachment;
+  final Attachment attachment;
 
   AttachmentsRemoveAttachment(this.attachment);
 }

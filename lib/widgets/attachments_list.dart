@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 
 import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
-import 'package:vk_messenger_flutter/models/local_attachment.dart';
-import 'package:vk_messenger_flutter/utils/helpers.dart';
+import 'package:vk_messenger_flutter/local_models/attachment.dart';
 
 class AttachmentsList extends StatelessWidget {
   void _handleDeleteFwdMessages(BuildContext context) {
@@ -12,8 +11,7 @@ class AttachmentsList extends StatelessWidget {
         .add(AttachmentsRemoveFwdMessages());
   }
 
-  void _handleDeleteAttachment(
-      BuildContext context, LocalAttachment attachment) {
+  void _handleDeleteAttachment(BuildContext context, Attachment attachment) {
     BlocProvider.of<AttachmentsBloc>(context)
         .add(AttachmentsRemoveAttachment(attachment));
   }
@@ -49,9 +47,8 @@ class AttachmentsList extends StatelessWidget {
                 ),
               ),
             ...attachments.map((element) {
-              final title = element.isFetching
-                  ? 'Идет загрузка'
-                  : getLocalAttachmentReplacer(element);
+              final title =
+                  element.isFetching ? 'Идет загрузка' : (element?.title ?? '');
 
               final tile = ListTile(
                 title: Text(title),

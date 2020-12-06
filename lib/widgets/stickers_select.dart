@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 
 import 'package:vk_messenger_flutter/blocs/stickers/stickers_bloc.dart';
-import 'package:vk_messenger_flutter/models/sticker.dart';
+import 'package:vk_messenger_flutter/local_models/sticker.dart';
 
 class StickersSelect extends StatefulWidget {
   @override
@@ -27,9 +27,8 @@ class _StickersSelectState extends State<StickersSelect> {
   }
 
   void _handleTapSticker(BuildContext context, Sticker sticker) {
-    BlocProvider.of<ConversationBloc>(context).add(
-      ConversationSendSticker(sticker: sticker)
-    );
+    BlocProvider.of<ConversationBloc>(context)
+        .add(ConversationSendSticker(sticker: sticker));
   }
 
   @override
@@ -47,12 +46,11 @@ class _StickersSelectState extends State<StickersSelect> {
         Scaffold.of(context).showSnackBar(snackBar);
       }
     }, builder: (_, state) {
-      final products = state.items ?? [];
+      final packs = state.items ?? [];
 
-      final product =
-          currentIndex < products.length ? products[currentIndex] : null;
+      final pack = currentIndex < packs.length ? packs[currentIndex] : null;
 
-      final stickers = product?.stickers ?? [];
+      final stickers = pack?.stickers ?? [];
 
       return Column(
         children: <Widget>[
@@ -64,7 +62,7 @@ class _StickersSelectState extends State<StickersSelect> {
               children: stickers.map((sticker) {
                 return GestureDetector(
                   onTap: () => _handleTapSticker(context, sticker),
-                  child: Image.network(sticker?.images[0]?.url),
+                  child: Image.network(sticker?.url),
                 );
               }).toList(),
             ),
@@ -73,14 +71,18 @@ class _StickersSelectState extends State<StickersSelect> {
             height: 50,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: products.length,
+              itemCount: packs.length,
               itemBuilder: (BuildContext _, int index) {
+                final stickers = packs[index].stickers ?? [];
+                final sticker = stickers.length == 0 ? null : stickers[0];
+                final preview = sticker?.url;
+
                 return GestureDetector(
                   onTap: () => _handleTapProduct(index),
                   child: SizedBox(
                     height: 50,
                     width: 50,
-                    child: Image.network(products[index]?.previews[0]?.url),
+                    child: Image.network(preview),
                   ),
                 );
               },

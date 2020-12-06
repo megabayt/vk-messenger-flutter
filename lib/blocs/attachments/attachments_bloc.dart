@@ -2,21 +2,33 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 
-import 'package:vk_messenger_flutter/models/local_attachment.dart';
-import 'package:vk_messenger_flutter/models/vk_audio_upload_result.dart';
-import 'package:vk_messenger_flutter/models/vk_doc_upload_result.dart';
-import 'package:vk_messenger_flutter/models/vk_photo_upload_result.dart';
-import 'package:vk_messenger_flutter/models/vk_video_upload_result.dart';
+import 'package:vk_messenger_flutter/local_models/attachment.dart';
+import 'package:vk_messenger_flutter/vk_models/audio_upload_result.dart';
+import 'package:vk_messenger_flutter/vk_models/doc_upload_result.dart';
+import 'package:vk_messenger_flutter/vk_models/get_doc_messages_upload_server_params.dart';
+import 'package:vk_messenger_flutter/vk_models/get_photo_upload_server_params.dart';
+import 'package:vk_messenger_flutter/vk_models/photo_upload_result.dart';
+import 'package:vk_messenger_flutter/vk_models/save_audio_params.dart';
+import 'package:vk_messenger_flutter/vk_models/save_doc_params.dart';
+import 'package:vk_messenger_flutter/vk_models/save_messages_photo_params.dart';
+import 'package:vk_messenger_flutter/vk_models/save_video_params.dart';
+import 'package:vk_messenger_flutter/vk_models/vk_video_upload_result.dart';
 import 'package:vk_messenger_flutter/services/interfaces/upload_service.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
+import 'package:vk_messenger_flutter/local_models/attachment_doc.dart';
+import 'package:vk_messenger_flutter/local_models/attachment_audio.dart';
+import 'package:vk_messenger_flutter/local_models/attachment_photo.dart';
+import 'package:vk_messenger_flutter/local_models/attachment_video.dart';
 
+part 'attachments_bloc.g.dart';
 part 'attachments_event.dart';
 part 'attachments_state.dart';
 
@@ -92,7 +104,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
 
   Stream<AttachmentsState> _mapAttachmentsAttachImageToState(
       AttachmentsAttachImage event) async* {
-    LocalAttachment attachment;
+    AttachmentPhoto attachment;
     try {
       final pickedFile = await _picker.getImage(source: event.imageSource);
 
@@ -100,8 +112,8 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
         return;
       }
 
-      attachment = LocalAttachment(
-        path: pickedFile?.path,
+      attachment = AttachmentPhoto(
+        url: pickedFile?.path,
         isFetching: true,
       );
 
@@ -113,41 +125,49 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
         ],
       );
 
-      final uploadServer = await _vkService.getPhotoMessagesUploadServer({
-        'peer_id': event.peerId.toString(),
-      });
+      final uploadServer = await _vkService.getPhotoMessagesUploadServer(
+        GetPhotoUploadServerParams(
+          peerId: event.peerId,
+        ),
+      );
 
       if (uploadServer?.error != null) {
         throw Exception('cannot get upload server');
       }
 
-      final uploadResult = VkPhotoUploadResult.fromJson(
+      final uploadResult = VkPhotoUploadResult.fromMap(
         await _uploadService.upload(
           File(pickedFile.path),
           uploadServer.response.uploadUrl,
         ),
       );
 
-      final saveResult = await _vkService.saveMessagesPhoto({
-        'photo': uploadResult?.photo,
-        'server': uploadResult?.server.toString(),
-        'hash': uploadResult?.hash,
-      });
+      final saveResult = await _vkService.saveMessagesPhoto(
+        SaveMessagesPhotoParams(
+          photo: uploadResult?.photo,
+          server: uploadResult?.server,
+          hash: uploadResult?.hash,
+        ),
+      );
 
-      if (saveResult?.error != null) {
+      if (saveResult?.error != null ||
+          saveResult?.response == null ||
+          saveResult.response?.length == 0) {
         throw Exception('cannot save uploaded photo');
       }
 
-      final ownerId = saveResult.response.ownerId;
-      final photoId = saveResult.response.id;
+      final ownerId = saveResult.response[0].ownerId;
+      final photoId = saveResult.response[0].id;
 
-      final attachments = List<LocalAttachment>.from(state?.attachments ?? []);
+      final attachments = List<Attachment>.from(state?.attachments ?? []);
 
       yield state.copyWith(
         attachments: attachments.map((element) {
           if (element == attachment) {
-            return LocalAttachment(
-                isFetching: false, path: 'photo${ownerId}_$photoId');
+            return attachment.copyWith(
+              isFetching: false,
+              path: 'photo${ownerId}_$photoId',
+            );
           }
           return element;
         }).toList(),
@@ -159,8 +179,8 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       }
       yield state.copyWith(
           error: errorText,
-          attachments: List<LocalAttachment>.from(state?.attachments ?? [])
-              .where((element) {
+          attachments:
+              List<Attachment>.from(state?.attachments ?? []).where((element) {
             return element != attachment;
           }).toList());
     }
@@ -168,7 +188,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
 
   Stream<AttachmentsState> _mapAttachmentsAttachVideoToState(
       AttachmentsAttachVideo event) async* {
-    LocalAttachment attachment;
+    AttachmentVideo attachment;
     try {
       final pickedFile = await _picker.getVideo(source: event.imageSource);
 
@@ -176,8 +196,8 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
         return;
       }
 
-      attachment = LocalAttachment(
-        path: pickedFile?.path,
+      attachment = AttachmentVideo(
+        url: pickedFile?.path,
         isFetching: true,
       );
 
@@ -189,15 +209,15 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
         ],
       );
 
-      final saveResult = await _vkService.saveVideo({
-        'is_private': '1',
-      });
+      final saveResult = await _vkService.saveVideo(SaveVideoParams(
+        isPrivate: true,
+      ));
 
       if (saveResult?.error != null) {
         throw Exception('cannot save video');
       }
 
-      final uploadResult = VkVideoUploadResult.fromJson(
+      final uploadResult = VkVideoUploadResult.fromMap(
         await _uploadService.upload(
           File(pickedFile.path),
           saveResult.response.uploadUrl,
@@ -205,15 +225,17 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       );
 
       final ownerId = saveResult.response.ownerId;
-      final photoId = uploadResult.videoId;
+      final videoId = uploadResult.videoId;
 
-      final attachments = List<LocalAttachment>.from(state?.attachments ?? []);
+      final attachments = List<Attachment>.from(state?.attachments ?? []);
 
       yield state.copyWith(
         attachments: attachments.map((element) {
           if (element == attachment) {
-            return LocalAttachment(
-                isFetching: false, path: 'video${ownerId}_$photoId');
+            return attachment.copyWith(
+              isFetching: false,
+              path: 'video${ownerId}_$videoId',
+            );
           }
           return element;
         }).toList(),
@@ -222,8 +244,8 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       var errorText = 'Произошла ошибка';
       yield state.copyWith(
           error: errorText,
-          attachments: List<LocalAttachment>.from(state?.attachments ?? [])
-              .where((element) {
+          attachments:
+              List<Attachment>.from(state?.attachments ?? []).where((element) {
             return element != attachment;
           }).toList());
     }
@@ -239,7 +261,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
   }
 
   Stream<AttachmentsState> _mapAttachmentsAttachAudioToState() async* {
-    LocalAttachment attachment;
+    AttachmentAudio attachment;
     try {
       FilePickerResult pickerResult =
           await FilePicker.platform.pickFiles(type: FileType.audio);
@@ -250,7 +272,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
 
       String path = pickerResult.files.single.path;
 
-      attachment = LocalAttachment(
+      attachment = AttachmentAudio(
         path: path,
         isFetching: true,
       );
@@ -269,33 +291,33 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
         throw Exception('cannot get upload server');
       }
 
-      final uploadResult = VkAudioUploadResult.fromJson(
+      final uploadResult = VkAudioUploadResult.fromMap(
         await _uploadService.upload(
           File(path),
           uploadServer.response.uploadUrl,
         ),
       );
 
-      final saveResult = await _vkService.saveAudio({
-        'server': uploadResult?.server.toString(),
-        'hash': uploadResult?.hash,
-        'audio': uploadResult?.audio,
-      });
+      final saveResult = await _vkService.saveAudio(SaveAudioParams(
+        server: uploadResult?.server,
+        hash: uploadResult?.hash,
+        audio: uploadResult?.audio,
+      ));
 
       if (saveResult?.error != null) {
         throw Exception('cannot save uploaded audio');
       }
 
       final ownerId = saveResult.response.ownerId;
-      final photoId = saveResult.response.id;
+      final audioId = saveResult.response.id;
 
-      final attachments = List<LocalAttachment>.from(state?.attachments ?? []);
+      final attachments = List<Attachment>.from(state?.attachments ?? []);
 
       yield state.copyWith(
         attachments: attachments.map((element) {
           if (element == attachment) {
-            return LocalAttachment(
-                isFetching: false, path: 'audio${ownerId}_$photoId');
+            return attachment.copyWith(
+                isFetching: false, path: 'audio${ownerId}_$audioId');
           }
           return element;
         }).toList(),
@@ -304,8 +326,8 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       var errorText = 'Произошла ошибка';
       yield state.copyWith(
           error: errorText,
-          attachments: List<LocalAttachment>.from(state?.attachments ?? [])
-              .where((element) {
+          attachments:
+              List<Attachment>.from(state?.attachments ?? []).where((element) {
             return element != attachment;
           }).toList());
     }
@@ -313,7 +335,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
 
   Stream<AttachmentsState> _mapAttachmentsAttachDocumentToState(
       AttachmentsAttachDocument event) async* {
-    LocalAttachment attachment;
+    AttachmentDoc attachment;
     try {
       FilePickerResult pickerResult =
           await FilePicker.platform.pickFiles(type: FileType.any);
@@ -325,7 +347,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       String path = pickerResult.files.single.path;
       String fileName = pickerResult.files.single.name;
 
-      attachment = LocalAttachment(
+      attachment = AttachmentDoc(
         path: path,
         isFetching: true,
       );
@@ -338,16 +360,18 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
         ],
       );
 
-      final uploadServer = await _vkService.getDocMessagesUploadServer({
-        'type': 'doc',
-        'peer_id': event.peerId.toString(),
-      });
+      final uploadServer = await _vkService.getDocMessagesUploadServer(
+        GetDocMessagesUploadServerParams(
+          type: 'doc',
+          peerId: event.peerId,
+        ),
+      );
 
       if (uploadServer?.error != null) {
         throw Exception('cannot get upload server');
       }
 
-      final uploadResult = VkDocUploadResult.fromJson(
+      final uploadResult = VkDocUploadResult.fromMap(
         await _uploadService.upload(
           File(path),
           uploadServer.response.uploadUrl,
@@ -355,7 +379,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       );
 
       final saveResult = await _vkService
-          .saveDoc({'file': uploadResult?.file, 'title': fileName});
+          .saveDoc(SaveDocParams(file: uploadResult?.file, title: fileName));
 
       if (saveResult?.error != null) {
         throw Exception('cannot save uploaded audio');
@@ -364,12 +388,12 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       final ownerId = saveResult.response.doc.ownerId;
       final docId = saveResult.response.doc.id;
 
-      final attachments = List<LocalAttachment>.from(state?.attachments ?? []);
+      final attachments = List<Attachment>.from(state?.attachments ?? []);
 
       yield state.copyWith(
         attachments: attachments.map((element) {
           if (element == attachment) {
-            return LocalAttachment(
+            return attachment.copyWith(
                 isFetching: false, path: 'doc${ownerId}_$docId');
           }
           return element;
@@ -379,8 +403,8 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       var errorText = 'Произошла ошибка';
       yield state.copyWith(
           error: errorText,
-          attachments: List<LocalAttachment>.from(state?.attachments ?? [])
-              .where((element) {
+          attachments:
+              List<Attachment>.from(state?.attachments ?? []).where((element) {
             return element != attachment;
           }).toList());
     }

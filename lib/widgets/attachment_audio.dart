@@ -4,8 +4,9 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:vk_messenger_flutter/models/attachment.dart';
-import 'package:vk_messenger_flutter/models/message.dart';
+import 'package:vk_messenger_flutter/local_models/attachment.dart';
+import 'package:vk_messenger_flutter/local_models/attachment_audio.dart' as AttachmentAudioModel;
+import 'package:vk_messenger_flutter/local_models/message.dart';
 import 'package:vk_messenger_flutter/services/interfaces/player_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 
@@ -37,9 +38,9 @@ class _AttachmentAudioState extends State<AttachmentAudio> {
   void _playTapHandler(BuildContext context) {
     final attachment = Provider.of<Attachment>(context, listen: false);
 
-    final url = attachment?.audio?.url;
+    final url = attachment?.url;
 
-    if (attachment?.audio?.contentRestricted == 1) {
+    if ((attachment as AttachmentAudioModel.AttachmentAudio).isContentRestricted) {
       final snackBar = SnackBar(
         content: Text(
           'Аудиозапись недоступна. Так решил музыкант или его представитель',
@@ -61,11 +62,11 @@ class _AttachmentAudioState extends State<AttachmentAudio> {
   Widget build(BuildContext context) {
     final message = Provider.of<Message>(context, listen: false);
 
-    final me = message?.out == 1;
+    final me = message?.isOut == true;
 
     final attachment = Provider.of<Attachment>(context, listen: false);
 
-    final url = attachment?.audio?.url;
+    final url = attachment?.url;
 
     final captionTheme = Theme.of(context).textTheme.caption;
 
@@ -95,7 +96,7 @@ class _AttachmentAudioState extends State<AttachmentAudio> {
           padding: EdgeInsets.all(8.0),
         ),
         Text(
-          '${attachment.audio?.artist ?? ''} - ${attachment.audio?.title ?? ''}',
+          attachment?.title ?? '',
           textAlign: me ? TextAlign.right : TextAlign.left,
           style: captionTheme,
         ),

@@ -1,18 +1,14 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:vk_messenger_flutter/blocs/profiles/profiles_bloc.dart';
+import 'package:vk_messenger_flutter/local_models/conversation.dart';
 
-import 'package:vk_messenger_flutter/models/vk_conversations.dart'
-    show VkConversationItem;
-import 'package:vk_messenger_flutter/services/interfaces/profiles_service.dart';
-import 'package:vk_messenger_flutter/services/service_locator.dart';
-import 'package:vk_messenger_flutter/utils/helpers.dart';
 import 'package:vk_messenger_flutter/widgets/conversation_avatar.dart';
 import 'package:vk_messenger_flutter/widgets/conversation_tile_skeleton.dart';
 
 class ConversationTile extends StatelessWidget {
-  final _profilesService = locator<ProfilesService>();
-
   Widget getOutRead(bool outRead) {
     if (outRead) {
       return null;
@@ -49,25 +45,30 @@ class ConversationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final item = Provider.of<VkConversationItem>(context, listen: false);
+    final item = Provider.of<Conversation>(context, listen: false);
 
-    final profile = _profilesService.getProfile(item?.conversation?.peer?.id);
+    final profile =
+        (BlocProvider.of<ProfilesBloc>(context).state as ProfilesInitial)
+            .getById(item?.id);
 
-    final name = item?.conversation?.chatSettings?.title ?? profile.name;
+    final name = item?.title ?? profile?.name ?? 'Неизвестно';
 
-    final unreadCount = item?.conversation?.unreadCount ?? 0;
+    final unreadCount = item?.unreadCount ?? 0;
 
-    final lastMsgAttachments = item?.lastMessage?.attachments ?? [];
-    final lastMsgFwdMessages = item?.lastMessage?.fwdMessages ?? [];
+    final messages = item?.messages ?? [];
 
-    var text = item?.lastMessage?.text;
+    final lastMessage = messages.length != 0 ? messages[0] : null;
 
-    final isOut = item?.lastMessage?.out == 1;
-    final outRead = item?.lastMessage?.id == item?.conversation?.outRead;
+    final lastMsgAttachments = lastMessage?.attachments ?? [];
+    final lastMsgFwdMessages = lastMessage?.fwdMessages ?? [];
+
+    var text = lastMessage?.text;
+
+    final outRead = lastMessage?.id == item?.outRead;
 
     if (text == '') {
       if (lastMsgAttachments.length != 0) {
-        text = getAttachmentReplacer(lastMsgAttachments[0]);
+        text = lastMsgAttachments[0].title ?? '';
       }
       if (lastMsgFwdMessages.length != 0) {
         text = 'Пересланные сообщения';
@@ -86,7 +87,9 @@ class ConversationTile extends StatelessWidget {
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: isOut ? getOutRead(outRead) : getInRead(unreadCount),
+      trailing: lastMessage?.isOut == true
+          ? getOutRead(outRead)
+          : getInRead(unreadCount),
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:vk_messenger_flutter/models/message.dart' as MessageModel;
+import 'package:vk_messenger_flutter/local_models/message.dart' as MessageModel;
 import 'package:vk_messenger_flutter/widgets/message.dart';
 import 'package:vk_messenger_flutter/widgets/message_date_delimeter.dart';
 

@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:vk_messenger_flutter/models/attachment.dart';
-import 'package:vk_messenger_flutter/models/message.dart';
+import 'package:vk_messenger_flutter/local_models/attachment.dart';
+import 'package:vk_messenger_flutter/local_models/message.dart';
 
 class AttachmentVideo extends StatelessWidget {
   Future<void> _tapHandler(BuildContext context) async {
     final attachment = Provider.of<Attachment>(context, listen: false);
 
-    final url =
-        'https://vk.com/video${attachment?.video?.ownerId}_${attachment?.video?.id}';
+    final url = attachment?.url;
 
     if (url != '' && await canLaunch(url)) {
       await launch(url);
@@ -21,15 +20,15 @@ class AttachmentVideo extends StatelessWidget {
   Widget build(BuildContext context) {
     final message = Provider.of<Message>(context, listen: false);
 
-    final me = message?.out == 1;
+    final me = message?.isOut == true;
 
     final attachment = Provider.of<Attachment>(context, listen: false);
 
-    final images = attachment?.video?.image ?? [];
+    final preview = attachment?.preview;
 
     final captionTheme = Theme.of(context).textTheme.caption;
 
-    if (images.length == 0) {
+    if (preview == null) {
       return Container();
     }
     return GestureDetector(
@@ -41,7 +40,7 @@ class AttachmentVideo extends StatelessWidget {
           Stack(
             alignment: Alignment.center,
             children: <Widget>[
-              Image(image: NetworkImage(images[0].url)),
+              Image(image: NetworkImage(preview)),
               Container(
                 width: 50,
                 height: 50,
@@ -62,7 +61,7 @@ class AttachmentVideo extends StatelessWidget {
             padding: EdgeInsets.all(10),
           ),
           Text(
-            attachment?.video?.title ?? '',
+            attachment?.title ?? '',
             textAlign: me ? TextAlign.right : TextAlign.left,
             style: captionTheme,
           ),

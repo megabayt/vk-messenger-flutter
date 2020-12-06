@@ -12,8 +12,32 @@ import 'package:vk_messenger_flutter/widgets/attachment_story.dart';
 import 'package:vk_messenger_flutter/widgets/attachment_video.dart';
 import 'package:vk_messenger_flutter/widgets/attachment_wall.dart';
 import 'package:vk_messenger_flutter/widgets/attachment_wall_reply.dart';
-import 'package:vk_messenger_flutter/models/attachment.dart' as AttachmentModel;
-import 'package:vk_messenger_flutter/utils/helpers.dart';
+
+import 'package:vk_messenger_flutter/local_models/attachment_doc.dart'
+    as AttachmentDocModel;
+import 'package:vk_messenger_flutter/local_models/attachment_audio.dart'
+    as AttachmentAudioModel;
+import 'package:vk_messenger_flutter/local_models/attachment_gift.dart'
+    as AttachmentGiftModel;
+import 'package:vk_messenger_flutter/local_models/attachment_link.dart'
+    as AttachmentLinkModel;
+import 'package:vk_messenger_flutter/local_models/attachment_photo.dart'
+    as AttachmentPhotoModel;
+import 'package:vk_messenger_flutter/local_models/attachment_poll.dart'
+    as AttachmentPollModel;
+import 'package:vk_messenger_flutter/local_models/attachment_sticker.dart'
+    as AttachmentStickerModel;
+import 'package:vk_messenger_flutter/local_models/attachment_story.dart'
+    as AttachmentStoryModel;
+import 'package:vk_messenger_flutter/local_models/attachment_video.dart'
+    as AttachmentVideoModel;
+import 'package:vk_messenger_flutter/local_models/attachment_wall.dart'
+    as AttachmentWallModel;
+import 'package:vk_messenger_flutter/local_models/attachment_wall_reply.dart'
+    as AttachmentWallReplyModel;
+
+import 'package:vk_messenger_flutter/local_models/attachment.dart'
+    as AttachmentModel;
 
 class Attachment extends StatelessWidget {
   @override
@@ -21,34 +45,30 @@ class Attachment extends StatelessWidget {
     final attachment =
         Provider.of<AttachmentModel.Attachment>(context, listen: false);
 
-    switch (attachment.type) {
-      case AttachmentModel.AttachmentType.PHOTO:
-        return AttachmentPhoto();
-      case AttachmentModel.AttachmentType.VIDEO:
-        return AttachmentVideo();
-      case AttachmentModel.AttachmentType.GIFT:
-        return AttachmentGift();
-      case AttachmentModel.AttachmentType.STICKER:
-        return AttachmentSticker();
-      case AttachmentModel.AttachmentType.DOC:
-        return AttachmentDoc();
-      case AttachmentModel.AttachmentType.STORY:
-        return AttachmentStory();
-      case AttachmentModel.AttachmentType.AUDIO:
-        return AttachmentAudio();
-      case AttachmentModel.AttachmentType.LINK:
-        return AttachmentLink();
-      case AttachmentModel.AttachmentType.POLL:
-        return AttachmentPoll();
-      case AttachmentModel.AttachmentType.WALL:
-        return AttachmentWall();
-      case AttachmentModel.AttachmentType.WALL_REPLY:
-        return AttachmentWallReply();
-      default:
-        final text = getAttachmentReplacer(attachment);
-        return Text(
-          text,
-        );
+    if (attachment is AttachmentPhotoModel.AttachmentPhoto) {
+      return AttachmentPhoto();
+    } else if (attachment is AttachmentVideoModel.AttachmentVideo) {
+      return AttachmentVideo();
+    } else if (attachment is AttachmentGiftModel.AttachmentGift) {
+      return AttachmentGift();
+    } else if (attachment is AttachmentStickerModel.AttachmentSticker) {
+      return AttachmentSticker();
+    } else if (attachment is AttachmentDocModel.AttachmentDoc) {
+      return AttachmentDoc();
+    } else if (attachment is AttachmentStoryModel.AttachmentStory) {
+      return AttachmentStory();
+    } else if (attachment is AttachmentAudioModel.AttachmentAudio) {
+      return AttachmentAudio();
+    } else if (attachment is AttachmentLinkModel.AttachmentLink) {
+      return AttachmentLink();
+    } else if (attachment is AttachmentPollModel.AttachmentPoll) {
+      return AttachmentPoll();
+    } else if (attachment is AttachmentWallModel.AttachmentWall) {
+      return AttachmentWall();
+    } else if (attachment is AttachmentWallReplyModel.AttachmentWallReply) {
+      return AttachmentWallReply();
+    } else {
+      return Text(attachment?.title ?? 'Вложение');
     }
   }
 }

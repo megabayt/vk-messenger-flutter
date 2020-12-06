@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+
 import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
-
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
-import 'package:vk_messenger_flutter/models/vk_conversations.dart';
+import 'package:vk_messenger_flutter/local_models/conversation.dart';
+import 'package:vk_messenger_flutter/screens/conversation_screen.dart';
 import 'package:vk_messenger_flutter/screens/conversations_screen.dart';
 import 'package:vk_messenger_flutter/screens/app_router.dart';
-import 'package:vk_messenger_flutter/widgets/conversation_tile.dart';
 import 'package:vk_messenger_flutter/widgets/creation_aware_list_item.dart';
+import 'package:vk_messenger_flutter/widgets/conversation_tile.dart';
 
 class ConversationsList extends StatelessWidget {
   final bool fwdSelectMode;
@@ -17,11 +18,12 @@ class ConversationsList extends StatelessWidget {
 
   ConversationsList({this.fwdSelectMode = false});
 
-  void _itemCreatedHandler(ConversationsBloc conversationsBloc, int index) {
-    final items = conversationsBloc?.state?.items ?? [];
+  void _itemCreatedHandler(
+      BuildContext context, ConversationsState state, int index) {
+    final items = state?.conversations ?? [];
 
     if (index == items.length - 1) {
-      conversationsBloc.add(ConversationsFetchMore());
+      BlocProvider.of<ConversationsBloc>(context).add(ConversationsFetchMore());
     }
   }
 
@@ -32,15 +34,15 @@ class ConversationsList extends StatelessWidget {
     conversationsBloc.add(ConversationsRetry());
   }
 
-  void _chatTapHandler(BuildContext context, VkConversationItem item) {
+  void _chatTapHandler(BuildContext context, Conversation item) {
     // ignore: close_sinks
     final conversationBloc = BlocProvider.of<ConversationBloc>(context);
-    // ignore: close_sinks
-    final attachmentsBloc = BlocProvider.of<AttachmentsBloc>(context);
-
     if (fwdSelectMode) {
-      attachmentsBloc.add(AttachmentsForwardMessage(
-          conversationBloc.state.selectedMessagesIds ?? []));
+      BlocProvider.of<AttachmentsBloc>(context).add(
+        AttachmentsForwardMessage(
+          conversationBloc.state.selectedMessagesIds ?? [],
+        ),
+      );
       AppRouter.sailor.popUntil((route) {
         if (route.settings.name == ConversationsScreen.routeUrl) {
           return true;
@@ -49,15 +51,18 @@ class ConversationsList extends StatelessWidget {
       });
     }
 
+    AppRouter.sailor.navigate(ConversationScreen.routeUrl);
+
     conversationBloc.add(
-        ConversationSetPeerId(item?.conversation?.peer?.id, fwdSelectMode));
+      ConversationSetPeerId(
+        item?.id,
+        fwdSelectMode,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // ignore: close_sinks
-    final conversationsBloc = BlocProvider.of<ConversationsBloc>(context);
-
     return BlocConsumer<ConversationsBloc, ConversationsState>(
       listener: (_, state) {
         if (state.error != '') {
@@ -74,33 +79,33 @@ class ConversationsList extends StatelessWidget {
       },
       builder: (_, state) {
         final totalCount = state?.count ?? 0;
-        var items = state?.items ?? [];
-        final needFetchMore = totalCount > items.length;
+        var conversations = state?.conversations ?? [];
+        final needFetchMore = totalCount > conversations.length;
 
-        if (items.length == 0 && state.isFetching) {
-          items = new List(15);
+        if (conversations.length == 0 && state.isFetching) {
+          conversations = new List(15);
         }
 
         if (needFetchMore) {
-          items = [...items, null, null, null];
+          conversations = [...conversations, null, null, null];
         }
 
         return RefreshIndicator(
           key: _refreshIndicatorKey,
           onRefresh: () async {
-            conversationsBloc.add(ConversationsFetch());
+            BlocProvider.of<ConversationsBloc>(context)
+                .add(ConversationsFetch());
           },
           child: ListView.builder(
-            itemCount: items.length,
+            itemCount: conversations.length,
             itemBuilder: (BuildContext _, int index) {
               return InkWell(
-                onTap: () => _chatTapHandler(context, items[index]),
+                onTap: () => _chatTapHandler(context, conversations[index]),
                 child: CreationAwareListItem(
-                  key: ValueKey(items[index]?.lastMessage?.id),
-                  itemCreated: () =>
-                      _itemCreatedHandler(conversationsBloc, index),
+                  key: ValueKey(conversations[index]?.id),
+                  itemCreated: () => _itemCreatedHandler(context, state, index),
                   child: Provider.value(
-                    value: items[index],
+                    value: conversations[index],
                     child: ConversationTile(),
                   ),
                 ),

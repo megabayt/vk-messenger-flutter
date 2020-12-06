@@ -5,8 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
-import 'package:vk_messenger_flutter/models/geo.dart';
-import 'package:vk_messenger_flutter/models/message.dart' as MessageModel;
+import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
+import 'package:vk_messenger_flutter/local_models/message.dart' as MessageModel;
 import 'package:vk_messenger_flutter/screens/forwarded_messages_screen.dart';
 import 'package:vk_messenger_flutter/screens/app_router.dart';
 import 'package:vk_messenger_flutter/screens/show_geo_screen.dart';
@@ -21,33 +21,34 @@ class Message extends StatelessWidget {
     });
   }
 
-  void _geoTapHandler(Geo geo) {
+  void _geoTapHandler(double longitude, double latitude, String place) {
     AppRouter.sailor.navigate(ShowGeoScreen.routeUrl, params: {
-      "geo": geo,
+      'longitude': longitude,
+      'latitude': latitude,
+      'place': place,
     });
   }
 
   void _selectMessageHandler(BuildContext context) {
     final message = Provider.of<MessageModel.Message>(context, listen: false);
-    // ignore: close_sinks
-    final conversationBloc = BlocProvider.of<ConversationBloc>(context);
 
     if (message?.isSent == false) {
       return;
     }
-    conversationBloc.add(ConversationSelectMessage(message?.id));
+    BlocProvider.of<ConversationBloc>(context)
+        .add(ConversationSelectMessage(message?.id));
   }
 
   bool _checkOutRead(BuildContext context, int id) {
     bool read = true;
 
-    // ignore: close_sinks
-    final history =
-        BlocProvider.of<ConversationBloc>(context)?.state?.currentHistory;
+    final peerId = BlocProvider.of<ConversationBloc>(context)?.state?.peerId;
 
-    final items = history?.items ?? [];
-    final conversations = history?.conversations ?? [];
-    final conversation = conversations.length > 0 ? conversations[0] : null;
+    final conversation =
+        BlocProvider.of<ConversationsBloc>(context)?.state?.getById(peerId);
+
+    final items = conversation?.messages ?? [];
+
     final outRead = conversation?.outRead;
 
     if (outRead == id) {
@@ -55,11 +56,11 @@ class Message extends StatelessWidget {
     }
 
     for (int i = 0; i < items.length; i++) {
-      if (items[i]?.id == id) {
+      if (items[i].id == id) {
         read = false;
         break;
       }
-      if (items[i]?.id == outRead) {
+      if (items[i].id == outRead) {
         break;
       }
     }
@@ -77,7 +78,7 @@ class Message extends StatelessWidget {
 
     double width = MediaQuery.of(context).size.width * 0.8; // 80% of screen
 
-    final me = item?.out == 1;
+    final me = item?.isOut == true;
 
     final text = item?.text ?? '';
 
@@ -85,7 +86,9 @@ class Message extends StatelessWidget {
 
     final fwdMessages = item?.fwdMessages ?? [];
 
-    final geo = item?.geo;
+    final longitude = item?.longitude;
+    final latitude = item?.latitude;
+    final place = item?.place;
 
     var rows = <Widget>[];
 
@@ -126,12 +129,16 @@ class Message extends StatelessWidget {
       );
     }
 
-    if (geo != null) {
+    if (longitude != null && latitude != null && place != null) {
       rows.add(
         GestureDetector(
-          onTap: () => _geoTapHandler(geo),
+          onTap: () => _geoTapHandler(
+            longitude,
+            latitude,
+            place,
+          ),
           child: Text(
-            'Местоположение: ${geo?.place?.title ?? ''}',
+            'Местоположение: ${place ?? ''}',
             textAlign: textAlign,
             style: captionTheme,
           ),
@@ -159,7 +166,7 @@ class Message extends StatelessWidget {
       );
     }
 
-    if (item?.out == 1) {
+    if (me) {
       rows.add(
         Icon(
           item.isSent ? Icons.done_all : Icons.done,

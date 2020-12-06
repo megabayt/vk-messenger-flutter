@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:vk_messenger_flutter/models/geo.dart';
 
 class ShowGeoScreen extends StatelessWidget {
   static const routeUrl = '/show_geo';
 
-  final Geo geo;
+  ShowGeoScreen(
+    this.longitude,
+    this.latitude,
+    this.place,
+  );
+
+  final double longitude;
+  final double latitude;
+  final String place;
 
   CameraPosition get initialCamera {
     return CameraPosition(
-      target: LatLng(geo.coordinates.latitude, geo.coordinates.longitude),
+      target: LatLng(latitude, longitude),
       zoom: 10,
     );
   }
@@ -19,17 +26,15 @@ class ShowGeoScreen extends StatelessWidget {
     return Set<Marker>()
       ..add(Marker(
         markerId: MarkerId('my location'),
-        position: LatLng(geo.coordinates.latitude, geo.coordinates.longitude),
+        position: LatLng(latitude, longitude),
       ));
   }
-
-  ShowGeoScreen(this.geo);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(geo?.place?.title ?? 'Местоположение'),
+        title: Text(place ?? 'Местоположение'),
       ),
       body: GoogleMap(
         initialCameraPosition: initialCamera,

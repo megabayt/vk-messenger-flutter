@@ -1,8 +1,9 @@
 part of 'stickers_bloc.dart';
 
 @immutable
+@CopyWith()
 class StickersState {
-  final List<StoreProduct> items;
+  final List<StickerPack> items;
   final bool isFetching;
   final String error;
 
@@ -11,15 +12,4 @@ class StickersState {
     this.isFetching = false,
     this.error = '',
   });
-
-  StickersState copyWith({
-    List<StoreProduct> items,
-    bool isFetching,
-    String error,
-  }) =>
-      StickersState(
-        items: items ?? this.items,
-        isFetching: isFetching ?? this.isFetching,
-        error: error ?? this.error,
-      );
 }
