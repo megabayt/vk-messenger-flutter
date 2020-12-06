@@ -1,6 +1,7 @@
 part of 'friends_bloc.dart';
 
 @immutable
+@CopyWith()
 class FriendsState {
   final List<Profile> items;
   final int count;
@@ -15,19 +16,4 @@ class FriendsState {
     this.error = '',
     this.lastEvent,
   });
-
-  FriendsState copyWith({
-    List<Profile> items,
-    int count,
-    bool isFetching,
-    String error,
-    FriendsEvent lastEvent,
-  }) =>
-      FriendsState(
-        items: items ?? this.items,
-        count: count ?? this.count,
-        isFetching: isFetching ?? this.isFetching,
-        error: error ?? this.error,
-        lastEvent: lastEvent ?? this.lastEvent,
-      );
 }

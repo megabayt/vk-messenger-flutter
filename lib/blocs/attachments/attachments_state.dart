@@ -1,6 +1,7 @@
 part of 'attachments_bloc.dart';
 
 @immutable
+@CopyWith()
 class AttachmentsState {
   final bool isFetching;
   final String error;
@@ -15,19 +16,4 @@ class AttachmentsState {
     this.attachments = const [],
     this.location = const LatLng(0, 0),
   });
-
-  AttachmentsState copyWith({
-    bool isFetching,
-    String error,
-    List<int> fwdMessages,
-    List<Attachment> attachments,
-    LatLng location,
-  }) =>
-      AttachmentsState(
-        isFetching: isFetching ?? this.isFetching,
-        error: error ?? this.error,
-        fwdMessages: fwdMessages ?? this.fwdMessages,
-        attachments: attachments ?? this.attachments,
-        location: location ?? this.location,
-      );
 }

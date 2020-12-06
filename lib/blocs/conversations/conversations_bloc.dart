@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:meta/meta.dart';
 
 import 'package:vk_messenger_flutter/blocs/profiles/profiles_bloc.dart';
@@ -12,6 +13,7 @@ import 'package:vk_messenger_flutter/vk_models/conversations_response.dart';
 import 'package:vk_messenger_flutter/vk_models/get_conversations_params.dart';
 import 'package:vk_messenger_flutter/vk_models/vk_response.dart';
 
+part 'conversations_bloc.g.dart';
 part 'conversations_event.dart';
 part 'conversations_state.dart';
 

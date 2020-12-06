@@ -1,6 +1,11 @@
+import 'package:copy_with_extension/copy_with_extension.dart';
+
 import 'package:vk_messenger_flutter/vk_models/attachment.dart';
 import 'package:vk_messenger_flutter/vk_models/attachment_type.dart';
 
+part 'attachment.g.dart';
+
+@CopyWith()
 class Attachment {
   Attachment({
     this.type,
@@ -127,23 +132,4 @@ class Attachment {
       unavaliable: unavaliable,
     );
   }
-
-  Attachment copyWith({
-    VkAttachmentType type,
-    String path,
-    String url,
-    String title,
-    String preview,
-    bool unavaliable,
-    bool isFetching,
-  }) =>
-      Attachment(
-        path: path ?? this.path,
-        type: type ?? this.type,
-        url: url ?? this.url,
-        title: title ?? this.title,
-        preview: preview ?? this.preview,
-        unavaliable: unavaliable ?? this.unavaliable,
-        isFetching: isFetching ?? this.isFetching,
-      );
 }

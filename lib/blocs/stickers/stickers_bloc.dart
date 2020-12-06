@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/material.dart';
 
 import 'package:vk_messenger_flutter/local_models/sticker_pack.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 
+part 'stickers_bloc.g.dart';
 part 'stickers_event.dart';
 part 'stickers_state.dart';
 
@@ -41,8 +43,8 @@ class StickersBloc extends Bloc<StickersEvent, StickersState> {
       }
 
       final items = (result?.response?.items ?? [])
-      .map((element) => StickerPack.fromVkStoreProduct(element))
-      .toList();
+          .map((element) => StickerPack.fromVkStoreProduct(element))
+          .toList();
 
       yield state.copyWith(
         items: items,

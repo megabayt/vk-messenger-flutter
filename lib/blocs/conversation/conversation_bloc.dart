@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
+import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:meta/meta.dart';
 
 import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
@@ -20,6 +21,7 @@ import 'package:vk_messenger_flutter/vk_models/get_messages_params.dart';
 import 'package:vk_messenger_flutter/vk_models/mark_as_read.dart';
 import 'package:vk_messenger_flutter/vk_models/send_message_params.dart';
 
+part 'conversation_bloc.g.dart';
 part 'conversation_event.dart';
 part 'conversation_state.dart';
 

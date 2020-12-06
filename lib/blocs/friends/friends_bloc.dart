@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:vk_messenger_flutter/local_models/profile.dart';
 
@@ -8,6 +9,7 @@ import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/vk_models/get_friends_params.dart';
 
+part 'friends_bloc.g.dart';
 part 'friends_event.dart';
 part 'friends_state.dart';
 
@@ -55,8 +57,8 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
       }
 
       final items = (result?.response?.items ?? [])
-        .map((element) => Profile.fromVkProfile(element))
-        .toList();
+          .map((element) => Profile.fromVkProfile(element))
+          .toList();
 
       yield state.copyWith(
         items: items,
@@ -73,8 +75,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
   }
 
   Stream<FriendsState> _mapFriendsFetchMoreToState(FriendsEvent event) async* {
-    if (state.isFetching ||
-        state.items.length >= state.count) {
+    if (state.isFetching || state.items.length >= state.count) {
       return;
     }
 
@@ -102,8 +103,8 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
       }
 
       final newItems = (result?.response?.items ?? [])
-        .map((element) => Profile.fromVkProfile(element))
-        .toList();
+          .map((element) => Profile.fromVkProfile(element))
+          .toList();
 
       yield state.copyWith(
         count: result?.response?.count ?? 0,

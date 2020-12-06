@@ -1,6 +1,7 @@
 part of 'conversations_bloc.dart';
 
 @immutable
+@CopyWith()
 class ConversationsState {
   final List<Conversation> conversations;
   final int count;
@@ -47,19 +48,4 @@ class ConversationsState {
   List<Message> getMessagesById(int id) {
     return getById(id)?.messages ?? [];
   }
-
-  ConversationsState copyWith({
-    List<Conversation> conversations,
-    int count,
-    bool isFetching,
-    String error,
-    ConversationsEvent lastEvent,
-  }) =>
-      ConversationsState(
-        conversations: conversations ?? this.conversations,
-        count: count ?? this.count,
-        isFetching: isFetching ?? this.isFetching,
-        error: error ?? this.error,
-        lastEvent: lastEvent ?? this.lastEvent,
-      );
 }

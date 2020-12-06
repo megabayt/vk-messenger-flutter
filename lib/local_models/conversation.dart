@@ -1,7 +1,12 @@
+import 'package:copy_with_extension/copy_with_extension.dart';
+
 import 'package:vk_messenger_flutter/local_models/message.dart';
 import 'package:vk_messenger_flutter/vk_models/conversation_item.dart';
 import 'package:vk_messenger_flutter/vk_models/peer_type.dart';
 
+part 'conversation.g.dart';
+
+@CopyWith()
 class Conversation {
   Conversation({
     this.id,
@@ -46,30 +51,4 @@ class Conversation {
         inRead: item?.conversation?.inRead,
         outRead: item?.conversation?.outRead,
       );
-
-  Conversation copyWith({
-    int id,
-    VkPeerType type,
-    int localId,
-    int messagesCount,
-    int unreadCount,
-    List<Message> messages,
-    List<int> activeIds,
-    String title,
-    int inRead,
-    int outRead,
-  }) {
-    return Conversation(
-      id: id ?? this.id,
-      type: type ?? this.type,
-      localId: localId ?? this.localId,
-      messagesCount: messagesCount ?? this.messagesCount,
-      unreadCount: unreadCount ?? this.unreadCount,
-      messages: messages ?? this.messages,
-      activeIds: activeIds ?? this.activeIds,
-      title: title ?? this.title,
-      inRead: inRead ?? this.inRead,
-      outRead: outRead ?? this.outRead,
-    );
-  }
 }

@@ -1,6 +1,11 @@
+import 'package:copy_with_extension/copy_with_extension.dart';
+
 import 'package:vk_messenger_flutter/vk_models/conversation.dart';
 import 'package:vk_messenger_flutter/vk_models/message.dart';
 
+part 'conversation_item.g.dart';
+
+@CopyWith()
 class VkConversationItem {
   VkConversationItem({
     this.conversation,
@@ -9,16 +14,6 @@ class VkConversationItem {
 
   final VkConversation conversation;
   final VkMessage lastMessage;
-
-  VkConversationItem copyWith({
-    VkConversation conversation,
-    VkMessage lastMessage,
-  }) {
-    return VkConversationItem(
-      conversation: conversation ?? this.conversation,
-      lastMessage: lastMessage ?? this.lastMessage,
-    );
-  }
 
   factory VkConversationItem.fromMap(Map<String, dynamic> json) =>
       VkConversationItem(

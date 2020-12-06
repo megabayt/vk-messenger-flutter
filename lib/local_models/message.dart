@@ -1,6 +1,11 @@
+import 'package:copy_with_extension/copy_with_extension.dart';
+
 import 'package:vk_messenger_flutter/local_models/attachment.dart';
 import 'package:vk_messenger_flutter/vk_models/message.dart';
 
+part 'message.g.dart';
+
+@CopyWith()
 class Message {
   Message({
     this.id,
@@ -56,36 +61,5 @@ class Message {
             : vkMessage?.geo?.place?.title,
         isOut: vkMessage?.out == 1,
         isImportant: vkMessage?.important == true,
-      );
-
-  Message copyWith({
-    final int id,
-    final int fromId,
-    final int date,
-    final String text,
-    final List<Message> fwdMessages,
-    final List<Attachment> attachments,
-    final double latitude,
-    final double longitude,
-    final String place,
-    final bool isOut,
-    final bool isImportant,
-    final bool isSent,
-    final bool isError,
-  }) =>
-      Message(
-        id: id ?? this.id,
-        fromId: fromId ?? this.fromId,
-        date: date ?? this.date,
-        text: text ?? this.text,
-        fwdMessages: fwdMessages ?? this.fwdMessages,
-        attachments: attachments ?? this.attachments,
-        latitude: latitude ?? this.latitude,
-        longitude: longitude ?? this.longitude,
-        place: place ?? this.place,
-        isOut: isOut ?? this.isOut,
-        isImportant: isImportant ?? this.isImportant,
-        isSent: isSent ?? this.isSent,
-        isError: isError ?? this.isError,
       );
 }
