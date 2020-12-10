@@ -33,3 +33,9 @@ Copy ios/Runner/google_maps_api.plist.example as google_maps_api.plist and inser
 - [ ] Rework attachments (remove separate page)
 - [ ] Max attachments
 - [ ] add access_key to attachments
+https://firebase.flutter.dev/docs/installation/android
+https://firebase.flutter.dev/docs/installation/ios
+## Firebase CM for push notifications
+Put your google_services.json file to android/app/ directory
+Put your GoogleService-Info.plist file to ios/Runner/ directory
+

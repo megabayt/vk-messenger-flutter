@@ -4,6 +4,7 @@ import 'package:sailor/sailor.dart';
 
 import 'package:vk_messenger_flutter/blocs/auth/auth_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
+import 'package:vk_messenger_flutter/blocs/firebase/firebase_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/long_polling/long_polling_bloc.dart';
 import 'package:vk_messenger_flutter/local_models/attachment.dart';
 import 'package:vk_messenger_flutter/local_models/message.dart';
@@ -24,7 +25,11 @@ class AppRouter {
     sailor.addRoutes(
       [
         SailorRoute(
-          name: SplashScreen.routeUrl,
+          name: SplashScreen.routeUrlFirebase,
+          builder: (context, args, params) => AppRouteGuard(SplashScreen()),
+        ),
+        SailorRoute(
+          name: SplashScreen.routeUrlVk,
           builder: (context, args, params) => AppRouteGuard(SplashScreen()),
         ),
         SailorRoute(
@@ -98,25 +103,47 @@ class AppRouteGuard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
-      listener: (listenerContext, state) {
-        if (state is AuthNotAuthenticated || state is AuthFailure) {
-          AppRouter.sailor.popUntil((_) => false);
-          AppRouter.sailor.navigate(SplashScreen.routeUrl);
-          BlocProvider.of<AuthBloc>(listenerContext).add(UserLogIn());
+    return BlocListener<FirebaseBloc, FirebaseState>(
+      listener: (_, firebaseState) {
+        if (firebaseState is FirebaseInitial ||
+            firebaseState is FirebaseInitFailed) {
+          AppRouter.sailor.popUntil((_) => false); // go to blank
+          AppRouter.sailor.navigate(
+              SplashScreen.routeUrlFirebase); // go to firebase splashscreen
+          BlocProvider.of<FirebaseBloc>(context)
+              .add(FirebaseInit()); // initialize firebase
         }
-        if (state is AuthAuthenticated) {
-          AppRouter.sailor.popUntil((_) => false);
-          AppRouter.sailor.navigate(ConversationsScreen.routeUrl);
-          BlocProvider.of<ConversationsBloc>(listenerContext)
-              .add(ConversationsFetch());
-          BlocProvider.of<LongPollingBloc>(listenerContext)
-              .add(LongPollingPoll());
+        if (firebaseState is FirebaseInitiated) {
+          AppRouter.sailor.popUntil((_) => false); //go to blank
+          AppRouter.sailor
+              .navigate(SplashScreen.routeUrlVk); // go to vk splashscreen
+          BlocProvider.of<AuthBloc>(context).add(UserLogIn()); // vk login
         }
       },
-      builder: (_, state) {
-        return child;
-      },
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (_, authState) {
+          if (authState is AuthNotAuthenticated || authState is AuthFailure) {
+            AppRouter.sailor.popUntil((_) => false); //go to blank
+            AppRouter.sailor
+                .navigate(SplashScreen.routeUrlVk); // return to vk splashscreen
+            BlocProvider.of<FirebaseBloc>(context)
+                .add(FirebasePushUnsub()); // unsub push notif
+            BlocProvider.of<AuthBloc>(context).add(UserLogIn()); // retry login
+          }
+          if (authState is AuthAuthenticated) {
+            AppRouter.sailor.popUntil((_) => false); //go to blank
+            AppRouter.sailor
+                .navigate(ConversationsScreen.routeUrl); // go to conversations
+            BlocProvider.of<ConversationsBloc>(context)
+                .add(ConversationsFetch()); // fetch conversations
+            BlocProvider.of<LongPollingBloc>(context)
+                .add(LongPollingPoll()); // long polling
+            BlocProvider.of<FirebaseBloc>(context)
+                .add(FirebasePushSub()); // sub push notif
+          }
+        },
+        child: child,
+      ),
     );
   }
 }

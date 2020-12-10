@@ -1,3 +1,4 @@
 const appId = '6647219'; // your client_id from https://vk.com/dev
-const BASE_URL = 'https://api.vk.com/method/';
 const VERSION = 5.101;
+const BASE_URL = 'https://api.vk.com/method/';
+const CUSTOM_PUSH_URL = '';
