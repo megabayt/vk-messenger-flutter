@@ -11,6 +11,7 @@ import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/vk_models/conversations_response.dart';
 import 'package:vk_messenger_flutter/vk_models/get_conversations_params.dart';
+import 'package:vk_messenger_flutter/vk_models/mark_as_read.dart';
 import 'package:vk_messenger_flutter/vk_models/vk_response.dart';
 
 part 'conversations_bloc.g.dart';
@@ -149,6 +150,7 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
     final newConversations = state.conversations.map((element) {
       if (element.id == event.conversation.id) {
         return element.copyWith(
+          unreadCount: event.conversation.unreadCount,
           messages: event.conversation.messages,
           messagesCount: event.conversation.messagesCount,
         );
@@ -163,18 +165,27 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
 
   Stream<ConversationsState> _mapConversationsResetUnreadToState(
       ConversationsResetUnread event) async* {
-    final index = state.getIndexById(event.peerId);
+    try {
+      final index = state.getIndexById(event.peerId);
 
-    if (index != -1) {
-      final newConversations = List<Conversation>.from(state.conversations);
+      if (index != -1) {
+        final newConversations = List<Conversation>.from(state.conversations);
 
-      newConversations[index] = newConversations[index].copyWith(
-        unreadCount: 0,
-      );
+        newConversations[index] = newConversations[index].copyWith(
+          unreadCount: 0,
+        );
 
-      yield state.copyWith(
-        conversations: newConversations,
-      );
+        await _vkService.markAsRead(MarkAsReadParams(
+          peerId: event.peerId,
+          startMessageId: newConversations[index].messages[0].id,
+        ));
+
+        yield state.copyWith(
+          conversations: newConversations,
+        );
+      }
+    } catch (error) {
+      print(error);
     }
   }
 }

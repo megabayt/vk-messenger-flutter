@@ -204,12 +204,6 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
         ),
       );
 
-      // Mark all conversation messages as read
-      await _vkService.markAsRead(MarkAsReadParams(
-        peerId: _peerId,
-        markConversationAsRead: true,
-      ));
-
       _conversationsBloc.add(ConversationsResetUnread(_peerId));
     } catch (e) {
       yield state.copyWith(
@@ -465,8 +459,11 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     final message = await _fetchMessage(messageId);
 
     final conversationsState = _conversationsBloc?.state;
-    final newMessages =
-        List<Message>.from(conversationsState?.getMessagesById(peerId) ?? []);
+    final conversation = conversationsState.getById(peerId);
+    final unreadCount = conversation?.unreadCount ?? 0;
+    final newMessages = conversation?.messages == null
+        ? null
+        : List<Message>.from(conversation?.messages ?? []);
 
     if (message != null) {
       newMessages.insert(0, message);
@@ -476,6 +473,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
           Conversation(
             id: peerId,
             messages: newMessages,
+            unreadCount: unreadCount + 1,
           ),
         ),
       );
