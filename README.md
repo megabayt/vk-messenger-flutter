@@ -23,12 +23,11 @@ Copy ios/Runner/google_maps_api.plist.example as google_maps_api.plist and inser
 
 - [x] Show out messages read flag
 - [x] Read messages when entering chat
-- [ ] Long polling
+- [x] Long polling
   - [x] Message read
   - [x] Set friends online
-- [ ] Push notifications
-  - [ ] Messages
-  - [ ] Birthdays
+- [x] Push notifications
+  - [x] Messages
 - [ ] Cache requests
 - [ ] Rework attachments (remove separate page)
 - [ ] Max attachments
