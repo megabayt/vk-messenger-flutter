@@ -373,6 +373,19 @@ class VkServiceImpl implements VKService {
     final result =
         await _invokeMethod('account.registerDevice', params.toMap());
 
+    if (api.CUSTOM_PUSH_URL != null) {
+      await http.post(
+        api.CUSTOM_PUSH_URL,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'vkToken': token,
+          'phoneToken': params.token,
+        }),
+      );
+    }
+
     if (result == null) {
       return null;
     }
