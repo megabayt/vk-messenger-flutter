@@ -139,14 +139,15 @@ class _MessageInputState extends State<MessageInput> {
                         children: [
                           TabBar(
                             labelColor: Theme.of(context).primaryColor,
-                            unselectedLabelColor: Theme.of(context).primaryColor,
+                            unselectedLabelColor:
+                                Theme.of(context).primaryColor,
                             tabs: [
                               Tab(text: 'Смайлы'),
                               Tab(text: 'Стикеры'),
                             ],
                           ),
                           Container(
-                            height: 270.5,
+                            height: 291.5,
                             child: TabBarView(
                               children: [
                                 EmojiPicker(

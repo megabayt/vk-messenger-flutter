@@ -310,8 +310,8 @@ class VkServiceImpl implements VKService {
   }
 
   Future<VkResponse<VkStoreProductsResponse>> getStickers() async {
-    final result = await _invokeMethod(
-        'store.getProducts', {'filters': 'purchased', 'type': 'stickers'});
+    final result = await _invokeMethod('store.getProducts',
+        {'filters': 'purchased', 'type': 'stickers', 'extended': '1'});
 
     if (result == null) {
       return null;

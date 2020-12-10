@@ -15,8 +15,8 @@ class StickerPack {
         id: vkStoreProduct?.id,
         stickers: vkStoreProduct?.stickers == null
             ? null
-            : vkStoreProduct.stickers.map(
-                (element) => Sticker.fromVkSticker(element),
-              ),
+            : vkStoreProduct.stickers
+                .map((element) => Sticker.fromVkSticker(element))
+                .toList(),
       );
 }

@@ -62,7 +62,7 @@ class ConversationTile extends StatelessWidget {
     final lastMsgAttachments = lastMessage?.attachments ?? [];
     final lastMsgFwdMessages = lastMessage?.fwdMessages ?? [];
 
-    var text = lastMessage?.text;
+    var text = lastMessage?.text ?? '';
 
     final outRead = lastMessage?.id == item?.outRead;
 
