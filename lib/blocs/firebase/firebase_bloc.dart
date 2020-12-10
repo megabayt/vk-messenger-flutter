@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:bloc/bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -57,15 +58,26 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState> {
       );
       final token = await _firebaseMessaging.getToken();
 
-      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      String deviceModel, deviceId, systemVersion;
+      if (Platform.isIOS) {
+        DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+        IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
+        deviceModel = iosDeviceInfo.name;
+        deviceId = iosDeviceInfo.identifierForVendor;
+        systemVersion = iosDeviceInfo.systemVersion;
+      } else if (Platform.isAndroid) {
+        DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        deviceModel = androidInfo.model;
+        deviceId = androidInfo.androidId;
+        systemVersion = androidInfo.version.release;
+      }
 
       final result = await _vkService.registerDevice(RegisterDeviceParams(
         token: token,
-        deviceModel: androidInfo.model,
-        // deviceYear: androidInfo.device,
-        deviceId: androidInfo.androidId,
-        systemVersion: androidInfo.version.release,
+        deviceModel: deviceModel,
+        deviceId: deviceId,
+        systemVersion: systemVersion,
         settings: {
           'msg': ['on'],
           'chat': ['on']
