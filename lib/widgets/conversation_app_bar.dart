@@ -59,6 +59,15 @@ class ConversationAppBar extends StatelessWidget
           builder: (_, conversationsState) {
             return BlocBuilder<ConversationBloc, ConversationState>(
               builder: (_, conversationState) {
+                final conversation = conversationsState.conversations
+                    ?.getById(conversationState.peerId);
+
+                final conversationName = conversation?.title ??
+                    (profilesState as ProfilesInitial)
+                        .profiles
+                        .getById(conversationState.peerId)
+                        .name;
+
                 final selectedMessagesIds =
                     conversationState?.selectedMessagesIds ?? [];
 
@@ -73,12 +82,7 @@ class ConversationAppBar extends StatelessWidget
                     .toList();
 
                 return AppBar(
-                  title: Text(
-                    (profilesState as ProfilesInitial)
-                        .profiles
-                        .getById(conversationState.peerId)
-                        .name,
-                  ),
+                  title: Text(conversationName),
                   actions: [
                     if (selectedMessagesIds.length > 0)
                       PopupMenuButton<ConversationAppBarMenuAction>(
