@@ -17,6 +17,7 @@ class Message {
     this.latitude,
     this.longitude,
     this.place,
+    this.replyMessage,
     this.isOut,
     this.isImportant,
     this.isSent = true,
@@ -32,6 +33,7 @@ class Message {
   final double latitude;
   final double longitude;
   final String place;
+  final Message replyMessage;
   final bool isOut;
   final bool isImportant;
   final bool isSent;
@@ -59,6 +61,9 @@ class Message {
         place: vkMessage?.geo?.place?.title == null
             ? null
             : vkMessage?.geo?.place?.title,
+        replyMessage: vkMessage?.replyMessage == null
+            ? null
+            : Message.fromVkMessage(vkMessage?.replyMessage),
         isOut: vkMessage?.out == 1,
         isImportant: vkMessage?.important == true,
       );

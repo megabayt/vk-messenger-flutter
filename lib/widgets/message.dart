@@ -101,6 +101,26 @@ class Message extends StatelessWidget {
 
     final captionTheme = Theme.of(context).textTheme.caption;
 
+    if (item?.replyMessage != null) {
+      rows.add(
+        IntrinsicWidth(
+          child: Row(
+            mainAxisAlignment: axisAlign,
+            children: <Widget>[
+              Icon(
+                Icons.reply,
+                size: 13.0,
+              ),
+              Text(
+                item?.replyMessage?.text ?? '',
+                style: captionTheme,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     if (text != '') {
       rows.add(Text(text, textAlign: textAlign));
     }

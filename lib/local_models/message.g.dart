@@ -20,6 +20,7 @@ extension MessageCopyWith on Message {
     double latitude,
     double longitude,
     String place,
+    Message replyMessage,
     String text,
   }) {
     return Message(
@@ -35,6 +36,7 @@ extension MessageCopyWith on Message {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       place: place ?? this.place,
+      replyMessage: replyMessage ?? this.replyMessage,
       text: text ?? this.text,
     );
   }

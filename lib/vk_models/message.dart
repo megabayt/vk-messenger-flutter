@@ -12,9 +12,10 @@ class VkMessage {
     this.fwdMessages,
     this.important,
     this.attachments,
+    this.replyMessage,
+    this.geo,
     this.isSent = true,
     this.isError = false,
-    this.geo,
   });
 
   final int date;
@@ -27,6 +28,7 @@ class VkMessage {
   final bool important;
   final List<VkAttachment> attachments;
   final VkGeo geo;
+  final VkMessage replyMessage;
   final bool isSent;
   final bool isError;
 
@@ -47,5 +49,8 @@ class VkMessage {
             : List<VkAttachment>.from(
                 json["attachments"].map((x) => VkAttachment.fromMap(x))),
         geo: json["geo"] == null ? null : VkGeo.fromMap(json["geo"]),
+        replyMessage: json["reply_message"] == null
+            ? null
+            : VkMessage.fromMap(json["reply_message"]),
       );
 }
