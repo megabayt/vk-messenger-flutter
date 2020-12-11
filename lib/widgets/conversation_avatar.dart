@@ -9,60 +9,58 @@ import 'package:vk_messenger_flutter/local_models/profile.dart';
 class ConversationAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final item = Provider.of<Conversation>(context, listen: false);
+    return BlocBuilder<ProfilesBloc, ProfilesState>(
+      builder: (_, state) {
+        final item = Provider.of<Conversation>(context, listen: false);
 
-    final profile =
-        (BlocProvider.of<ProfilesBloc>(context).state as ProfilesInitial)
-            .profiles
-            .getById(item?.id);
+        final profile = (state as ProfilesInitial).profiles.getById(item?.id);
 
-    final activeIds = item?.activeIds ?? [];
+        final activeIds = item?.activeIds ?? [];
 
-    final activeProfiles = activeIds
-        .map<String>((activeId) =>
-            (BlocProvider.of<ProfilesBloc>(context).state as ProfilesInitial)
-                .profiles
-                .getById(activeId)
-                ?.avatar)
-        .toList();
+        final activeProfiles = activeIds
+            .map<String>((activeId) =>
+                (state as ProfilesInitial).profiles.getById(activeId)?.avatar)
+            .toList();
 
-    var avatarUrls =
-        activeProfiles.length != 0 ? activeProfiles : [profile.avatar];
+        var avatarUrls =
+            activeProfiles.length != 0 ? activeProfiles : [profile.avatar];
 
-    avatarUrls = avatarUrls.where((item) => item != null).toList();
+        avatarUrls = avatarUrls.where((item) => item != null).toList();
 
-    if (avatarUrls.length == 1) {
-      return Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-          CircleAvatar(
-            backgroundImage: NetworkImage(
-              avatarUrls[0],
-            ),
-          ),
-          if (profile.isOnline)
-            Container(
-              width: 10.0,
-              height: 10.0,
-              decoration: BoxDecoration(
-                color: Color.fromRGBO(74, 179, 74, 1),
-                shape: BoxShape.circle,
+        if (avatarUrls.length == 1) {
+          return Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              CircleAvatar(
+                backgroundImage: NetworkImage(
+                  avatarUrls[0],
+                ),
               ),
-            ),
-        ],
-      );
-    }
-    return Container(
-      height: 40.0,
-      width: 40.0,
-      child: GridView.count(
-        crossAxisCount: 2,
-        crossAxisSpacing: 3,
-        mainAxisSpacing: 3,
-        children: avatarUrls.map((avatar) {
-          return CircleAvatar(backgroundImage: NetworkImage(avatar));
-        }).toList(),
-      ),
+              if (profile.isOnline)
+                Container(
+                  width: 10.0,
+                  height: 10.0,
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(74, 179, 74, 1),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+            ],
+          );
+        }
+        return Container(
+          height: 40.0,
+          width: 40.0,
+          child: GridView.count(
+            crossAxisCount: 2,
+            crossAxisSpacing: 3,
+            mainAxisSpacing: 3,
+            children: avatarUrls.map((avatar) {
+              return CircleAvatar(backgroundImage: NetworkImage(avatar));
+            }).toList(),
+          ),
+        );
+      },
     );
   }
 }
