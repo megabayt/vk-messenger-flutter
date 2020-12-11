@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'package:vk_messenger_flutter/blocs/profiles/profiles_bloc.dart';
 import 'package:vk_messenger_flutter/local_models/conversation.dart';
+import 'package:vk_messenger_flutter/local_models/profile.dart';
 
 class ConversationAvatar extends StatelessWidget {
   @override
@@ -12,6 +13,7 @@ class ConversationAvatar extends StatelessWidget {
 
     final profile =
         (BlocProvider.of<ProfilesBloc>(context).state as ProfilesInitial)
+            .profiles
             .getById(item?.id);
 
     final activeIds = item?.activeIds ?? [];
@@ -19,6 +21,7 @@ class ConversationAvatar extends StatelessWidget {
     final activeProfiles = activeIds
         .map<String>((activeId) =>
             (BlocProvider.of<ProfilesBloc>(context).state as ProfilesInitial)
+                .profiles
                 .getById(activeId)
                 ?.avatar)
         .toList();

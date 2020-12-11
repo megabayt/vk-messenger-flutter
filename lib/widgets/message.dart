@@ -6,6 +6,7 @@ import 'package:skeleton_text/skeleton_text.dart';
 
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
+import 'package:vk_messenger_flutter/local_models/conversation.dart';
 import 'package:vk_messenger_flutter/local_models/message.dart' as MessageModel;
 import 'package:vk_messenger_flutter/screens/forwarded_messages_screen.dart';
 import 'package:vk_messenger_flutter/screens/app_router.dart';
@@ -44,8 +45,10 @@ class Message extends StatelessWidget {
 
     final peerId = BlocProvider.of<ConversationBloc>(context)?.state?.peerId;
 
-    final conversation =
-        BlocProvider.of<ConversationsBloc>(context)?.state?.getById(peerId);
+    final conversation = BlocProvider.of<ConversationsBloc>(context)
+        ?.state
+        ?.conversations
+        ?.getById(peerId);
 
     final items = conversation?.messages ?? [];
 

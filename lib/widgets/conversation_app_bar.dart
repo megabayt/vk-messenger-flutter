@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/profiles/profiles_bloc.dart';
-
+import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
+import 'package:vk_messenger_flutter/local_models/conversation.dart';
+import 'package:vk_messenger_flutter/local_models/profile.dart';
 import 'package:vk_messenger_flutter/screens/forward_messages_select.dart';
 import 'package:vk_messenger_flutter/screens/app_router.dart';
-import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 
 class ConversationAppBar extends StatelessWidget
     implements PreferredSizeWidget {
@@ -60,7 +62,7 @@ class ConversationAppBar extends StatelessWidget
                 final selectedMessagesIds =
                     conversationState?.selectedMessagesIds ?? [];
 
-                final selectedMessages = conversationsState
+                final selectedMessages = conversationsState.conversations
                     .getMessagesById(conversationState.peerId)
                     .where(
                       (message) =>
@@ -73,6 +75,7 @@ class ConversationAppBar extends StatelessWidget
                 return AppBar(
                   title: Text(
                     (profilesState as ProfilesInitial)
+                        .profiles
                         .getById(conversationState.peerId)
                         .name,
                   ),

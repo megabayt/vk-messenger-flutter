@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:vk_messenger_flutter/blocs/profiles/profiles_bloc.dart';
 import 'package:vk_messenger_flutter/local_models/conversation.dart';
+import 'package:vk_messenger_flutter/local_models/profile.dart';
 
 import 'package:vk_messenger_flutter/widgets/conversation_avatar.dart';
 import 'package:vk_messenger_flutter/widgets/conversation_tile_skeleton.dart';
@@ -49,6 +50,7 @@ class ConversationTile extends StatelessWidget {
 
     final profile =
         (BlocProvider.of<ProfilesBloc>(context).state as ProfilesInitial)
+            .profiles
             .getById(item?.id);
 
     final name = item?.title ?? profile?.name ?? 'Неизвестно';

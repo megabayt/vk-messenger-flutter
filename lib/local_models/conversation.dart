@@ -52,3 +52,27 @@ class Conversation {
         outRead: item?.conversation?.outRead,
       );
 }
+
+extension ConversationsList on List<Conversation> {
+  int getIndexById(int id) {
+    return this.indexWhere((element) => element.id == id);
+  }
+
+  Conversation getById(int id) {
+    final index = getIndexById(id);
+
+    if (index == -1) {
+      return null;
+    }
+
+    return this[index];
+  }
+
+  int getMessagesCountById(int id) {
+    return getById(id)?.messagesCount ?? 0;
+  }
+
+  List<Message> getMessagesById(int id) {
+    return getById(id)?.messages ?? [];
+  }
+}

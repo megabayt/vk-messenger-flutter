@@ -6,6 +6,7 @@ import 'package:vk_messenger_flutter/blocs/profiles/profiles_bloc.dart';
 
 import 'package:vk_messenger_flutter/local_models/attachment.dart';
 import 'package:vk_messenger_flutter/local_models/attachment_photo.dart';
+import 'package:vk_messenger_flutter/local_models/profile.dart';
 
 class PhotosScreen extends StatelessWidget {
   static const routeUrl = '/photos';
@@ -18,15 +19,14 @@ class PhotosScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageAttachments = attachments
-        .where((element) => element is AttachmentPhoto)
-        .toList();
+    final imageAttachments =
+        attachments.where((element) => element is AttachmentPhoto).toList();
     final initialPage = imageAttachments
         .indexWhere((element) => element == attachments[attachmentIndex]);
 
     return BlocBuilder<ProfilesBloc, ProfilesState>(
       builder: (context, state) {
-        final profile = (state as ProfilesInitial)?.getById(fromId);
+        final profile = (state as ProfilesInitial)?.profiles?.getById(fromId);
         final name = profile?.name ?? '';
 
         return Scaffold(

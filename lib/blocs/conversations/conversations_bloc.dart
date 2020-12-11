@@ -6,7 +6,6 @@ import 'package:meta/meta.dart';
 
 import 'package:vk_messenger_flutter/blocs/profiles/profiles_bloc.dart';
 import 'package:vk_messenger_flutter/local_models/conversation.dart';
-import 'package:vk_messenger_flutter/local_models/message.dart';
 import 'package:vk_messenger_flutter/services/interfaces/vk_service.dart';
 import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/vk_models/conversations_response.dart';
@@ -150,9 +149,16 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
     final newConversations = state.conversations.map((element) {
       if (element.id == event.conversation.id) {
         return element.copyWith(
-          unreadCount: event.conversation.unreadCount,
-          messages: event.conversation.messages,
-          messagesCount: event.conversation.messagesCount,
+          activeIds: event.conversation?.activeIds,
+          id: event.conversation?.id,
+          inRead: event.conversation?.inRead,
+          localId: event.conversation?.localId,
+          messages: event.conversation?.messages,
+          messagesCount: event.conversation?.messagesCount,
+          outRead: event.conversation?.outRead,
+          title: event.conversation?.title,
+          type: event.conversation?.type,
+          unreadCount: event.conversation?.unreadCount,
         );
       }
       return element;
@@ -166,7 +172,7 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
   Stream<ConversationsState> _mapConversationsResetUnreadToState(
       ConversationsResetUnread event) async* {
     try {
-      final index = state.getIndexById(event.peerId);
+      final index = state.conversations?.getIndexById(event.peerId);
 
       if (index != -1) {
         final newConversations = List<Conversation>.from(state.conversations);
@@ -175,10 +181,12 @@ class ConversationsBloc extends Bloc<ConversationsEvent, ConversationsState> {
           unreadCount: 0,
         );
 
-        await _vkService.markAsRead(MarkAsReadParams(
-          peerId: event.peerId,
-          startMessageId: newConversations[index].messages[0].id,
-        ));
+        if (newConversations[index].messages.length != 0) {
+          await _vkService.markAsRead(MarkAsReadParams(
+            peerId: event.peerId,
+            startMessageId: newConversations[index].messages[0].id,
+          ));
+        }
 
         yield state.copyWith(
           conversations: newConversations,

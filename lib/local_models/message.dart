@@ -63,3 +63,20 @@ class Message {
         isImportant: vkMessage?.important == true,
       );
 }
+
+extension MessageList on List<Message> {
+  List<Message> uniq() {
+    final messagesIds = [];
+    final newMessages = this.fold<List<Message>>(
+      [],
+      (previousValue, element) {
+        if (messagesIds.contains(element.id)) {
+          return previousValue;
+        }
+        messagesIds.add(element.id);
+        return [...previousValue, element];
+      },
+    );
+    return newMessages;
+  }
+}

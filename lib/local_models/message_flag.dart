@@ -20,12 +20,12 @@ enum MessageFlag {
   NOT_DELIVERED,
 }
 
-extension MessageFlags on MessageFlag {
-  static List<MessageFlag> getFlags(int mask) {
+extension MessageFlags on int {
+  List<MessageFlag> getMessageFlags() {
     List<MessageFlag> _flags = [];
 
     MessageFlag.values.forEach((element) {
-      if (mask & (1 << element.index) != 0) {
+      if (this & (1 << element.index) != 0) {
         _flags.add(element);
       }
     });

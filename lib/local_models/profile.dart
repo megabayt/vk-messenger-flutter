@@ -32,3 +32,19 @@ class Profile {
         isOnline: vkProfile?.online == 1,
       );
 }
+
+extension ProfilesList on List<Profile> {
+  Profile getById(int id) {
+    final index = getIndexById(id);
+
+    if (index == -1) {
+      return null;
+    }
+
+    return this[index];
+  }
+
+  int getIndexById(int id) {
+    return this.indexWhere((element) => element.id == id);
+  }
+}

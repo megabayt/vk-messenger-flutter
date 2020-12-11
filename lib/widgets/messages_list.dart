@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'package:vk_messenger_flutter/blocs/conversation/conversation_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
+import 'package:vk_messenger_flutter/local_models/conversation.dart';
 import 'package:vk_messenger_flutter/widgets/creation_aware_list_item.dart';
 import 'package:vk_messenger_flutter/widgets/message.dart';
 import 'package:vk_messenger_flutter/widgets/message_date_delimeter.dart';
@@ -23,8 +24,10 @@ class _MessagesListState extends State<MessagesList> {
 
     final peerId = conversationBloc?.state?.peerId;
 
-    final conversation =
-        BlocProvider.of<ConversationsBloc>(context)?.state?.getById(peerId);
+    final conversation = BlocProvider.of<ConversationsBloc>(context)
+        ?.state
+        ?.conversations
+        ?.getById(peerId);
 
     final items = conversation?.messages ?? [];
 
@@ -61,7 +64,8 @@ class _MessagesListState extends State<MessagesList> {
           builder: (_, conversationState) {
             final peerId = conversationState?.peerId;
 
-            final conversation = conversationsState?.getById(peerId);
+            final conversation =
+                conversationsState?.conversations?.getById(peerId);
 
             final totalCount = conversation?.messagesCount ?? 0;
             var items = conversation?.messages ?? [];

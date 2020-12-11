@@ -19,7 +19,6 @@ import 'package:vk_messenger_flutter/services/service_locator.dart';
 import 'package:vk_messenger_flutter/vk_models/delete_messages_params.dart';
 import 'package:vk_messenger_flutter/vk_models/get_history_params.dart';
 import 'package:vk_messenger_flutter/vk_models/get_messages_params.dart';
-import 'package:vk_messenger_flutter/vk_models/mark_as_read.dart';
 import 'package:vk_messenger_flutter/vk_models/send_message_params.dart';
 
 part 'conversation_bloc.g.dart';
@@ -66,8 +65,8 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
   void _appendOrRemoveMessage(int randomId, Message message) {
     final conversationsState = _conversationsBloc?.state;
-    final newMessages =
-        List<Message>.from(conversationsState?.getMessagesById(_peerId) ?? []);
+    final newMessages = List<Message>.from(
+        conversationsState?.conversations?.getMessagesById(_peerId) ?? []);
 
     final index = newMessages.indexWhere((element) => element.id == randomId);
 
@@ -140,10 +139,6 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     if (event is ConversationPollDeleteMessage) {
       yield* _mapConversationPollDeleteMessageToState(event);
     }
-    if (event is ConversationPollDeleteMessages) {
-      // TODO: Process event
-      yield* _mapConversationPollDeleteMessagesToState(event);
-    }
     if (event is ConversationPollReadMessage) {
       yield* _mapConversationPollReadMessageToState(event);
     }
@@ -157,6 +152,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     yield state.copyWith(
       peerId: event.peerId,
       selectedMessagesIds: [],
+      showEmojiKeyboard: false,
     );
     if (!event.fwdMode) {
       _attachmentsBloc.add(AttachmentsClearAttachments());
@@ -217,9 +213,11 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
   Stream<ConversationState> _mapConversationFetchMoreToState(
       ConversationEvent event) async* {
     final conversationsState = _conversationsBloc?.state;
-    final oldMessages = conversationsState?.getMessagesById(_peerId) ?? [];
+    final oldMessages =
+        conversationsState?.conversations?.getMessagesById(_peerId) ?? [];
     final oldMessagesCount = oldMessages.length;
-    final totalCount = conversationsState?.getMessagesCountById(_peerId) ?? 0;
+    final totalCount =
+        conversationsState?.conversations?.getMessagesCountById(_peerId) ?? 0;
 
     if (state.isFetching || oldMessagesCount >= totalCount) {
       return;
@@ -424,7 +422,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
       final conversationsState = _conversationsBloc?.state;
       final newMessages = List<Message>.from(
-          conversationsState?.getMessagesById(_peerId) ?? []);
+          conversationsState?.conversations?.getMessagesById(_peerId) ?? []);
 
       newMessages.removeWhere((message) =>
           selectedMessagesIds.indexWhere(
@@ -459,21 +457,35 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     final message = await _fetchMessage(messageId);
 
     final conversationsState = _conversationsBloc?.state;
-    final conversation = conversationsState.getById(peerId);
-    final unreadCount = conversation?.unreadCount ?? 0;
-    final newMessages = conversation?.messages == null
+    final conversation = conversationsState.conversations?.getById(peerId);
+
+    if (conversation == null) {
+      _conversationsBloc.add(ConversationsFetch());
+      return;
+    }
+
+    List<Message> newMessages = conversation?.messages == null
         ? null
         : List<Message>.from(conversation?.messages ?? []);
 
     if (message != null) {
       newMessages.insert(0, message);
 
+      newMessages = newMessages.uniq();
+
+      final hasNewMessages =
+          (conversation?.messages ?? []).length < newMessages.length;
+
+      final unreadCount = conversation?.unreadCount ?? 0;
+      final messagesCount = conversation?.messagesCount ?? 0;
+
       _conversationsBloc.add(
         ConversationsUpdateConversation(
           Conversation(
             id: peerId,
             messages: newMessages,
-            unreadCount: unreadCount + 1,
+            unreadCount: hasNewMessages ? unreadCount + 1 : unreadCount,
+            messagesCount: hasNewMessages ? messagesCount + 1 : messagesCount,
           ),
         ),
       );
@@ -488,8 +500,8 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     final message = await _fetchMessage(messageId);
 
     final conversationsState = _conversationsBloc?.state;
-    final newMessages =
-        List<Message>.from(conversationsState?.getMessagesById(peerId) ?? []);
+    final newMessages = List<Message>.from(
+        conversationsState?.conversations?.getMessagesById(peerId) ?? []);
 
     final index = newMessages.indexWhere((element) => element.id == messageId);
 
@@ -514,8 +526,8 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     final peerId = event.peerId;
 
     final conversationsState = _conversationsBloc?.state;
-    final newMessages =
-        List<Message>.from(conversationsState?.getMessagesById(peerId) ?? []);
+    final newMessages = List<Message>.from(
+        conversationsState?.conversations?.getMessagesById(peerId) ?? []);
 
     final index = newMessages.indexWhere((element) => element.id == messageId);
 
@@ -533,14 +545,9 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     }
   }
 
-  Stream<ConversationState> _mapConversationPollDeleteMessagesToState(
-      ConversationPollDeleteMessages event) async* {
-    print(event.localId);
-  }
-
   Stream<ConversationState> _mapConversationPollProcessFlagsToState(
       ConversationPollProcessFlags event) async* {
-    final flags = MessageFlags.getFlags(event.mask);
+    final flags = event.mask?.getMessageFlags() ?? [];
 
     flags.forEach((flag) {
       switch (flag) {
@@ -559,7 +566,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
     final conversationsState = _conversationsBloc?.state;
 
-    final conversation = conversationsState?.getById(peerId);
+    final conversation = conversationsState?.conversations?.getById(peerId);
 
     final newConversation = event.inRead
         ? conversation.copyWith(inRead: messageId)
