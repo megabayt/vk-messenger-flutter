@@ -8,6 +8,7 @@ class AttachmentsState {
   final List<Attachment> attachments;
   final List<int> fwdMessages;
   final LatLng location;
+  final int replyTo;
 
   AttachmentsState({
     this.isFetching = false,
@@ -15,5 +16,6 @@ class AttachmentsState {
     this.fwdMessages = const [],
     this.attachments = const [],
     this.location = const LatLng(0, 0),
+    this.replyTo = 0,
   });
 }

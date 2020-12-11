@@ -89,6 +89,7 @@ class ConversationAppBar extends StatelessWidget
                           var singleMessageRows = [];
                           if (selectedMessagesIds.length == 1) {
                             singleMessageRows.addAll([
+                              // TODO: Check if no forwarded messages
                               PopupMenuItem(
                                 child: Text('Ответить'),
                                 value: ConversationAppBarMenuAction.REPLY,
@@ -115,6 +116,7 @@ class ConversationAppBar extends StatelessWidget
                           });
 
                           return [
+                            // TODO: Check if no replyTo
                             PopupMenuItem(
                               child: Text('Переслать'),
                               value: ConversationAppBarMenuAction.FORWARD,

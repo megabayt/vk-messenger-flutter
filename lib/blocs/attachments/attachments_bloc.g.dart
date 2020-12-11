@@ -13,6 +13,7 @@ extension AttachmentsStateCopyWith on AttachmentsState {
     List<int> fwdMessages,
     bool isFetching,
     LatLng location,
+    int replyTo,
   }) {
     return AttachmentsState(
       attachments: attachments ?? this.attachments,
@@ -20,6 +21,7 @@ extension AttachmentsStateCopyWith on AttachmentsState {
       fwdMessages: fwdMessages ?? this.fwdMessages,
       isFetching: isFetching ?? this.isFetching,
       location: location ?? this.location,
+      replyTo: replyTo ?? this.replyTo,
     );
   }
 }

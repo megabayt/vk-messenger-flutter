@@ -7,6 +7,7 @@ class SendMessageParams {
   List<String> attachment;
   double lat;
   double long;
+  int replyTo;
 
   SendMessageParams({
     this.peerId,
@@ -17,6 +18,7 @@ class SendMessageParams {
     this.attachment,
     this.lat,
     this.long,
+    this.replyTo,
   });
 
   Map<String, String> toMap() {
@@ -33,10 +35,10 @@ class SendMessageParams {
     if (message != null) {
       map['message'] = message;
     }
-    if (forwardMessages != null) {
+    if (forwardMessages != null && forwardMessages.length != 0) {
       map['forward_messages'] = forwardMessages.join(',');
     }
-    if (attachment != null) {
+    if (attachment != null && attachment.length != 0) {
       map['attachment'] = attachment.join(',');
     }
     if (lat != null) {
@@ -44,6 +46,9 @@ class SendMessageParams {
     }
     if (long != null) {
       map['long'] = long.toString();
+    }
+    if (replyTo != null) {
+      map['reply_to'] = replyTo.toString();
     }
     return map;
   }

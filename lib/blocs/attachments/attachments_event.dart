@@ -47,3 +47,9 @@ class AttachmentsAttachLocation extends AttachmentsEvent {
 
   AttachmentsAttachLocation(this.location);
 }
+
+class AttachmentsReplyTo extends AttachmentsEvent {
+  final int messageId;
+
+  AttachmentsReplyTo(this.messageId);
+}

@@ -63,6 +63,11 @@ class _MessageInputState extends State<MessageInput> {
               attachCount += 1;
             }
 
+            final replyTo = attachmentsState?.replyTo;
+            if (replyTo != 0) {
+              attachCount += 1;
+            }
+
             final attachBtn = IconButton(
               icon: Icon(Icons.attach_file),
               onPressed: _tapAttachHandler,

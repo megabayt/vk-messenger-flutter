@@ -282,6 +282,10 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     final location = _attachmentsBloc.state.location;
     final locationEmpty = location.latitude == 0 && location.longitude == 0;
 
+    final replyTo = _attachmentsBloc.state.replyTo == 0
+        ? null
+        : _attachmentsBloc.state.replyTo;
+
     if (event.message == '' &&
         fwdMessages.length == 0 &&
         attachments.length == 0 &&
@@ -311,6 +315,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
         attachment: attachments,
         lat: location.latitude,
         long: location.longitude,
+        replyTo: replyTo,
       ));
       if (result.error != null) {
         throw Exception(result.error?.errorMsg);
@@ -442,7 +447,17 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     }
   }
 
-  Stream<ConversationState> _mapConversationReplyMessageToState() async* {}
+  Stream<ConversationState> _mapConversationReplyMessageToState() async* {
+    final selectedMessagesIds = List<int>.from(state.selectedMessagesIds ?? []);
+
+    final messageId =
+        selectedMessagesIds.length != 0 ? selectedMessagesIds[0] : null;
+
+    if (messageId != null) {
+      _attachmentsBloc.add(AttachmentsReplyTo(messageId));
+      yield state.copyWith(selectedMessagesIds: []);
+    }
+  }
 
   Stream<ConversationState>
       _mapConversationMarkImportantMessageToState() async* {}

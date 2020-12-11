@@ -73,6 +73,9 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
     if (event is AttachmentsAttachLocation) {
       yield* _mapAttachmentsAttachLocationToState(event);
     }
+    if (event is AttachmentsReplyTo) {
+      yield* _mapAttachmentsReplyToToState(event);
+    }
   }
 
   Stream<AttachmentsState> _mapAttachmentsForwardMessageToState(
@@ -99,6 +102,7 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
       fwdMessages: [],
       attachments: [],
       location: LatLng(0, 0),
+      replyTo: 0,
     );
   }
 
@@ -413,5 +417,10 @@ class AttachmentsBloc extends Bloc<AttachmentsEvent, AttachmentsState> {
   Stream<AttachmentsState> _mapAttachmentsAttachLocationToState(
       AttachmentsAttachLocation event) async* {
     yield state.copyWith(location: event.location);
+  }
+
+  Stream<AttachmentsState> _mapAttachmentsReplyToToState(
+      AttachmentsReplyTo event) async* {
+    yield state.copyWith(replyTo: event.messageId);
   }
 }
