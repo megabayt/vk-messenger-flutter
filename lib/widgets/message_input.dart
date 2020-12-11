@@ -36,9 +36,6 @@ class _MessageInputState extends State<MessageInput> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: close_sinks
-    final conversationBloc = BlocProvider.of<ConversationBloc>(context);
-
     return BlocBuilder<AttachmentsBloc, AttachmentsState>(
       builder: (_, attachmentsState) {
         return BlocBuilder<ConversationBloc, ConversationState>(
@@ -90,8 +87,9 @@ class _MessageInputState extends State<MessageInput> {
                     children: <Widget>[
                       IconButton(
                         icon: Icon(Icons.insert_emoticon),
-                        onPressed: () => conversationBloc
-                            .add(ConversationToggleEmojiKeyboard()),
+                        onPressed: () =>
+                            BlocProvider.of<ConversationBloc>(context)
+                                .add(ConversationToggleEmojiKeyboard()),
                         color: showEmojiKeyboard
                             ? primaryColor
                             : primaryColor.withOpacity(.5),

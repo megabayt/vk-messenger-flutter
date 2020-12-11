@@ -9,7 +9,10 @@ import 'package:vk_messenger_flutter/widgets/creation_aware_list_item.dart';
 class FriendsList extends StatelessWidget {
   final _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
 
-  void _itemCreatedHandler(FriendsBloc friendsBloc, int index) {
+  void _itemCreatedHandler(BuildContext context, int index) {
+    // ignore: close_sinks
+    final friendsBloc = BlocProvider.of<FriendsBloc>(context);
+
     final items = friendsBloc?.state?.items ?? [];
 
     if (index == items.length - 1) {
@@ -18,17 +21,11 @@ class FriendsList extends StatelessWidget {
   }
 
   void _retryHandler(BuildContext context) {
-    // ignore: close_sinks
-    final friendsBloc = BlocProvider.of<FriendsBloc>(context);
-
-    friendsBloc.add(FriendsRetry());
+    BlocProvider.of<FriendsBloc>(context).add(FriendsRetry());
   }
 
   @override
   Widget build(BuildContext context) {
-    // ignore: close_sinks
-    final friendsBloc = BlocProvider.of<FriendsBloc>(context);
-
     return BlocConsumer<FriendsBloc, FriendsState>(
       listener: (_, state) {
         if (state.error != '') {
@@ -59,7 +56,7 @@ class FriendsList extends StatelessWidget {
         return RefreshIndicator(
           key: _refreshIndicatorKey,
           onRefresh: () async {
-            friendsBloc.add(FriendsFetch());
+            BlocProvider.of<FriendsBloc>(context).add(FriendsFetch());
           },
           child: ListView.builder(
             itemCount: items.length,
@@ -68,7 +65,7 @@ class FriendsList extends StatelessWidget {
                 // onTap: _chatTapHandler(context, items[index]),
                 child: CreationAwareListItem(
                   key: ValueKey(items[index]?.id),
-                  itemCreated: () => _itemCreatedHandler(friendsBloc, index),
+                  itemCreated: () => _itemCreatedHandler(context, index),
                   child: Provider.value(
                     value: items[index],
                     child: FriendTile(),

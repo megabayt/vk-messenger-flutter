@@ -15,11 +15,12 @@ class FriendTile extends StatelessWidget {
 
     // ignore: close_sinks
     final conversationBloc = BlocProvider.of<ConversationBloc>(context);
-    // ignore: close_sinks
-    final attachmentsBloc = BlocProvider.of<AttachmentsBloc>(context);
 
-    attachmentsBloc.add(AttachmentsForwardMessage(
-        conversationBloc.state.selectedMessagesIds ?? []));
+    BlocProvider.of<AttachmentsBloc>(context).add(
+      AttachmentsForwardMessage(
+        conversationBloc.state.selectedMessagesIds ?? [],
+      ),
+    );
     AppRouter.sailor.popUntil((route) {
       if (route.settings.name == ConversationsScreen.routeUrl) {
         return true;

@@ -14,10 +14,7 @@ class _StickersSelectState extends State<StickersSelect> {
   int currentIndex = 0;
 
   void _retryHandler(BuildContext context) {
-    // ignore: close_sinks
-    final stickersBloc = BlocProvider.of<StickersBloc>(context);
-
-    stickersBloc.add(StickersFetch());
+    BlocProvider.of<StickersBloc>(context).add(StickersFetch());
   }
 
   void _handleTapProduct(int index) {

@@ -24,9 +24,7 @@ class AttachmentsAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   void _popupMenuHandler(
       BuildContext context, AttachmentsAppBarMenuAction action) {
-    // ignore: close_sinks
-    final conversationBloc = BlocProvider.of<ConversationBloc>(context);
-    final peerId = conversationBloc.state.peerId;
+    final peerId = BlocProvider.of<ConversationBloc>(context).state.peerId;
 
     switch (action) {
       case AttachmentsAppBarMenuAction.PHOTO_GALLERY:

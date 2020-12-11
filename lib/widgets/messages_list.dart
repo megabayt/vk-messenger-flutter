@@ -37,10 +37,7 @@ class _MessagesListState extends State<MessagesList> {
   }
 
   void _retryHandler(BuildContext context) {
-    // ignore: close_sinks
-    final conversationBloc = BlocProvider.of<ConversationBloc>(context);
-
-    conversationBloc.add(ConversationRetry());
+    BlocProvider.of<ConversationBloc>(context).add(ConversationRetry());
   }
 
   @override

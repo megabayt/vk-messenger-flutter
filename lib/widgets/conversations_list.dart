@@ -28,10 +28,7 @@ class ConversationsList extends StatelessWidget {
   }
 
   void _retryHandler(BuildContext context) {
-    // ignore: close_sinks
-    final conversationsBloc = BlocProvider.of<ConversationsBloc>(context);
-
-    conversationsBloc.add(ConversationsRetry());
+    BlocProvider.of<ConversationsBloc>(context).add(ConversationsRetry());
   }
 
   void _chatTapHandler(BuildContext context, Conversation item) {
