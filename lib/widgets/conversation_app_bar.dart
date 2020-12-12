@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vk_messenger_flutter/blocs/attachments/attachments_bloc.dart';
 
 import 'package:vk_messenger_flutter/blocs/conversations/conversations_bloc.dart';
 import 'package:vk_messenger_flutter/blocs/profiles/profiles_bloc.dart';
@@ -59,87 +60,96 @@ class ConversationAppBar extends StatelessWidget
           builder: (_, conversationsState) {
             return BlocBuilder<ConversationBloc, ConversationState>(
               builder: (_, conversationState) {
-                final conversation = conversationsState.conversations
-                    ?.getById(conversationState.peerId);
+                return BlocBuilder<AttachmentsBloc, AttachmentsState>(
+                  builder: (_, attachmentsState) {
+                    final conversation = conversationsState.conversations
+                        ?.getById(conversationState.peerId);
 
-                final conversationName = conversation?.title ??
-                    (profilesState as ProfilesInitial)
-                        .profiles
-                        .getById(conversationState.peerId)
-                        .name;
+                    final conversationName = conversation?.title ??
+                        (profilesState as ProfilesInitial)
+                            .profiles
+                            .getById(conversationState.peerId)
+                            .name;
 
-                final selectedMessagesIds =
-                    conversationState?.selectedMessagesIds ?? [];
+                    final selectedMessagesIds =
+                        conversationState?.selectedMessagesIds ?? [];
 
-                final selectedMessages = conversationsState.conversations
-                    .getMessagesById(conversationState.peerId)
-                    .where(
-                      (message) =>
-                          selectedMessagesIds.indexWhere(
-                              (messageId) => message?.id == messageId) !=
-                          -1,
-                    )
-                    .toList();
+                    final selectedMessages = conversationsState.conversations
+                        .getMessagesById(conversationState.peerId)
+                        .where(
+                          (message) =>
+                              selectedMessagesIds.indexWhere(
+                                  (messageId) => message?.id == messageId) !=
+                              -1,
+                        )
+                        .toList();
 
-                return AppBar(
-                  title: Text(conversationName),
-                  actions: [
-                    if (selectedMessagesIds.length > 0)
-                      PopupMenuButton<ConversationAppBarMenuAction>(
-                        icon: Icon(Icons.more_vert),
-                        onSelected: (action) =>
-                            _popupMenuHandler(context, action),
-                        itemBuilder: (BuildContext context) {
-                          var singleMessageRows = [];
-                          if (selectedMessagesIds.length == 1) {
-                            singleMessageRows.addAll([
-                              // TODO: Check if no forwarded messages
-                              PopupMenuItem(
-                                child: Text('Ответить'),
-                                value: ConversationAppBarMenuAction.REPLY,
-                              ),
-                              PopupMenuItem(
-                                child: Text('Пометить как важное'),
-                                value:
-                                    ConversationAppBarMenuAction.MARK_IMPORTANT,
-                              ),
-                              PopupMenuItem(
-                                child: Text('Редактировать'),
-                                value: ConversationAppBarMenuAction.EDIT,
-                              ),
-                            ]);
-                          }
+                    final hasReplyTo = attachmentsState.replyTo != 0;
+                    final hasForwardedMessages =
+                        (attachmentsState.fwdMessages ?? []).length != 0;
 
-                          final canRemoveForEveryone =
-                              selectedMessages.every((element) {
-                            final date = DateTime.fromMillisecondsSinceEpoch(
-                                element.date * 1000);
-                            return element.isOut &&
-                                DateTime.now().difference(date).inMinutes <
-                                    1440;
-                          });
+                    return AppBar(
+                      title: Text(conversationName),
+                      actions: [
+                        if (selectedMessagesIds.length > 0)
+                          PopupMenuButton<ConversationAppBarMenuAction>(
+                            icon: Icon(Icons.more_vert),
+                            onSelected: (action) =>
+                                _popupMenuHandler(context, action),
+                            itemBuilder: (BuildContext context) {
+                              var singleMessageRows = [];
+                              if (selectedMessagesIds.length == 1) {
+                                singleMessageRows.addAll([
+                                  if (!hasForwardedMessages)
+                                    PopupMenuItem(
+                                      child: Text('Ответить'),
+                                      value: ConversationAppBarMenuAction.REPLY,
+                                    ),
+                                  PopupMenuItem(
+                                    child: Text('Пометить как важное'),
+                                    value: ConversationAppBarMenuAction
+                                        .MARK_IMPORTANT,
+                                  ),
+                                  PopupMenuItem(
+                                    child: Text('Редактировать'),
+                                    value: ConversationAppBarMenuAction.EDIT,
+                                  ),
+                                ]);
+                              }
 
-                          return [
-                            // TODO: Check if no replyTo
-                            PopupMenuItem(
-                              child: Text('Переслать'),
-                              value: ConversationAppBarMenuAction.FORWARD,
-                            ),
-                            PopupMenuItem(
-                              child: Text('Удалить (у меня)'),
-                              value: ConversationAppBarMenuAction.REMOVE,
-                            ),
-                            if (canRemoveForEveryone)
-                              PopupMenuItem(
-                                child: Text('Удалить (у всех)'),
-                                value: ConversationAppBarMenuAction
-                                    .REMOVE_FOR_EVERYONE,
-                              ),
-                            ...singleMessageRows,
-                          ];
-                        },
-                      ),
-                  ],
+                              final canRemoveForEveryone =
+                                  selectedMessages.every((element) {
+                                final date =
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                        element.date * 1000);
+                                return element.isOut &&
+                                    DateTime.now().difference(date).inMinutes <
+                                        1440;
+                              });
+
+                              return [
+                                if (!hasReplyTo)
+                                  PopupMenuItem(
+                                    child: Text('Переслать'),
+                                    value: ConversationAppBarMenuAction.FORWARD,
+                                  ),
+                                PopupMenuItem(
+                                  child: Text('Удалить (у меня)'),
+                                  value: ConversationAppBarMenuAction.REMOVE,
+                                ),
+                                if (canRemoveForEveryone)
+                                  PopupMenuItem(
+                                    child: Text('Удалить (у всех)'),
+                                    value: ConversationAppBarMenuAction
+                                        .REMOVE_FOR_EVERYONE,
+                                  ),
+                                ...singleMessageRows,
+                              ];
+                            },
+                          ),
+                      ],
+                    );
+                  },
                 );
               },
             );
