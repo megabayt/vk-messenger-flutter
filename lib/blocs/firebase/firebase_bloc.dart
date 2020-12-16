@@ -82,6 +82,7 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState> {
           'msg': ['on'],
           'chat': ['on']
         },
+        pushProvider: 'fcm',
         // 'sandbox': '0',
       ));
 

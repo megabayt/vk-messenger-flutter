@@ -8,6 +8,7 @@ class RegisterDeviceParams {
   final String systemVersion;
   final Map<String, dynamic> settings;
   final int sandbox;
+  final String pushProvider;
 
   RegisterDeviceParams({
     this.token,
@@ -17,6 +18,7 @@ class RegisterDeviceParams {
     this.systemVersion,
     this.settings,
     this.sandbox,
+    this.pushProvider,
   });
 
   Map<String, String> toMap() {
@@ -41,6 +43,9 @@ class RegisterDeviceParams {
     }
     if (sandbox != null) {
       map['sandbox'] = sandbox.toString();
+    }
+    if (pushProvider != null) {
+      map['push_provider'] = pushProvider;
     }
     return map;
   }
