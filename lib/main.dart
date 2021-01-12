@@ -66,6 +66,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       ? message.data['body']
       : 'Новое сообщение';
 
+  if (title == '' && body == '') {
+    return;
+  }
+
   await flutterLocalNotificationsPlugin
       .show(0, title, body, platformChannelSpecifics, payload: 'item x');
 
